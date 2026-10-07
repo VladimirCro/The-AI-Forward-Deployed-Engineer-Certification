@@ -48,10 +48,38 @@ put real hostnames, IPs, or architecture diagrams in this file.
   frequently disagrees with what people believe about their own network.
 -->
 
-<!-- probe output here -->
+### 2026-10-07 — Session 1 egress probe (developer laptop, WSL2)
+
+| host | why | status | underlying error |
+| --- | --- | --- | --- |
+| pypi.org | Python packages | DNS BLOCKED | no answer within the probe's deadline |
+| files.pythonhosted.org | the actual wheel downloads | DNS BLOCKED | no answer within the probe's deadline |
+| api.openai.com | the model API | TLS BLOCKED | network is unreachable |
+| cdn.jsdelivr.net | the CDN the Week 1 frontend uses | TLS BLOCKED | network is unreachable |
+| huggingface.co | open weights, Weeks 2 and 8 | DNS BLOCKED | no answer within the probe's deadline |
+| registry-1.docker.io | container images | DNS BLOCKED | no answer within the probe's deadline |
+| github.com | this repository | TLS BLOCKED | connection timed out |
+
+**Verdict (probe):** Blocked: pypi.org, files.pythonhosted.org, api.openai.com, cdn.jsdelivr.net, huggingface.co, registry-1.docker.io, github.com. Someone has to allow these or mirror them internally before Weeks 2, 8, and 9 — find out who, now, not in the week you need it.
 
 **Does this match what you were told in the table above?** Where it doesn't, that
 gap is worth chasing — it usually means a proxy nobody documented.
+
+Only partly. The probe connects directly and ignores the proxy, so it reports
+everything as blocked: this laptop has no direct egress at all. None of the
+failures is a certificate problem — the connection never gets that far. Through
+the corporate proxy most hosts work (pypi.org, github.com and huggingface.co
+return 200), so the real constraint is "proxy only, allowlisted", not
+"everything blocked". DNS vs TLS BLOCKED is incidental here; the finding is the
+same for every host.
+
+Two more things the probe cannot see:
+- The CDN the frontend loads is refused by the proxy from WSL (407) but loads
+  in the Windows browser, so the chat works locally but would likely break on a
+  server without a user's proxy login.
+- On 2026-10-07 the proxy failed to resolve Google API domains
+  (502 notresolvable) while other domains worked — a temporary proxy-side DNS
+  issue, not a local one.
 
 ---
 
