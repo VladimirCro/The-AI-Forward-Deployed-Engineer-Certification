@@ -62,6 +62,36 @@ put real hostnames, IPs, or architecture diagrams in this file.
 
 **Verdict (probe):** Blocked: pypi.org, files.pythonhosted.org, api.openai.com, cdn.jsdelivr.net, huggingface.co, registry-1.docker.io, github.com. Someone has to allow these or mirror them internally before Weeks 2, 8, and 9 — find out who, now, not in the week you need it.
 
+### 2026-10-07 — the same hosts through the corporate proxy
+
+| host | tunnel via proxy | server reply | certificate issuer |
+| --- | --- | --- | --- |
+| pypi.org | 200 | 200 | GlobalSign (public) |
+| files.pythonhosted.org | 200 | 404 on `/` (host reachable) | GlobalSign (public) |
+| api.openai.com | 200 | 421 on `/` (host reachable) | Google Trust Services (public) |
+| cdn.jsdelivr.net | **407 — proxy requires authentication** | — | — |
+| huggingface.co | 200 | 200 | Amazon (public) |
+| registry-1.docker.io | 200 | 404 on `/` (host reachable) | Amazon (public) |
+| github.com | 200 | 200 | Sectigo (public) |
+
+**How measured:** `curl -sv https://<host>/` from the same laptop, through the
+proxy already configured in the shell (`https_proxy`). Read three lines from
+the verbose output: the proxy's reply to `CONNECT` (tunnel), the server's HTTP
+status, and the certificate `issuer`. Compared with the notebook probe, which
+connects directly and bypasses the proxy.
+
+**Reading:** an allowlist behind an authenticating proxy, with no TLS interception.
+Every certificate is from a public CA. Six of seven hosts tunnel without a login;
+the frontend's CDN only passes with a proxy login, which a browser on the
+corporate laptop sends automatically and tools in WSL do not.
+
+**What it predicts:** open weights from huggingface.co (Weeks 2 and 8) and
+container base images from Docker Hub (Week 9) are reachable through the proxy.
+The CDN is the risk: on a server without a user's proxy login, the Week 1
+frontend would load but not work, so the client library should be vendored.
+Anything calling an internal service needs the internal CA, which tools inside a
+container will not trust by default.
+
 **Does this match what you were told in the table above?** Where it doesn't, that
 gap is worth chasing — it usually means a proxy nobody documented.
 
