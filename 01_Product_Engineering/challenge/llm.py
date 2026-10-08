@@ -11,7 +11,7 @@ That property matters more than it looks like it does right now -- see the
 import json
 import os
 
-from litellm import completion
+from litellm import completion, cost_per_token, token_counter
 
 # LiteLLM picks the provider from the model string:
 #   "gpt-4.1-mini"                    -> OpenAI
@@ -52,3 +52,22 @@ def stream_reply(message: str, history: list[dict] | None = None):
         if piece:
             reply += piece
             yield reply
+
+
+def estimate_prompt_cost(message: str, history: list[dict] | None = None) -> float | None:
+    """Estimate the input cost in USD of sending `message` before sending it.
+
+    Only the prompt side is priced -- the reply length is unknown until it
+    arrives. Returns None when LiteLLM has no price for MODEL (self-hosted,
+    ollama, a gateway alias), because a made-up zero would read as "free".
+    """
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages.extend(history or [])
+    messages.append({"role": "user", "content": message})
+
+    prompt_tokens = token_counter(model=MODEL, messages=messages)
+    try:
+        prompt_cost, _ = cost_per_token(model=MODEL, prompt_tokens=prompt_tokens, completion_tokens=0)
+    except Exception:
+        return None
+    return prompt_cost
