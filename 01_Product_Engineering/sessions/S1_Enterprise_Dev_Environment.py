@@ -418,9 +418,13 @@ def _(mo):
     **1 — Start it, and look before you leap.**
 
     ```bash
-    cd ../challenge
+    cd 01_Product_Engineering/challenge    # from the repository root
     claude
     ```
+
+    The directory matters: Claude Code reads the `CLAUDE.md` in the folder it
+    starts in, and the challenge's is the one with the rules you are about to
+    edit. Started from the repository root it picks up a different file.
 
     Press `Shift+Tab` until you are in **plan mode**, then ask for something
     real:
