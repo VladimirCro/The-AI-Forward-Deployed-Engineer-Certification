@@ -96,7 +96,7 @@ would notice.
 | | |
 | --- | --- |
 | **In** | A control ID (e.g. `POL-001`) chosen by the consultant, and 1–N evidence documents as plain text, each with an ID (e.g. `DOC-02`) and a name. The control's five documentation and five implementation statements come from the tool's own copy of the public calculator, not from the consultant. |
-| **Out** | For documentation and for implementation separately: the proposed level 1–5 with the matching statement from the catalog, or **no level** with the reason "insufficient evidence"; a **low confidence** flag with the reason when a level is proposed but the evidence is unclear, e.g. documents contradict each other; verbatim quotes, each with document ID and location, that must exist in the input; a one-to-two sentence rationale. Plus a list of contradictions between documents and a list of missing evidence. Never a final score — the consultant decides. |
+| **Out** | For documentation and for implementation separately: the proposed level 1–5 with the matching statement from the catalog, or **no level** with the reason "insufficient evidence"; a **low confidence** flag with the reason when a level is proposed but the tool is not confident in it, e.g. the evidence fits two levels equally well; verbatim quotes, each with document ID and location, that must exist in the input; a one-to-two sentence rationale. Plus a list of contradictions between documents and a list of missing evidence. Never a final score — the consultant decides. |
 
 ---
 
