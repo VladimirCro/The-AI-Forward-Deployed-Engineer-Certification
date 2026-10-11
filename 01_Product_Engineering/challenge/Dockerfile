@@ -4,7 +4,10 @@
 FROM python:3.12-slim
 
 # uv installs dependencies fast and is already how we run things locally.
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+# Installed from PyPI rather than ghcr.io, which sits behind proxy authentication
+# on this network. Pinned to the version used locally.
+RUN pip install --no-cache-dir uv==0.12.16
+# ghcr.io is behind proxy authentication here; PyPI is reachable. Pinned to the local version.
 
 WORKDIR /app
 
@@ -19,7 +22,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv export --frozen --no-dev --no-emit-project -o requirements.txt \
  && uv pip install --system --no-cache -r requirements.txt
 
-COPY llm.py app.py ./
+COPY llm.py app.py schema.py catalog.json ./
 COPY frontend/ ./frontend/
 
 # Don't run as root. Your security review will ask about this.

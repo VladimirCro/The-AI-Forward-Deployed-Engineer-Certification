@@ -29,3 +29,24 @@ missing evidence. The GRC consultant reads it and makes the final decision.
 `propose_control_maturity`, because the tool proposes and the consultant
 decides. The verb says it only proposes, and the object says it works on one
 control's maturity level.
+
+## Step 9 — The container
+
+**The CDN dependency.** The frontend loads the Gradio client library from a
+public CDN (`cdn.jsdelivr.net`) when the page opens, and the URL does not pin a
+version. On my network the corporate proxy lets that host through only with a
+user login: the Windows browser gets through, but tools in WSL get a 407. The
+library is fetched by the user's browser, not by the server, so running the app
+in Docker does not change this. A consultant whose browser cannot reach that
+CDN, for example on a stricter network, at a client site or in a locked-down
+virtual desktop, would see the page load and then do nothing, with the error
+only in the browser console. I would download a pinned version of the file
+once, keep it in the repository and serve it from the app, so the page no
+longer depends on any external host at runtime, and the build does not either.
+
+**Image vs virtual environment.** A virtual environment holds only the Python
+packages and relies on the Python, operating system and system libraries of
+whatever machine it sits on. The image also carries the Python interpreter, the
+operating system layer, the app code and the start command, so the platform team
+can run exactly what I tested without knowing anything about Python, and only
+supplies what differs per environment: the key, the internal CA and the proxy.
