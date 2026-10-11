@@ -22,7 +22,7 @@ class DimensionAssessment(BaseModel):
     """Assessment of a single dimension of a control."""
     level: int | None = Field(default=None, ge =1, le = 5, description="Level of maturity, 1-5, or null if not enough evidence to assess")
     level_statement: str | None = Field(default=None, description="Description of the level, from the catalog control description")
-    low_confidence: bool = Field(description="True if the model is not confident in this assessment, documents contradict each other")
+    low_confidence: bool = Field(description="True if the model is not confident in the level it proposed; contradictions between documents go in contradictions, not here")
     uncertainty_reason: str | None = Field(default=None, description="Explain why there is no level or why it is low confidence")
     rationale: str = Field(description="Rationale for the assessment, exactly why this level was chosen, and why it is not a different level")
     citation_ids: list[str] = Field(default_factory=list, description="List of citation IDs that support this assessment")
