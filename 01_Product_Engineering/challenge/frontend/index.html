@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Rename this. It is your app. -->
-    <title>Your AI Application</title>
+    <title>Control maturity assistant</title>
     <style>
       body {
         font-family: system-ui, sans-serif;
@@ -27,20 +27,73 @@
       form { display: flex; gap: 0.5rem; }
       input { flex: 1; padding: 0.5rem; font: inherit; }
       button { padding: 0.5rem 1rem; font: inherit; }
+      #assess { display: block; margin-top: 2.5rem; }
+      #assess label { display: block; font-weight: 600; margin: 0.75rem 0 0.25rem; }
+      #assess select, #assess input, #assess textarea {
+        width: 100%; box-sizing: border-box; padding: 0.5rem; font: inherit;
+      }
+      #assess textarea { min-height: 5rem; resize: vertical; }
+      #assess fieldset { border: 1px solid #ccc; border-radius: 6px; margin: 0.75rem 0; }
+      #assess button { margin-top: 0.75rem; }
+      #assessment-out {
+        border: 1px solid #ccc; border-radius: 6px; padding: 1rem;
+        min-height: 6rem; margin-top: 1rem; white-space: pre-wrap; overflow-x: auto;
+      }
+      #assessment-out.error { border-color: #b00020; color: #b00020; }
     </style>
   </head>
   <body>
-    <h1>Your AI Application</h1>
+    <h1>Control maturity assistant</h1>
     <p>
-      This is a deliberately plain frontend. Making it good is your job — open
-      this file in VS Code and point Claude Code at it.
+      Proposes a maturity level for one control from the client's evidence
+      documents, with quotes. The consultant makes the final decision.
     </p>
 
+    <form id="assess">
+      <h2>Propose control maturity</h2>
+
+      <label for="control">Control</label>
+      <select id="control">
+        <option value="POL-001">POL-001</option>
+        <option value="ORG-001">ORG-001</option>
+        <option value="EDU-001">EDU-001</option>
+      </select>
+
+      <fieldset>
+        <legend>DOC-01</legend>
+        <label for="doc1-name">Name</label>
+        <input id="doc1-name" />
+        <label for="doc1-content">Content</label>
+        <textarea id="doc1-content"></textarea>
+      </fieldset>
+
+      <fieldset>
+        <legend>DOC-02 (optional)</legend>
+        <label for="doc2-name">Name</label>
+        <input id="doc2-name" />
+        <label for="doc2-content">Content</label>
+        <textarea id="doc2-content"></textarea>
+      </fieldset>
+
+      <fieldset>
+        <legend>DOC-03 (optional)</legend>
+        <label for="doc3-name">Name</label>
+        <input id="doc3-name" />
+        <label for="doc3-content">Content</label>
+        <textarea id="doc3-content"></textarea>
+      </fieldset>
+
+      <button type="submit">Propose</button>
+      <pre id="assessment-out"></pre>
+    </form>
+
+    <h2>General chat (model check)</h2>
     <div id="log"></div>
     <form id="form">
       <input id="input" placeholder="Ask something..." autocomplete="off" />
       <button type="submit">Send</button>
     </form>
+
 
     <script type="module">
       // NOTE: this loads the Gradio client from a public CDN. On a locked-down
@@ -91,7 +144,52 @@
 
         history.push({ role: "user", content: message });
         history.push({ role: "assistant", content: reply });
+      }); 
+      
+      const assessForm = document.getElementById("assess");
+      const assessOut = document.getElementById("assessment-out");
+
+      assessForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // 1. sakupi dokumente: preskoči prazne
+        const evidence_documents = [];
+        for (const n of [1, 2, 3]) {
+          const name = document.getElementById(`doc${n}-name`).value.trim();
+          const content = document.getElementById(`doc${n}-content`).value.trim();
+          if (!content) continue;                       // prazan okvir → preskoči
+          evidence_documents.push({ document_id: `DOC-0${n}`, name, content });
+        }
+        const control_id = document.getElementById("control").value;
+
+        // Catch the empty form here, so the consultant gets a reason instead of a hang.
+        if (evidence_documents.length === 0) {
+          showError("Add at least one document with content.");
+          return;
+        }
+
+        // 2. pozovi endpoint i prikazuj odgovor kako stiže
+        assessOut.classList.remove("error");
+        assessOut.textContent = "Working...";
+        try {
+          const job = client.submit("/propose_control_maturity", { control_id, evidence_documents });
+          for await (const event of job) {
+            if (event.type === "data") {
+              assessOut.textContent = event.data[0];
+            } else if (event.type === "status" && event.stage === "error") {
+              showError(event.message || "The server could not complete the assessment.");
+            }
+          }
+        } catch (err) {
+          // Gateway down, network blocked, server stopped: say so instead of staying on "Working...".
+          showError(err?.message || String(err));
+        }
       });
+
+      function showError(message) {
+        assessOut.classList.add("error");
+        assessOut.textContent = `Error: ${message}`;
+      }
     </script>
   </body>
 </html>
