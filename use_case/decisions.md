@@ -11,11 +11,19 @@ If you cannot name what you did not do, you did not choose.
 
 | Week | Decision | What you rejected | Why | What would change your mind |
 | --- | --- | --- | --- | --- |
+| 1 | A pipeline, not an agent (1 of 4). Retrieval is a fixed step in front of `solve()`. A quote that fails the check is retried once, then dropped and flagged. | An agent that decides its own next step. | The steps are the same every time: statements from the catalog, find quotes, check them in code, pick a level. New situations fit the outputs we already have. A pipeline costs the same per request, its output can be compared with the golden examples, and it is easier to get approved. | If the Week 4 evaluation shows that more than 10% of wrong levels come from key evidence that never reached the analysis, add one step where the consultant can send the AI to search again. Only that step, not the whole tool. |
 | 3 | <!-- retrieval approach --> | <!-- --> | <!-- --> | <!-- --> |
 | 5 | <!-- agent architecture --> | <!-- --> | <!-- --> | <!-- --> |
 | 6 | <!-- guardrail level --> | <!-- --> | <!-- --> | <!-- --> |
 | 7 | <!-- memory type --> | <!-- --> | <!-- --> | <!-- --> |
 | 8 | <!-- model --> | <!-- --> | <!-- --> | <!-- --> |
+
+**Week 1, the strongest case for an agent.** Documents are indexed whole, so a
+long document such as board minutes, with one relevant sentence among many
+other topics, may not reach the top results, and the evidence that decides the
+level never gets to the analysis. A consultant who sees "draft" would go and
+look for the adoption decision; a fixed pipeline does not know anything is
+missing. An agent could notice that, decide it needs another search and run it.
 
 ---
 
