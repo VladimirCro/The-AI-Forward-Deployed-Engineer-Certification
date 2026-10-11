@@ -1,0 +1,53 @@
+{
+  "POL-001": {
+    "name": "Postojanje strateškog akta kibernetičke sigurnosne politike",
+    "documentation": {
+      "1": "Dokumentacija i ključni dokumenti poput politike ne postoje ili provoditelji procesa nisu s njom upoznati.",
+      "2": "Postoji osnovna dokumentacija koja nije redovito ažurirana i pokriva samo osnovne elemente kontrole.",
+      "3": "Dokumentacija je formalno odobrena, ažurirana s definiranim iznimkama; većina elemenata dokumentacije je jasna.",
+      "4": "Dokumentacija je potpuna, ažurirana i uključuje sve ključne elemente i procese; uz postojanje manjih iznimaka (<3%).",
+      "5": "Dokumentacija je u potpunosti usklađena, redovito ažurirana i kontinuirano se poboljšava; iznimke <0,5%"
+    },
+    "implementation": {
+      "1": "Strateški akt ne postoji.",
+      "2": "Strateški akt je u pripremi i sadrži sve osnovne elemente, ali nije formalno usvojen od strane upravljačkog tijela.",
+      "3": "Strateški akt je dokumentiran, sadrži sve osnovne elemente i formalno je usvojen od strane upravljačkog tijela.",
+      "4": "Strateški akt je dokumentiran, sadrži sve osnovne elemente, formalno usvojen od strane upravljačkog tijela i implementiran u poslovne procese subjekta, uzimajući u obzir poslovne prioritete subjekta.",
+      "5": "Strateški akt je dokumentiran, sadrži sve osnovne elemente, formalno je usvojen od strane upravljačkog tijela i implementiran u poslovne procese subjekta te ažuriran po potrebi kao i po provedbi procjene djelotvornosti mjera koja se provodi najmanje jednom tijekom tekuće godine."
+    }
+  },
+  "ORG-001": {
+    "name": "Raspodjela uloga, odgovornosti i obveza",
+    "documentation": {
+      "1": "Dokumentacija i ključni dokumenti poput politike ne postoje ili provoditelji procesa nisu s njom upoznati.",
+      "2": "Postoji osnovna dokumentacija koja nije redovito ažurirana i pokriva samo osnovne elemente kontrole.",
+      "3": "Dokumentacija je formalno odobrena, ažurirana s definiranim iznimkama; većina elemenata dokumentacije je jasna.",
+      "4": "Dokumentacija je potpuna, ažurirana i uključuje sve ključne elemente i procese; uz postojanje manjih iznimaka (<3%).",
+      "5": "Dokumentacija je u potpunosti usklađena, redovito ažurirana i kontinuirano se poboljšava; iznimke <0,5%"
+    },
+    "implementation": {
+      "1": "Nema definirane raspodjele uloga i odgovornosti.",
+      "2": "Uloge su djelomično definirane, ali nisu formalno dokumentirane.",
+      "3": "Uloge i odgovornosti su u cijelosti definirane i formalno dokumentirane, ali nisu komunicirane relevantnim zaposlenicima koji su uključeni u provedbu sigurnosnih mjera.",
+      "4": "Uloge i odgovornosti su formalno dokumentirane i komunicirane relevantnim zaposlenicima koji su uključeni u provedbu sigurnosnih mjera.",
+      "5": "Uloge i odgovornosti su jasno definirane, formalno dokumentirane, komunicirane relevantnim zaposlenicima koji su uključeni u provedbu sigurnosnih mjera i revidirane i ažurirane u skladu sbposlovnim potrebama i promjenama unutar subjekta."
+    }
+  },
+  "EDU-001": {
+    "name": "Upoznavanje zaposlenika s ključnim odrednicama kibernetičke sigurnosne politike",
+    "documentation": {
+      "1": "Dokumentacija i ključni dokumenti poput politike ne postoje ili provoditelji procesa nisu s njom upoznati.",
+      "2": "Postoji osnovna dokumentacija koja nije redovito ažurirana i pokriva samo osnovne elemente kontrole.",
+      "3": "Dokumentacija je formalno odobrena, ažurirana s definiranim iznimkama; većina elemenata dokumentacije je jasna.",
+      "4": "Dokumentacija je potpuna, ažurirana i uključuje sve ključne elemente i procese; uz postojanje manjih iznimaka (<3%).",
+      "5": "Dokumentacija je u potpunosti usklađena, redovito ažurirana i kontinuirano se poboljšava; iznimke <0,5%"
+    },
+    "implementation": {
+      "1": "Zaposlenici nisu upoznati s ključnim elementima politike.",
+      "2": "Postoji osnovni program edukacije, ali nije formaliziran ili se ne provodi redovito.",
+      "3": "Edukacija se provodi, ali ne obuhvaća sve potrebne elemente posebno u vezi s upravljanjem sigurnosnim rizicima i njihovim potencijalnim utjecajem na usluge i aktivnosti subjekta ili nije dostupna svim relevantnim zaposlenicima.",
+      "4": "Edukacija obuhvaća sve potrebne elemente i dostupna je svim relevantnim zaposlenicima.",
+      "5": "Edukacija je potpuno implementirana i uz sve potrebne elemente provodi se redovito za sve zaposlenike."
+    }
+  }
+}
