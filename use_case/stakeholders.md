@@ -11,7 +11,7 @@ Use roles, not names. This is a public fork.
 
 | Week | Who (role) | What you asked | What you learned | Follow-up |
 | --- | --- | --- | --- | --- |
-| 1 | <!-- e.g. Platform Engineering lead --> | <!-- where would a container run here? --> | <!-- --> | <!-- --> |
+| 1 | Platform team lead (owns the shared Kubernetes clusters) | Where does an internal container app run and how does it get there? (confirmed during my three earlier deploys) | Shared GKE clusters, internal registry, Entra ID, egress through NAT and allowlist, approved model access through Vertex AI or the internal gateway | Confirm the Vertex AI or gateway choice when this app is deployed |
 
 ---
 

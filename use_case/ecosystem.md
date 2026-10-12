@@ -18,26 +18,30 @@ put real hostnames, IPs, or architecture diagrams in this file.
 
 **Who did you ask?** (role, not name)
 
-<!-- your answer here -->
+The platform team lead who owns the shared clusters. From my own experience
+deploying three apps on this platform, confirmed with the platform team lead
+during each deploy.
 
 | # | Question | Answer |
 | :---: | --- | --- |
-| 1 | Where do internal apps run? (k8s, ECS, App Service, a VM someone maintains) | <!-- --> |
-| 2 | Which cloud? AWS, Azure, GCP, on-prem, several? | <!-- --> |
-| 3 | Is there an internal container registry? | <!-- --> |
-| 4 | How do users log in? (Okta, Entra ID, Ping, SAML, homegrown) | <!-- --> |
-| 5 | Can the app reach the internet? Egress proxy? Allowlist? | <!-- --> |
-| 6 | Where do secrets come from? (Vault, Secrets Manager, Key Vault) | <!-- --> |
-| 7 | Who approves a deployment, and what review does it need? | <!-- --> |
-| 8 | Is there an approved internal LLM endpoint already? | <!-- --> |
+| 1 | Where do internal apps run? (k8s, ECS, App Service, a VM someone maintains) | Shared, firm-managed GKE clusters; each app is a guest in its own namespace. Separate dev and prod clusters. Internal-only, behind an internal HTTPS gateway, reached from the internal network or VPN. |
+| 2 | Which cloud? AWS, Azure, GCP, on-prem, several? | GCP, attached to the firm's network through a shared VPC. |
+| 3 | Is there an internal container registry? | Yes: a shared Artifact Registry for dev and prod, versions told apart by tag. Images are built by Cloud Build from CI. A shared Helm chart is published there too. |
+| 4 | How do users log in? (Okta, Entra ID, Ping, SAML, homegrown) | Entra ID (single sign-on); roles are checked in the backend. External partners come in as guest users. |
+| 5 | Can the app reach the internet? Egress proxy? Allowlist? | Not freely. Egress goes through Cloud NAT with a fixed address that specific external services allowlist. No public LLM API is needed. |
+| 6 | Where do secrets come from? (Vault, Secrets Manager, Key Vault) | Masked CI variables, written into Kubernetes secrets at deploy time. Access to GCP services uses workload identity, so no keys. Secret Manager is available. |
+| 7 | Who approves a deployment, and what review does it need? | Dev deploys automatically from CI. Prod never deploys on its own: one manual approval by the app owner, then the pipeline runs. Cluster-side changes (routing, TLS, NAT) go through the platform team. |
+| 8 | Is there an approved internal LLM endpoint already? | Yes, two: the internal LLM gateway this app uses today, and Vertex AI inside our own GCP project (EU region), which our existing products use directly. |
 
 **What surprised you?**
 
-<!-- your answer here -->
+Nothing surprised me: I have already deployed three apps on this platform.
 
 **What would you have to change about your app to deploy there?**
 
-<!-- your answer here -->
+Entra ID login; CI build and push to the internal registry; the shared Helm chart;
+secrets from CI or workload identity instead of `--env-file`; no public CDN at
+runtime; internal CA in the trust store; possibly Vertex AI instead of the gateway.
 
 ---
 
@@ -87,8 +91,10 @@ corporate laptop sends automatically and tools in WSL do not.
 
 **What it predicts:** open weights from huggingface.co (Weeks 2 and 8) and
 container base images from Docker Hub (Week 9) are reachable through the proxy.
-The CDN is the risk: on a server without a user's proxy login, the Week 1
-frontend would load but not work, so the client library should be vendored.
+The CDN is the risk: the client library is fetched by each user's browser, not
+by the server, so the Week 1 frontend works for anyone whose browser gets
+through the proxy and silently does nothing for anyone whose browser does not.
+The client library should be vendored.
 Anything calling an internal service needs the internal CA, which tools inside a
 container will not trust by default.
 
@@ -105,11 +111,26 @@ same for every host.
 
 Two more things the probe cannot see:
 - The CDN the frontend loads is refused by the proxy from WSL (407) but loads
-  in the Windows browser, so the chat works locally but would likely break on a
-  server without a user's proxy login.
+  in the Windows browser. The browser fetches it, not the server, so the app
+  works for users whose browser gets through and breaks for users whose browser
+  does not, wherever the app itself runs.
 - On 2026-10-07 the proxy failed to resolve Google API domains
   (502 notresolvable) while other domains worked — a temporary proxy-side DNS
   issue, not a local one.
+
+### 2026-10-11 — what building and running the container showed
+
+- **`ghcr.io` needs a proxy login (407).** The course Dockerfile pulled `uv` from
+  there, so the build failed. `uv` now comes from PyPI, which the proxy lets
+  through, pinned to one version.
+- **`docker build` does not inherit the shell's proxy.** Package installs inside
+  the build need the proxy passed in as build arguments; those are not stored in
+  the image.
+- **The container does not trust the internal CA.** Calling the internal LLM
+  gateway failed with `CERTIFICATE_VERIFY_FAILED`. Mounting the host's CA bundle
+  read-only at run time and pointing `SSL_CERT_FILE` at it fixed it, with no
+  certificate in the image or the repo. This is not TLS interception: public
+  hosts still show public certificates; the gateway is an internal server.
 
 ---
 
