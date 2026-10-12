@@ -752,31 +752,45 @@ Fill these in directly in this README, and commit it.
 
 **Who did you ask?** (role, not name)
 
-<!-- Your answer here -->
+The platform team lead who owns the firm's shared Kubernetes clusters. The
+answers come from my own experience deploying three apps there; the platform
+team lead confirmed this setup during each of those deploys.
 
 **Where would this application run?**
 
-<!-- Your answer here -->
+As a guest in its own namespace on a shared Kubernetes (GKE) cluster that the
+platform team runs, deployed with the firm's shared Helm chart. It would be
+reachable only from the internal network or VPN, behind an internal HTTPS
+gateway.
 
 **Which cloud provider, if any?**
 
-<!-- Your answer here -->
+GCP, connected to the firm's network through a shared VPC.
 
 **How would users authenticate?**
 
-<!-- Your answer here -->
+Entra ID single sign-on. The app has no login today, so this has to be added
+before anyone else uses it.
 
 **Could this container reach an external LLM API? If not, what would it use instead?**
 
-<!-- Your answer here -->
+Not freely. Outbound traffic leaves through a fixed NAT address that is
+allowlisted only for specific services. Today the app calls the firm's internal
+LLM gateway. Our existing products call Vertex AI directly inside our own GCP
+project with workload identity, with no key and no internet egress, and this app
+would most likely do the same.
 
 **What surprised you in this conversation?**
 
-<!-- Your answer here -->
+Nothing surprised me: I have already deployed three apps on this platform.
 
 **What would you have to change about this app to make it deployable there?**
 
-<!-- Your answer here -->
+Add Entra ID login; build and push the image through CI to the internal registry
+instead of building it on my laptop; deploy it with the shared Helm chart; move
+secrets from `--env-file` to CI-managed Kubernetes secrets or workload identity;
+stop loading the client library from a public CDN; keep the internal CA in the
+trust store; and possibly switch the model call from the gateway to Vertex AI.
 
 Then log the answers in [`use_case/ecosystem.md`](../../use_case/ecosystem.md)
 and the person you asked in
