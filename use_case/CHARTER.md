@@ -45,8 +45,10 @@ implementation plan are written by hand.
 **What does that cost — time, money, risk, or relationships?**
 
 About 4 consultant-days (~32 hours) per client, most of it reading evidence and
-filling the calculator. Demand from organisations obliged by the law is higher
-than the team's capacity and the deadline is fixed, so clients the team cannot
+filling the calculator, out of about 7 consultant-days for the whole engagement
+including the gap report. The team has six consultants and more clients in the
+pipeline than it can start; some are already waiting. Demand from organisations
+obliged by the law is higher than the team's capacity and the deadline is fixed, so clients the team cannot
 serve in time go to competitors — lost for this assessment and for the
 follow-up work. Manual, judgement-heavy work also means two consultants can
 reach different conclusions on the same evidence, which is an audit risk.
