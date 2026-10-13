@@ -12,7 +12,7 @@ Use roles, not names. This is a public fork.
 | Week | Who (role) | What you asked | What you learned | Follow-up |
 | --- | --- | --- | --- | --- |
 | 1 | Platform team lead (owns the shared Kubernetes clusters) | Where does an internal container app run and how does it get there? (confirmed during my three earlier deploys) | Shared GKE clusters, internal registry, Entra ID, egress through NAT and allowlist, approved model access through Vertex AI or the internal gateway | Confirm the Vertex AI or gateway choice when this app is deployed |
-| 1 | GRC consultant (the user from the charter) | How long does a full engagement take, how many consultants are there, how much demand is waiting? | About 7 consultant-days for the assessment plus the gap report; six consultants; more clients in the pipeline than the team can start; a separate, larger market for plain legal compliance | Book a 30-minute demo of the app before the deadline |
+| 1 | GRC consultant (the user from the charter) | How long does a full engagement take, how many consultants are there, how much demand is waiting? | About 7 consultant-days for the assessment plus the gap report; six consultants; more clients in the pipeline than the team can start; a separate, larger market for plain legal compliance | Show her this app and the five golden examples; ask what is missing and what it should cost |
 
 ---
 

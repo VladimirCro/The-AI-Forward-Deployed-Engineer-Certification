@@ -50,3 +50,25 @@ whatever machine it sits on. The image also carries the Python interpreter, the
 operating system layer, the app code and the start command, so the platform team
 can run exactly what I tested without knowing anything about Python, and only
 supplies what differs per environment: the key, the internal CA and the proxy.
+
+## Step 12 — Showing it to a real user
+
+I did not run a separate demo of this app. I worked through the problem with a
+GRC consultant while we built a pitch for the proof of concept, which she has
+seen. The answers below are what I took from those sessions, in my own words.
+
+**1. What would you use this for?** To have quotes, sources and contradictions
+prepared for each control, so consultants no longer do the tedious work of
+searching through documents and spend their time on expert review and on
+deciding the level. The goal is that the same team can take on more analyses,
+including the ones it turns down today.
+
+**2. What is missing before you would actually use it?** Not asked yet about
+this app.
+
+**3. What would you expect it to cost?** Not asked yet. She described the work
+in consultant-days: about 7 for a full engagement, of which about 4 is the
+self-assessment.
+
+**Golden examples:** not shown to her yet; the levels come from the experts'
+reference assessments.
