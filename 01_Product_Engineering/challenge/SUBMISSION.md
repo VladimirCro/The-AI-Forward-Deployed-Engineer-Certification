@@ -1,5 +1,25 @@
 # Week 1 submission
 
+## Where each deliverable is
+
+**The problem in one sentence** (`use_case/CHARTER.md`): Deciding, for every
+control, which prescribed maturity level a client's evidence supports takes a
+GRC consultant about three and a half days per client, so the team cannot keep
+up with organisations that must self-assess by law.
+
+| Deliverable | Where |
+| --- | --- |
+| Charter | `use_case/CHARTER.md` |
+| Schema: `Request`, `Response`, `solve()` | `01_Product_Engineering/challenge/schema.py` |
+| Agent or pipeline: a pipeline, not an agent (1 of 4), with the case for an agent | `use_case/decisions.md` |
+| Golden examples; which is the edge case and which the decline | `use_case/evals/golden.jsonl`; Step 7 below |
+| The endpoint and the four questions | `challenge/app.py`, `challenge/frontend/index.html`; Step 8 below |
+| The container, the CDN paragraph, image vs virtual environment | `challenge/Dockerfile`; Step 9 below |
+| Where the app would run | Step 10 in `challenge/README.md`; `use_case/ecosystem.md`; `use_case/stakeholders.md` |
+| Vibe check and the app's limitations | Step 11 in `challenge/README.md` |
+| Demo to a real user | Step 12 below; `use_case/stakeholders.md`; `use_case/decisions.md` |
+| Napkin math, latency, what I would swap | `## Bring it to work` in `challenge/README.md` |
+
 ## Step 7 — Golden examples
 
 Example 3 is the edge case (two documents disagree), example 5 is the decline
