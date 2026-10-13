@@ -109,6 +109,23 @@ explicit = true
 torch = [{ index = "pytorch" }]
 
 [tool.fde]
+# Tier-2 helpers whose consuming week has not been copied into this repository
+# yet. `scripts/check_helpers.py` reports these as pending instead of failing,
+# and FAILS if one of them gains a consumer, so the entry has to be removed the
+# week it arrives. Keep this list empty in the repository every week ships from.
+helpers-pending = [
+    "adapter",      # fine-tuning
+    "embeddings",   # retrieval
+    "guardrails",   # guardrails
+    "judge",        # evals
+    "llm",          # the packaged model call, referenced from retrieval onward
+    "memory",       # memory
+    "rag",          # retrieval
+    "tools",        # agent architecture
+    "trace",        # agent architecture
+    "vectorstore",  # retrieval
+]
+
 # Packages a notebook may declare in its PEP 723 block WITHOUT a matching entry in
 # [project.dependencies] above. Everything else must match the root exactly, so two
 # students on the same lesson get the same library versions.
