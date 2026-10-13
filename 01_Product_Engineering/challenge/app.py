@@ -40,13 +40,18 @@ def propose_control_maturity(control_id: str, evidence_documents: list[dict]) ->
 
     Never makes the final decision; the consultant does, after reviewing the Response.
     """
+    # 1. Validate the input against the contract in schema.py: a bad request stops here.
     request = Request(control_id=control_id, evidence_documents=[EvidenceDocument(**doc) for doc in evidence_documents])
 
+    # 2. Look up the control's scale. This is a generator, so the message has to be yielded;
+    #    a plain return value would never reach the caller.
     if request.control_id not in CATALOG:
         yield f"Unknown control: {request.control_id}"
         return
 
-    control = CATALOG[request.control_id] 
+    control = CATALOG[request.control_id]
+
+    # 3. Build the prompt in four blocks: task, scale, documents, rules.
     task = (
         "TASK:\n"
         "You assist a GRC consultant. Based on the client's documents, propose a maturity level "
@@ -77,6 +82,8 @@ def propose_control_maturity(control_id: str, evidence_documents: list[dict]) ->
     )
 
     prompt = "\n\n".join([task, scale, documents, rules])
+
+    # 4. Stream the model's reply straight back to the caller, one growing string per yield.
     yield from stream_reply(prompt)
 
 # --- The frontend ------------------------------------------------------------

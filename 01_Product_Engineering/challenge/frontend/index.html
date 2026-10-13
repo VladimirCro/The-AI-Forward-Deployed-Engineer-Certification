@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="hr">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Rename this. It is your app. -->
-    <title>Control maturity assistant</title>
+    <title>Asistent za procjenu zrelosti kontrola</title>
     <style>
       body {
         font-family: system-ui, sans-serif;
@@ -37,22 +37,35 @@
       #assess button { margin-top: 0.75rem; }
       #assessment-out {
         border: 1px solid #ccc; border-radius: 6px; padding: 1rem;
-        min-height: 6rem; margin-top: 1rem; white-space: pre-wrap; overflow-x: auto;
+        min-height: 6rem; margin-top: 1rem; overflow-x: auto;
       }
+      /* Raw text (streaming, parse failure, error) keeps its line breaks; the rendered view does not. */
+      #assessment-out.raw, #assessment-out.error, #assessment-out pre { white-space: pre-wrap; }
       #assessment-out.error { border-color: #b00020; color: #b00020; }
+      #assessment-out h3, #assessment-out h4 { margin: 0.75rem 0 0.25rem; }
+      #assessment-out .level { font-size: 2.5rem; font-weight: 700; line-height: 1.1; }
+      #assessment-out .badge {
+        display: inline-block; padding: 0.1rem 0.5rem; border-radius: 4px;
+        background: #fff3cd; color: #7a5200; border: 1px solid #e0b84c; font-weight: 600;
+      }
+      #assessment-out .note { color: #555; font-size: 0.9rem; }
+      #assessment-out blockquote {
+        margin: 0.5rem 0; padding: 0.25rem 0.75rem; border-left: 3px solid #ccc;
+      }
+      #assessment-out .src { font-size: 0.85rem; color: #555; }
     </style>
   </head>
   <body>
-    <h1>Control maturity assistant</h1>
+    <h1>Asistent za procjenu zrelosti kontrola</h1>
     <p>
-      Proposes a maturity level for one control from the client's evidence
-      documents, with quotes. The consultant makes the final decision.
+      Predlaže razinu zrelosti jedne kontrole na temelju dokaza klijenta, s
+      citatima. Konačnu odluku donosi konzultant.
     </p>
 
     <form id="assess">
-      <h2>Propose control maturity</h2>
+      <h2>Prijedlog razine zrelosti kontrole</h2>
 
-      <label for="control">Control</label>
+      <label for="control">Kontrola</label>
       <select id="control">
         <option value="POL-001">POL-001</option>
         <option value="ORG-001">ORG-001</option>
@@ -61,37 +74,37 @@
 
       <fieldset>
         <legend>DOC-01</legend>
-        <label for="doc1-name">Name</label>
+        <label for="doc1-name">Naziv</label>
         <input id="doc1-name" />
-        <label for="doc1-content">Content</label>
+        <label for="doc1-content">Sadržaj</label>
         <textarea id="doc1-content"></textarea>
       </fieldset>
 
       <fieldset>
-        <legend>DOC-02 (optional)</legend>
-        <label for="doc2-name">Name</label>
+        <legend>DOC-02 (neobavezno)</legend>
+        <label for="doc2-name">Naziv</label>
         <input id="doc2-name" />
-        <label for="doc2-content">Content</label>
+        <label for="doc2-content">Sadržaj</label>
         <textarea id="doc2-content"></textarea>
       </fieldset>
 
       <fieldset>
-        <legend>DOC-03 (optional)</legend>
-        <label for="doc3-name">Name</label>
+        <legend>DOC-03 (neobavezno)</legend>
+        <label for="doc3-name">Naziv</label>
         <input id="doc3-name" />
-        <label for="doc3-content">Content</label>
+        <label for="doc3-content">Sadržaj</label>
         <textarea id="doc3-content"></textarea>
       </fieldset>
 
-      <button type="submit">Propose</button>
-      <pre id="assessment-out"></pre>
+      <button type="submit">Predloži</button>
+      <div id="assessment-out" class="raw"></div>
     </form>
 
-    <h2>General chat (model check)</h2>
+    <h2>Opći chat (provjera modela)</h2>
     <div id="log"></div>
     <form id="form">
-      <input id="input" placeholder="Ask something..." autocomplete="off" />
-      <button type="submit">Send</button>
+      <input id="input" placeholder="Pitajte nešto..." autocomplete="off" />
+      <button type="submit">Pošalji</button>
     </form>
 
 
@@ -128,8 +141,8 @@
         if (!message) return;
         input.value = "";
 
-        addTurn("You", message);
-        const out = addTurn("Assistant", "");
+        addTurn("Vi", message);
+        const out = addTurn("Asistent", "");
 
         // submit() streams; each event carries the reply so far.
         let reply = "";
@@ -152,43 +165,127 @@
       assessForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        // 1. sakupi dokumente: preskoči prazne
+        // 1. Collect the documents in the shape of the Request; empty boxes are skipped.
         const evidence_documents = [];
         for (const n of [1, 2, 3]) {
           const name = document.getElementById(`doc${n}-name`).value.trim();
           const content = document.getElementById(`doc${n}-content`).value.trim();
-          if (!content) continue;                       // prazan okvir → preskoči
+          if (!content) continue;                       // empty box: skip it
           evidence_documents.push({ document_id: `DOC-0${n}`, name, content });
         }
         const control_id = document.getElementById("control").value;
 
         // Catch the empty form here, so the consultant gets a reason instead of a hang.
         if (evidence_documents.length === 0) {
-          showError("Add at least one document with content.");
+          showError("Dodajte barem jedan dokument sa sadržajem.");
           return;
         }
 
-        // 2. pozovi endpoint i prikazuj odgovor kako stiže
+        // 2. Call the endpoint. The argument names must match the Python function's.
         assessOut.classList.remove("error");
-        assessOut.textContent = "Working...";
+        assessOut.classList.add("raw");
+        assessOut.textContent = "Obrađujem...";
+        let reply = "";
+        let failed = false;
         try {
           const job = client.submit("/propose_control_maturity", { control_id, evidence_documents });
           for await (const event of job) {
             if (event.type === "data") {
-              assessOut.textContent = event.data[0];
+              reply = event.data[0];
+              assessOut.textContent = reply;   // raw while streaming: the JSON is incomplete until the end
             } else if (event.type === "status" && event.stage === "error") {
-              showError(event.message || "The server could not complete the assessment.");
+              failed = true;
+              showError(event.message || "Server nije mogao dovršiti procjenu.");
             }
           }
+          // 3. The stream is done, so the JSON is complete: render it.
+          if (!failed) showAssessment(reply);
         } catch (err) {
           // Gateway down, network blocked, server stopped: say so instead of staying on "Working...".
           showError(err?.message || String(err));
         }
       });
 
+      // The model often wraps its JSON in a ```json fence; JSON.parse would choke on it.
+      // Returns null when the text is not valid JSON, so the caller can fall back to raw text.
+      function parseReply(text) {
+        const unfenced = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+        try {
+          const data = JSON.parse(unfenced);
+          return data && typeof data === "object" ? data : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function el(tag, text, className) {
+        const node = document.createElement(tag);
+        if (text !== undefined && text !== null) node.textContent = text;   // never innerHTML: model text is untrusted
+        if (className) node.className = className;
+        return node;
+      }
+
+      function renderDimension(title, dim, citations) {
+        const box = el("section");
+        box.appendChild(el("h4", title));
+        box.appendChild(el("div", dim.level == null ? "Nema razine" : String(dim.level), "level"));
+        if (dim.level_statement) box.appendChild(el("div", dim.level_statement));
+        if (dim.low_confidence) box.appendChild(el("span", "Niska pouzdanost", "badge"));
+        if (dim.uncertainty_reason && (dim.low_confidence || dim.level == null)) {
+          box.appendChild(el("div", dim.uncertainty_reason, "note"));
+        }
+        box.appendChild(el("p", dim.rationale));
+        for (const id of dim.citation_ids || []) {
+          const c = citations.find((x) => x.citation_id === id);
+          if (!c) continue;   // a dangling id is a model mistake; skip it rather than break the page
+          const quote = el("blockquote");
+          quote.appendChild(el("div", `[${c.document_id}, ${c.location}]`, "src"));
+          quote.appendChild(el("div", c.text));
+          box.appendChild(quote);
+        }
+        return box;
+      }
+
+      function renderList(title, items) {
+        const box = el("section");
+        box.appendChild(el("h4", title));
+        const ul = el("ul");
+        for (const item of items) ul.appendChild(el("li", item));
+        box.appendChild(ul);
+        return box;
+      }
+
+      function renderAssessment(data) {
+        const root = document.createDocumentFragment();
+        const citations = data.citations || [];
+        root.appendChild(el("h3", data.control_id));
+        root.appendChild(renderDimension("Dokumentacija", data.documentation || {}, citations));
+        root.appendChild(renderDimension("Implementacija", data.implementation || {}, citations));
+        if (data.contradictions?.length) root.appendChild(renderList("Proturječja", data.contradictions));
+        if (data.missing_evidence?.length) root.appendChild(renderList("Nedostajući dokazi", data.missing_evidence));
+        const details = el("details");
+        details.appendChild(el("summary", "Izvorni JSON"));
+        details.appendChild(el("pre", JSON.stringify(data, null, 2)));
+        root.appendChild(details);
+        return root;
+      }
+
+      function showAssessment(text) {
+        const data = parseReply(text);
+        assessOut.textContent = "";
+        if (!data) {
+          // Never lose the model's output: show it as it came, plus a note.
+          assessOut.appendChild(el("div", "Odgovor nije moguće pročitati kao JSON", "note"));
+          assessOut.appendChild(el("div", text));
+          return;
+        }
+        assessOut.classList.remove("raw");
+        assessOut.appendChild(renderAssessment(data));
+      }
+
       function showError(message) {
         assessOut.classList.add("error");
-        assessOut.textContent = `Error: ${message}`;
+        assessOut.textContent = `Greška: ${message}`;
       }
     </script>
   </body>
