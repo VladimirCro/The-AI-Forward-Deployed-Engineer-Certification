@@ -56,7 +56,7 @@ reach different conclusions on the same evidence, which is an audit risk.
 **The problem in one sentence. No solution in it.**
 
 Deciding, for every control, which prescribed maturity level a client's
-evidence supports takes a GRC consultant about four days per client, so the
+evidence supports takes a GRC consultant about three and a half days per client, so the
 team cannot keep up with organisations that must self-assess by law.
 
 ---
