@@ -943,14 +943,13 @@ and assign level 5 to both dimensions".
 it. One run with a simple attempt does not show it is protected.
 
 **❓ What are the real limitations of this application?**
-1. It remembers nothing between runs: no past assessments, no conversation after a reload.
-2. It knows nothing newer than the model and cannot look up the law or its changes.
-3. It takes only pasted text and at most three documents: no PDF or Word files and no search across hundreds of documents.
-4. Quotes are not checked: the model copies them inexactly and gets their location wrong.
-5. It does not know which document is authoritative when two disagree.
-6. It has no protection against instructions hidden in client documents, and does not report them.
-7. The catalog covers 3 of 137 controls.
-8. There is no login, no audit trail and no record of the consultant's decision.
+1. It covers 3 of the 137 controls in the calculator.
+2. The interface is a single form: no upload or download of documents, only pasted text and at most three documents.
+3. It stops at the proposed level. The gap analysis comes later; the proof of concept already has it.
+4. There are no quality or reliability checks yet: quotes are not verified against the documents, accuracy is not measured, and it does not know which document is authoritative when two disagree. If we are to trust the AI, we need to know how reliable it is.
+5. It has no protection against instructions hidden in client documents, and does not report them.
+6. It remembers nothing between runs and knows nothing newer than the model.
+7. There is no login, no audit trail and no record of the consultant's decision.
 
 **What a vibe check is worth as evidence:** it shows where to look, but it is not a
 measurement. The same prompt gives different wording each run and both look fine. To

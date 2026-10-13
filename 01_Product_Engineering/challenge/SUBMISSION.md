@@ -91,6 +91,12 @@ documents go, since clients such as banks and hospitals need the data to stay in
 the EU and not be used for training; and scanned PDFs with signatures, which are
 about half of the evidence.
 
+**What I see as missing:** everything the proof of concept already does and this
+week's app does not: all 137 controls, a better interface, uploading and
+downloading documents, and the gap analysis that comes after the assessment. On
+top of that, quality and reliability checks: if we are to trust the AI, we need to
+know how reliable it is.
+
 **3. What would you expect it to cost?** She prices it against the time it saves:
 a fraction of the consultant-days it removes, per analysis or as a monthly fee
 per consultant. Above that it does not pay off, because she still checks
