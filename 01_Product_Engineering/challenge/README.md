@@ -1082,10 +1082,10 @@ build against it — measuring it afterwards is a different, weaker thing.
 | cost per call | 1,658 / 1e6 × $1 + 1,054 / 1e6 × $5 ≈ **$0.007**, so about $0.95 for all 137 controls of one client | calculated |
 | calls per day | about 30 analyses a year × 137 controls / 250 days ≈ **16** | looked up |
 | model per year | $0.007 × 16 × 250 ≈ **$28** | calculated |
-| minutes per pass | about 10.5 minutes per control (a GRC consultant's estimate: about 3 days of reading for 137 controls; not timed) | looked up |
+| minutes per pass | about 14 minutes per control (about 4 days of reading and scoring for 137 controls; not timed) | looked up |
 | loaded rate | $30 per hour, an assumption well below a consultant's real rate | assumed |
-| human per year | 10.5 / 60 × $30 × 16 × 250 ≈ **$21,600** | calculated |
-| **ratio** | about **760×**; still about 380× if the app only halves the reading time, as the consultant expects. It stays above 20× for any rate above $0.80 per hour. | |
+| human per year | 14 / 60 × $30 × 16 × 250 ≈ **$28,800** | calculated |
+| **ratio** | about **1,000×**; about 760× counting only the 3 of 4 days the app is meant to save. It stays above 20× for any rate above $0.60 per hour. | |
 
 Comfortable: the model cost is noise next to the consultant's time, so the effort
 should go into quality, not token savings. Input will grow once real documents
@@ -1095,8 +1095,8 @@ per analysis or monthly per consultant; at about $1 of model cost per analysis,
 the price is set by the time saved, not by the model.
 
 **Latency.** Measured: six calls, 7 to 15 seconds each (too few for a real p95).
-Target: p95 under 60 seconds per control, since a consultant spends about 10
-minutes reading one; a whole client of 137 controls takes about 26 minutes, so it
+Target: p95 under 60 seconds per control, since a consultant spends about 14
+minutes on one; a whole client of 137 controls takes about 26 minutes, so it
 should run in the background. Neither cost nor latency is the likely blocker:
 trust in the quotes and levels is.
 
