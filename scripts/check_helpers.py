@@ -18,6 +18,15 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+# Windows consoles default to a code page that cannot encode the check marks
+# these scripts print, so a redirected run dies with UnicodeEncodeError before
+# reporting anything. Force UTF-8 on our own output rather than dropping to
+# ASCII markers -- the students on managed Windows laptops are the ones running
+# these gates.
+for stream in (sys.stdout, sys.stderr):
+    if hasattr(stream, "reconfigure"):
+        stream.reconfigure(encoding="utf-8", errors="replace")
+
 ROOT = Path(__file__).resolve().parent.parent
 OK, BAD = "✓", "✗"
 
@@ -38,7 +47,7 @@ def curriculum_text() -> list[tuple[Path, str]]:
 
 def main() -> int:
     helpers = sorted(
-        p.stem for p in (ROOT / "helpers").glob("*.py") if p.stem not in TIER1
+        path.stem for path in (ROOT / "helpers").glob("*.py") if path.stem not in TIER1
     )
     if not helpers:
         print(f"{OK} no tier-2 helpers")
@@ -48,11 +57,11 @@ def main() -> int:
     orphans = []
     for name in helpers:
         needles = (f"helpers/{name}", f"helpers.{name}", f"helpers import {name}")
-        where = [p for p, body in texts if any(n in body for n in needles)]
+        where = [path for path, body in texts if any(needle in body for needle in needles)]
         if not where:
             orphans.append(name)
         else:
-            rels = sorted({p.relative_to(ROOT).parts[0] for p in where})
+            rels = sorted({path.relative_to(ROOT).parts[0] for path in where})
             print(f"{OK} helpers/{name}.py  ← {', '.join(rels)}")
 
     for name in orphans:
