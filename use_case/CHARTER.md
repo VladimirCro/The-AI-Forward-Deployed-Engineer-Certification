@@ -44,8 +44,8 @@ implementation plan are written by hand.
 
 **What does that cost — time, money, risk, or relationships?**
 
-About 4 consultant-days (~32 hours) per client, most of it reading evidence and
-filling the calculator, out of about 7 consultant-days for the whole engagement
+About 3.5 consultant-days per client, most of it reading evidence and filling
+the calculator, out of about 7 consultant-days for the whole engagement
 including the gap report. The team has six consultants and more clients in the
 pipeline than it can start; some are already waiting. Demand from organisations
 obliged by the law is higher than the team's capacity and the deadline is fixed, so clients the team cannot
@@ -74,7 +74,7 @@ on remediation instead of reading every document.
 
 **How would the firm measure it? Which numbers should move?**
 
-- Consultant time per client: from ~4 days to ~1 day.
+- Reading and scoring evidence: from about 3 days to about 1.5 per client.
 - Clients served per consultant per month: up to four times more.
 - Agreement between the proposed level and the consultant's final decision.
 - Unsupported citations (quotes not found in the source): zero.

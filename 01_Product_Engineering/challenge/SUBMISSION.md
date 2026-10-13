@@ -3,15 +3,15 @@
 ## Step 7 — Golden examples
 
 Example 3 is the edge case (two documents disagree), example 5 is the decline
-(no relevant evidence, no level). Example 6 is unresolved.
+(no relevant evidence, no level). Example 4 is unresolved.
 
 ## Step 8 — The endpoint
 
 **1. What is one thing you do at work this could take over?**
 Reading the client's evidence documents for one control and picking which of
 the five prescribed statements they support, for documentation and for
-implementation. Today a GRC consultant spends about 14 minutes per control on
-this, across 137 controls per client.
+implementation. Today a GRC consultant spends about 10 minutes per control on
+this (about 3 days of reading across 137 controls per client).
 
 **2. What exactly goes in — a string, a file, several fields?**
 Two fields: a control ID from the catalog (for example `POL-001`), and a list of
@@ -53,22 +53,35 @@ supplies what differs per environment: the key, the internal CA and the proxy.
 
 ## Step 12 — Showing it to a real user
 
-I did not run a separate demo of this app. I worked through the problem with a
-GRC consultant while we built a pitch for the proof of concept, which she has
-seen. The answers below are what I took from those sessions, in my own words.
+I showed the app to a GRC consultant: one assessment live (golden 1), then the
+five golden examples and two open questions.
 
-**1. What would you use this for?** To have quotes, sources and contradictions
-prepared for each control, so consultants no longer do the tedious work of
-searching through documents and spend their time on expert review and on
-deciding the level. The goal is that the same team can take on more analyses,
-including the ones it turns down today.
+**1. What would you use this for?** The first pass through a client's evidence.
+Today the first day or two goes on reading and finding where things are; with a
+proposed level and a quote she would only check and correct it. She valued most
+that it catches contradictions, such as an intranet post against board minutes,
+which she can miss when reading tired, and that two consultants would give the
+same evidence the same level.
 
-**2. What is missing before you would actually use it?** Not asked yet about
-this app.
+**2. What is missing before you would actually use it?** Five things: drop in a
+whole folder of evidence and have it sorted to the controls; change a level,
+write why and keep that on record, because she signs the assessment, not the
+app; export to Excel or the firm's report template; a clear answer on where the
+documents go, since clients such as banks and hospitals need the data to stay in
+the EU and not be used for training; and scanned PDFs with signatures, which are
+about half of the evidence.
 
-**3. What would you expect it to cost?** Not asked yet. She described the work
-in consultant-days: about 7 for a full engagement, of which about 4 is the
-self-assessment.
+**3. What would you expect it to cost?** She prices it against the time it saves:
+a fraction of the consultant-days it removes, per analysis or as a monthly fee
+per consultant. Above that it does not pay off, because she still checks
+everything.
 
-**Golden examples:** not shown to her yet; the levels come from the experts'
-reference assessments.
+**Golden examples:** she agreed with 1, 2, 3 and 5. Example 3 was the most useful
+to her: an intranet post is not evidence, board minutes are. She disagreed with
+example 4: implementation 3 is generous for 58% coverage without the risk topic;
+she would give 2, at most 2–3, and wants the app to show the threshold. She
+settled example 6 at implementation 3, because the IT director standing in means
+IT checks itself, unless the board has made a written interim appointment.
+
+**Time:** about 3.5 of the 7 days is the self-assessment. She expects the app to
+cut the 3 reading days to about 1.5, not the interviews or the report.
