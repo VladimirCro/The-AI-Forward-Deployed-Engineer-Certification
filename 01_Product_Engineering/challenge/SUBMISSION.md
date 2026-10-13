@@ -9,6 +9,7 @@ up with organisations that must self-assess by law.
 
 | Deliverable | Where |
 | --- | --- |
+| Video walkthrough (under five minutes) | https://www.loom.com/share/4fd8c77b0185438d8345b287d1761d7d |
 | Charter | `use_case/CHARTER.md` |
 | Schema: `Request`, `Response`, `solve()` | `01_Product_Engineering/challenge/schema.py` |
 | Agent or pipeline: a pipeline, not an agent (1 of 4), with the case for an agent | `use_case/decisions.md` |
