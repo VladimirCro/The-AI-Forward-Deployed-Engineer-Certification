@@ -4,7 +4,7 @@
 
 **The problem in one sentence** (`use_case/CHARTER.md`): Deciding, for every
 control, which prescribed maturity level a client's evidence supports takes a
-GRC consultant about three and a half days per client, so the team cannot keep
+GRC consultant about four days per client, so the team cannot keep
 up with organisations that must self-assess by law.
 
 | Deliverable | Where |
@@ -30,8 +30,8 @@ Example 3 is the edge case (two documents disagree), example 5 is the decline
 **1. What is one thing you do at work this could take over?**
 Reading the client's evidence documents for one control and picking which of
 the five prescribed statements they support, for documentation and for
-implementation. Today a GRC consultant spends about 10 minutes per control on
-this (about 3 days of reading across 137 controls per client).
+implementation. Today a GRC consultant spends about 14 minutes per control on
+this (about 4 days of reading and scoring across 137 controls per client).
 
 **2. What exactly goes in — a string, a file, several fields?**
 Two fields: a control ID from the catalog (for example `POL-001`), and a list of
@@ -103,5 +103,6 @@ she would give 2, at most 2–3, and wants the app to show the threshold. She
 settled example 6 at implementation 3, because the IT director standing in means
 IT checks itself, unless the board has made a written interim appointment.
 
-**Time:** about 3.5 of the 7 days is the self-assessment. She expects the app to
-cut the 3 reading days to about 1.5, not the interviews or the report.
+**Time:** our target is to cut reading and scoring from about 4 days to about 1
+per client. Her own, more cautious estimate was about 3 days down to about 1.5;
+the app does not shorten the interviews or the report.

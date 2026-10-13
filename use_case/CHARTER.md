@@ -44,7 +44,7 @@ implementation plan are written by hand.
 
 **What does that cost — time, money, risk, or relationships?**
 
-About 3.5 consultant-days per client, most of it reading evidence and filling
+About 4 consultant-days per client, most of it reading evidence and filling
 the calculator, out of about 7 consultant-days for the whole engagement
 including the gap report. The team has six consultants and more clients in the
 pipeline than it can start; some are already waiting. Demand from organisations
@@ -56,7 +56,7 @@ reach different conclusions on the same evidence, which is an audit risk.
 **The problem in one sentence. No solution in it.**
 
 Deciding, for every control, which prescribed maturity level a client's
-evidence supports takes a GRC consultant about three and a half days per client, so the
+evidence supports takes a GRC consultant about four days per client, so the
 team cannot keep up with organisations that must self-assess by law.
 
 ---
@@ -74,7 +74,7 @@ on remediation instead of reading every document.
 
 **How would the firm measure it? Which numbers should move?**
 
-- Reading and scoring evidence: from about 3 days to about 1.5 per client.
+- Reading and scoring evidence: from about 4 days to about 1 day per client.
 - Clients served per consultant per month: up to four times more.
 - Agreement between the proposed level and the consultant's final decision.
 - Unsupported citations (quotes not found in the source): zero.
