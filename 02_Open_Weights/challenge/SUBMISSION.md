@@ -17,6 +17,7 @@
 | What I would swap to run this at work | `## Bring it to work` in `02_Open_Weights/challenge/README.md` |
 | Blocked model download | `use_case/ecosystem.md`, Week 2 |
 | The dataset (548 rows) | `use_case/data/synthetic_v1.jsonl`, gitignored, not in the repo |
+| Update: levels relabelled with a stronger model | `02_Open_Weights/challenge/relabel.py`, "Update" at the end of `use_case/data/DATASHEET.md` |
 
 ## Step 6, review with the project lead
 
@@ -25,3 +26,9 @@ My notes from going through 20 rows and the datasheet together.
 - Never happens: nothing impossible, but six levels are not backed by the documents (examples 4, 5, 6, 8, 9 and 18 of the 20).
 - Missing: scans, big packages, technical evidence like config exports and logs, evidence sent later.
 - Worry if public: that the data looks validated when nobody checked the levels.
+
+## Update after submission (2026-10-20)
+
+- I relabelled all 548 rows with Opus 5.5: same documents, new levels, in `synthetic_v2.jsonl`.
+- It agrees with the project lead on all six rejected levels.
+- It changed 463 of 1,096 levels and found 313 rows whose documents do not match their recipe.
