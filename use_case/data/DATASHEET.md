@@ -68,3 +68,18 @@ Removed after reading:
 No, overlap: goldens 3, 5 and 6 were shown to the generator as format examples, so this file and those goldens share a source. If Week 8 tunes on this file, scores on those three goldens are not independent.
 
 **Overlap between `golden.jsonl` and this file, by the dedupe measure:** 0 rows at threshold 0.7 (the closest pair is 0.33).
+
+## Update 2026-10-20: levels relabelled with a stronger model
+
+The same 548 rows were relabelled with `openai/claude-opus-5-5`: same documents, new levels, in `use_case/data/synthetic_v2.jsonl`, written by `02_Open_Weights/challenge/relabel.py`. The prompt has the catalog levels and three rules from the project lead's review: count from the documents, missing evidence is not proof that something is not done, and a postponement or a backup role is not a contradiction.
+
+| | |
+| --- | --- |
+| Levels changed | 463 of 1,096 (195 documentation, 268 implementation) |
+| Direction | 244 lower, 185 higher, 34 between a level and no level |
+| Rows whose documents do not match their recipe | 313 of 548 |
+| The six levels the project lead rejected | the new levels agree with the review on all six |
+
+- The two models disagree on 42% of levels, with no clear lean up or down (the average change is -0.06). Where a person checked, the new levels are right. Nobody has checked them on the other rows yet, so this is still prototyping data.
+- 313 rows do not match their recipe: the generator often added a policy where the recipe said "evidence only, no paper", or wrote documents that agree where the recipe said they contradict each other. These rows keep the new levels and a flag, but counts by axis are not reliable for them.
+- From now on I use `synthetic_v2.jsonl`. `synthetic_v1.jsonl` stays as submitted.
