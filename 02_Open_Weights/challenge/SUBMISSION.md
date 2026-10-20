@@ -4,7 +4,7 @@
 
 | Deliverable | Where |
 | --- | --- |
-| Video walkthrough (under five minutes) | (link added after recording) |
+| Video walkthrough (under five minutes) | https://www.loom.com/share/6e182e6600b24f8e9dee4657a45d44d3 |
 | Axes, with a reason each | `02_Open_Weights/challenge/axes.py`, the same table in `use_case/data/DATASHEET.md` |
 | Generation, dedupe and validation code | `02_Open_Weights/challenge/generate.py` |
 | Four counts and the settings | `use_case/data/DATASHEET.md`, "What this data is" |
