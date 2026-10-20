@@ -1,9 +1,4 @@
-"""Variation axes for TC2 synthetic data.
-
-One request = one control + the client's evidence documents.
-Each axis covers a real way those requests differ, and each one exists
-because of a known failure in the golden examples.
-"""
+"""Variation axes for the TC2 synthetic data."""
 
 AXES = {
     "control": {

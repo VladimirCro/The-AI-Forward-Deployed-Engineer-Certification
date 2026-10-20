@@ -5,9 +5,20 @@
 
 ## What this data is
 
-**Generated on:** <!-- date -->
-**Generated from:** <!-- the schema + a written description, NOT real records -->
-**Rows:** <!-- n -->
+**Generated on:** 2026-10-20
+**Generated from:** the Week 1 schema, the control catalog (the level criteria go into every prompt), the variation axes, and golden examples 3, 5 and 6 as format examples. No real records.
+**Rows:** 555
+
+| Count | |
+| --- | --- |
+| Generated | 562 |
+| After dedupe | 562 |
+| Schema-valid | 555 |
+| Dead combinations | 0 (13 in the first run; those 13 were run a second time with the same settings and all produced rows) |
+
+255 lines needed one extra closing brace removed before they could be read; 33 lines could not be read at all.
+
+**Settings:** `openai/claude-haiku-4-5` through the internal gateway, temperature 0.7 (0.3 for the decline combinations), top_p 0.9, 2 rows per call, dedupe threshold 0.7, 288 combinations. Script: `02_Open_Weights/challenge/generate.py`.
 
 ## Variation axes
 
