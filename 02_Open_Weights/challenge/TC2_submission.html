@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TC2 submission</title>
+<style>
+:root{
+  --bg:#faf9f6; --card:#ffffff; --ink:#1c1c1a; --muted:#5d5b55; --line:#dcd9d0;
+  --accent:#9a3b12; --tint:#f3ece4; --link:#0b5cad;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16171a; --card:#1e2024; --ink:#ebeae6; --muted:#a3a198; --line:#34363b;
+    --accent:#e8a070; --tint:#26241f; --link:#7db7f0;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16171a; --card:#1e2024; --ink:#ebeae6; --muted:#a3a198; --line:#34363b;
+  --accent:#e8a070; --tint:#26241f; --link:#7db7f0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  padding:24px 16px 56px; overflow-wrap:break-word}
+main{max-width:760px; margin:0 auto}
+a{color:var(--link)}
+h1{font-size:2rem; line-height:1.15; margin:0 0 6px}
+h2{font-size:1.3rem; line-height:1.25; margin:40px 0 10px; padding-top:6px; border-top:1px solid var(--line)}
+p{margin:0 0 12px}
+.sub{color:var(--muted); margin-bottom:20px}
+code{font:.88em ui-monospace,Consolas,monospace; background:var(--tint); padding:1px 5px; border-radius:4px; overflow-wrap:anywhere}
+.box{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:0 0 12px}
+.wrap{overflow-x:auto; margin:0 0 12px; border:1px solid var(--line); border-radius:10px; background:var(--card)}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:.95rem}
+th,td{text-align:left; vertical-align:top; padding:8px 12px; border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{background:var(--tint); font-weight:600}
+ul{margin:0 0 12px; padding-left:22px}
+li{margin-bottom:6px}
+.order{color:var(--muted); font-size:.95rem}
+.num{white-space:nowrap}
+</style>
+</head>
+<body>
+<main>
+<h1>TC2 submission</h1>
+<p class="sub">Week 2, Open Weights. Synthetic data for the use case.</p>
+
+<h2 id="summary">Summary</h2>
+<p>A GRC consultant needs about four days per client to decide which maturity level the client's evidence supports for each control. The team cannot keep up with the organisations that must self-assess by law. This week I generated synthetic requests for three controls, varied along four axes, so I can test a system for this task before any real client data is allowed near it.</p>
+<p>The result is 548 rows, a datasheet that says what they can and cannot show, the code that made them, and a review of 20 rows with the project lead. The rows are not in the repo, only the code and the datasheet.</p>
+<p class="order">This page follows the order of the video: summary, axes, counts, what the data cannot validate, review, bring it to work.</p>
+
+<h2 id="video">Video</h2>
+<p><a href="https://www.loom.com/share/6e182e6600b24f8e9dee4657a45d44d3">Watch the video on Loom</a></p>
+<p>Under five minutes. It walks through the axes, the four counts and what the data cannot validate, in the same order as this page.</p>
+
+<h2 id="deliverables">Every deliverable, with links</h2>
+<div class="wrap">
+<table>
+<tr><th>Deliverable</th><th>Where</th></tr>
+<tr><td>Video walkthrough (under five minutes)</td><td><a href="https://www.loom.com/share/6e182e6600b24f8e9dee4657a45d44d3">Loom</a></td></tr>
+<tr><td>Axes, with a reason each</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/02_Open_Weights/challenge/axes.py"><code>axes.py</code></a>, and the same table in <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/data/DATASHEET.md"><code>DATASHEET.md</code></a></td></tr>
+<tr><td>Generation, dedupe and validation code</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/02_Open_Weights/challenge/generate.py"><code>generate.py</code></a></td></tr>
+<tr><td>Four counts and the settings</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/data/DATASHEET.md"><code>DATASHEET.md</code></a>, "What this data is"</td></tr>
+<tr><td>Dedupe threshold</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>decisions.md</code></a>, Week 2</td></tr>
+<tr><td>Leak check and what I removed after reading</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/data/DATASHEET.md"><code>DATASHEET.md</code></a>, "Leakage check, outward"</td></tr>
+<tr><td>What it cannot validate, what it must never be compared against</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/data/DATASHEET.md"><code>DATASHEET.md</code></a></td></tr>
+<tr><td>Goldens provenance</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/data/DATASHEET.md"><code>DATASHEET.md</code></a>, "Leakage check, inward"</td></tr>
+<tr><td>Model and endpoint</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>decisions.md</code></a>, Week 2</td></tr>
+<tr><td>Review with the project lead</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/stakeholders.md"><code>stakeholders.md</code></a>, <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>decisions.md</code></a> and <a href="#review">the review section below</a></td></tr>
+<tr><td>What I would swap to run this at work</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/02_Open_Weights/challenge/README.md"><code>README.md</code></a>, "Bring it to work"</td></tr>
+<tr><td>Blocked model download</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/ecosystem.md"><code>ecosystem.md</code></a>, Week 2</td></tr>
+<tr><td>The dataset (548 rows)</td><td><code>use_case/data/synthetic_v1.jsonl</code>. Gitignored, not in the repo, so no link.</td></tr>
+</table>
+</div>
+
+<h2 id="axes">The axes</h2>
+<p>One request is one control plus the client's evidence documents. Each axis has a reason.</p>
+<div class="wrap">
+<table>
+<tr><th>Axis</th><th>Values</th><th>Why</th></tr>
+<tr><td>control</td><td>3 controls: top-level cybersecurity policy, roles and duties, staff awareness training</td><td>The system must work on every topic, and the implementation scale is different for each control.</td></tr>
+<tr><td>document_state</td><td>adopted and in force, draft, not adopted or not signed, incomplete, badly or vaguely worded, outdated</td><td>Good content does not make a document valid. Adopted, up to date and complete are separate things.</td></tr>
+<tr><td>document_relation</td><td>documents agree, contradict each other, several versions, a later event changes the situation, refers to a document that was not submitted</td><td>The system has to know which document is authoritative and notice what is missing.</td></tr>
+<tr><td>implementation_evidence</td><td>full, partial near a level threshold, paper only, evidence only, irrelevant documents only (decline)</td><td>Implementation must not be inferred from paper. Without relevant evidence there is no level.</td></tr>
+</table>
+</div>
+<p>3 × 6 × 5 × 5 is 450 combinations. I removed the ones that cannot exist, which leaves 288. For example, with irrelevant documents only, the document axes do not apply.</p>
+<p>The script <code>generate.py</code> builds every possible combination, asks the model for rows for each one, removes near-duplicates and keeps only rows that fit the schema.</p>
+
+<h2 id="counts">The four counts and the settings</h2>
+<div class="wrap">
+<table>
+<tr><th>Count</th><th>Rows</th></tr>
+<tr><td>Generated</td><td class="num">562</td></tr>
+<tr><td>After dedupe</td><td class="num">562</td></tr>
+<tr><td>Schema-valid</td><td class="num">555</td></tr>
+<tr><td>Dead combinations</td><td>0 (13 in the first run, then run again with the same settings, and all produced rows)</td></tr>
+</table>
+</div>
+<p>The final dataset has 548 rows: 555 schema-valid, 1 removed after reading, 6 removed after the project lead's review.</p>
+<p>255 lines needed one extra closing brace removed before they could be read. 33 lines could not be read at all.</p>
+<p>Settings: <code>openai/claude-haiku-4-5</code> through the internal gateway, temperature 0.7 (0.3 for the decline combinations), top_p 0.9, 2 rows per call, dedupe threshold 0.7, 288 combinations.</p>
+<p>The threshold is 0.7 because each row is a whole package of documents, and even the closest pair is only 0.49 alike. At 0.4 I would throw away real test cases. At 0.7 nothing was dropped.</p>
+
+<h2 id="removed">What I removed</h2>
+<div class="box">
+<p><b>After reading (1 row).</b> A POL-001 row, draft later adopted, full evidence. Implementation level 5 is too generous. The documents only say implementation has started, and level 5 also needs updates and a yearly effectiveness review.</p>
+<p><b>After the project lead's review (6 rows).</b> The level is not backed by the documents, so the label is wrong. I kept none of them, even though the scenarios are realistic.</p>
+</div>
+<p>The leak check read 50 rows spread across all controls and all evidence values, with an automated pre-screen for e-mails, URLs, personal ID numbers, IBANs, phone numbers, company names and code-like references. Nothing of that kind was found. Names in the rows are invented, and I checked them against people I know.</p>
+
+<h2 id="cannot">What the data cannot validate</h2>
+<p>It is prototyping data. It can show that the script runs, that the output keeps to the schema, that every axis combination has rows, and where the system breaks by axis. It cannot support a production accuracy number.</p>
+<ul>
+<li><b>Other controls.</b> The rows cover 3 controls out of a catalog of more than a hundred. The implementation scale is different for each, so results here say nothing about the rest.</li>
+<li><b>The levels themselves.</b> The generator labelled every row and nobody confirmed the labels. Of the 50 rows I checked, one level was too generous. Others like it are likely still in.</li>
+<li><b>Real document formats.</b> Every document is clean text. Real packages have scans, Word files with tracked changes and long e-mail chains.</li>
+<li><b>Real package size.</b> Real clients send more and longer documents, so the sentence that decides the level is harder to find.</li>
+<li><b>Technical evidence and evidence sent later.</b> Not in the data. This came from the project lead's review.</li>
+</ul>
+<p>These rows must never be compared against the consultants' final levels from past client analyses, or against the reference assessment the golden levels came from. They must never be reported as those results or mixed with them in one score.</p>
+<p>One more limit: goldens 3, 5 and 6 were shown to the generator as format examples. If Week 8 tunes on this file, scores on those three goldens are not independent. By the dedupe measure, 0 rows overlap with the goldens at threshold 0.7. The closest pair is 0.33.</p>
+
+<h2 id="review">Review with the project lead</h2>
+<p>I went through 20 rows and the datasheet together. Three notes.</p>
+<ul>
+<li><b>Never happens:</b> nothing impossible, but six levels are not backed by the documents (examples 4, 5, 6, 8, 9 and 18 of the 20).</li>
+<li><b>Missing:</b> scans, big packages, technical evidence like config exports and logs, evidence sent later.</li>
+<li><b>Worry if public:</b> that the data looks validated when nobody checked the levels.</li>
+</ul>
+<p>I removed the six rows. A consultant should check a sample of levels before Week 4.</p>
+
+<h2 id="work">Bring it to work</h2>
+<p>The maturity assessment tool cannot be tested on real client evidence until each client consents to having their documents processed with AI. The secure infrastructure on our side is already in place.</p>
+<ul>
+<li><b>Data:</b> generate from a description (the catalog, the level criteria and rules such as "board minutes outrank the intranet"), never from client records. Use past analyses only to check that the generated cases look like real ones.</li>
+<li><b>Model:</b> the internal AI gateway in our GCP landing zone, under an enterprise agreement, so the data stays inside our environment. The gateway offers several hosted models, so the model can change without the data leaving.</li>
+<li><b>Approval:</b> a deployment review with DevOps, then security and privacy reviews with the teams that own them, before anything goes to production. The product owner asks clients for consent to have their documents processed and encourages them to join.</li>
+</ul>
+</main>
+</body>
+</html>

@@ -132,6 +132,13 @@ Two more things the probe cannot see:
   certificate in the image or the repo. This is not TLS interception: public
   hosts still show public certificates; the gateway is an internal server.
 
+### 2026-10-18, Week 2: downloading open weights
+
+- **The model page loads, the weights do not.** `huggingface.co` answers through the proxy, but the weights come from a CDN (`*.cdn.hf.co`, `*.xethub.hf.co`) that the proxy refuses (407). The Week 1 prediction above was wrong: reaching the page is not the same as downloading the model.
+- **The PyTorch package index is refused too (407).** torch came from PyPI instead, as a much larger GPU build.
+- **How I got the model for Session 3:** I downloaded it once outside the firm network (phone hotspot, no VPN, no proxy) into the local cache; after that it loads from disk.
+- **For Weeks 8 and 9:** an allowlist entry for those hosts, or an internal model registry, is needed before an open-weights model can run on the firm's machines.
+
 ---
 
 ## Week 9 — the full checklist

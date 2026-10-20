@@ -559,3 +559,11 @@ challenge, which carries the full detail.
 
 Everything after this week assumes you have data you can show people, and a
 document that says what it is.
+
+## Bring it to work
+
+The maturity assessment tool cannot be tested on real client evidence until each client consents to having their documents processed with AI. The secure infrastructure on our side is already in place.
+
+- **Data:** generate from a description (the catalog, the level criteria and rules such as "board minutes outrank the intranet"), never from client records; use past analyses only to check that the generated cases look like real ones.
+- **Model:** the internal AI gateway in our GCP landing zone, under an enterprise agreement, so the data stays inside our environment. The gateway offers several hosted models, so the model can change without the data leaving.
+- **Approval:** a deployment review with DevOps, then security and privacy reviews with the teams that own them, before anything goes to production. The product owner asks clients for consent to have their documents processed with AI and encourages them to join.
