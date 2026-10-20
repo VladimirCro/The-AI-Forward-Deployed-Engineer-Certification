@@ -41,7 +41,7 @@ Prototyping data. The inputs look like real requests, but no consultant has conf
 ## What it cannot validate
 
 - Other controls. The rows cover 3 controls out of a catalog of more than a hundred, and the implementation scale is different for every control, so results here say nothing about the rest.
-- The levels themselves. The generator labelled every row against the catalog and nobody confirmed them. Of the 50 rows I read, one level was too generous and was removed, so others like it are likely still in.
+- The levels themselves. The generator labelled every row against the catalog and nobody confirmed them. Of the 50 rows checked, one level was too generous and was removed, so others like it are likely still in.
 - Real document formats. Every document here is clean text. Real packages contain scans, Word files with tracked changes and long e-mail chains.
 - Real package size. Real clients send more and longer documents than these rows, so the sentence that decides the level is harder to find.
 - Technical evidence and evidence sent later are not in the data (from the project lead's review).
