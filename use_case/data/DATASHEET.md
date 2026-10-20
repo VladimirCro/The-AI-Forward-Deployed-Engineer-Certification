@@ -36,7 +36,7 @@ Combinations that cannot exist are removed before generation:
 
 ## What it can validate
 
-Prototyping data. The inputs look like real requests, but no consultant has confirmed the levels. It can show that the pipeline runs end to end, that the output keeps to the schema, that every axis combination including the decline case is exercised, and where the system breaks by axis. It cannot support a production accuracy number.
+Prototyping data. The inputs look like real requests, but no consultant has confirmed the levels. It can show that the script runs, that the output keeps to the schema, that every axis combination, including the decline case, has rows, and where the system breaks by axis. It cannot support a production accuracy number.
 
 ## What it cannot validate
 
