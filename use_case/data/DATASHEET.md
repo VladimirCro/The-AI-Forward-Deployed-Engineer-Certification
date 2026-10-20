@@ -4,7 +4,7 @@
 
 **Generated on:** 2026-10-20
 **Generated from:** the Week 1 schema, the control catalog (the level criteria go into every prompt), the variation axes, and golden examples 3, 5 and 6 as format examples. No real records.
-**Rows:** 554 (555 schema-valid, 1 removed after reading, see the leakage check)
+**Rows:** 548 (555 schema-valid, 1 removed after reading, 6 removed after the project lead's review)
 
 | Count | |
 | --- | --- |
@@ -44,6 +44,7 @@ Prototyping data. The inputs look like real requests, but no consultant has conf
 - The levels themselves. The generator labelled every row against the catalog and nobody confirmed them. Of the 50 rows I read, one level was too generous and was removed, so others like it are likely still in.
 - Real document formats. Every document here is clean text. Real packages contain scans, Word files with tracked changes and long e-mail chains.
 - Real package size. Real clients send more and longer documents than these rows, so the sentence that decides the level is harder to find.
+- Technical evidence and evidence sent later are not in the data (from the project lead's review).
 
 ## What it must never be compared against
 
