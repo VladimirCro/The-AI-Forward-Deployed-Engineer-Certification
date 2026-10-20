@@ -1,8 +1,5 @@
 # Datasheet
 
-<!-- Written in TC2, alongside your synthetic data. This file is committed; the
-     data itself is not. -->
-
 ## What this data is
 
 **Generated on:** 2026-10-20
@@ -39,17 +36,18 @@ Combinations that cannot exist are removed before generation:
 
 ## What it can validate
 
-<!-- Which claims this data supports. Be narrow. -->
+Prototyping data. The inputs look like real requests, but no consultant has confirmed the levels. It can show that the pipeline runs end to end, that the output keeps to the schema, that every axis combination including the decline case is exercised, and where the system breaks by axis. It cannot support a production accuracy number.
 
 ## What it cannot validate
 
-<!-- The important half. Synthetic data cannot tell you about real distribution,
-     real frequency, or failure modes you did not think to generate. Say so. -->
+- Other controls. The rows cover 3 controls out of a catalog of more than a hundred, and the implementation scale is different for every control, so results here say nothing about the rest.
+- The levels themselves. The generator labelled every row against the catalog and nobody confirmed them. Of the 50 rows I read, one level was too generous and was removed, so others like it are likely still in.
+- Real document formats. Every document here is clean text. Real packages contain scans, Word files with tracked changes and long e-mail chains.
+- Real package size. Real clients send more and longer documents than these rows, so the sentence that decides the level is harder to find.
 
 ## What it must never be compared against
 
-<!-- If you have real ground truth somewhere, say where, and say explicitly that
-     these rows are not it. -->
+The real answers are the consultants' final levels from past client analyses, and the reference assessment the golden levels came from. Both stay inside the firm. These rows are generated and must never be reported as those results or mixed with them in one score.
 
 ## Leakage check, outward (what left)
 
@@ -63,9 +61,9 @@ How it was checked: 50 rows spread across all controls and all evidence values, 
 Removed after reading:
 - 1 row (POL-001, draft later adopted, full evidence): implementation level 5 is too generous; the documents only say implementation has started, and level 5 also needs updates and a yearly effectiveness review.
 
-## Leakage check — inward (what the eval shares with the training data)
+## Leakage check, inward (what the eval shares with the training data)
 
 **Are the goldens disjoint from anything the system was, or will be, tuned on?**
-<!-- yes, disjoint | no — overlap: <which goldens, which source> | unknown — who would know: <role> -->
+No, overlap: goldens 3, 5 and 6 were shown to the generator as format examples, so this file and those goldens share a source. If Week 8 tunes on this file, scores on those three goldens are not independent.
 
-**Overlap between `golden.jsonl` and this file, by the dedupe measure:** <!-- n rows at threshold t -->
+**Overlap between `golden.jsonl` and this file, by the dedupe measure:** 0 rows at threshold 0.7 (the closest pair is 0.33).
