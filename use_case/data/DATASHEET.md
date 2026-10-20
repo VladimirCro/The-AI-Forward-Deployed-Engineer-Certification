@@ -7,7 +7,7 @@
 
 **Generated on:** 2026-10-20
 **Generated from:** the Week 1 schema, the control catalog (the level criteria go into every prompt), the variation axes, and golden examples 3, 5 and 6 as format examples. No real records.
-**Rows:** 555
+**Rows:** 554 (555 schema-valid, 1 removed after reading, see the leakage check)
 
 | Count | |
 | --- | --- |
@@ -24,12 +24,12 @@
 
 The same list as `02_Open_Weights/challenge/axes.py`. One request is one control plus the client's evidence documents.
 
-| Axis | Values | Why |
-| --- | --- | --- |
-| control | POL-001 (top-level cybersecurity policy) · ORG-001 (roles, responsibilities and duties) · EDU-001 (staff awareness training) | The system must work on every topic, and the implementation scale is different for each control. |
-| document_state | adopted and in force · draft · not adopted or not signed · incomplete (a section or annex is missing) · badly or vaguely worded · outdated (adopted, but not reviewed for years) | Good content does not make a document valid; the catalog separates adopted, up to date and complete (golden 1, 2). |
-| document_relation | documents agree · documents contradict each other · several versions of the same document · a later event changes the situation · refers to a document that was not submitted | The system has to know which document is authoritative and notice what is missing (golden 3, 6). |
-| implementation_evidence | full evidence · partial evidence, near a level threshold · paper only, no evidence of implementation · evidence only, no paper · irrelevant documents only (decline: no level, ask for evidence) | Implementation must not be inferred from paper, and without relevant evidence there is no level (golden 4, 5). |
+| Axis | Values |
+| --- | --- |
+| control | POL-001 (top-level cybersecurity policy) · ORG-001 (roles, responsibilities and duties) · EDU-001 (staff awareness training) |
+| document_state | adopted and in force · draft · not adopted or not signed · incomplete (a section or annex is missing) · badly or vaguely worded · outdated (adopted, but not reviewed for years) |
+| document_relation | documents agree · documents contradict each other · several versions of the same document · a later event changes the situation · refers to a document that was not submitted |
+| implementation_evidence | full evidence · partial evidence, near a level threshold · paper only, no evidence of implementation · evidence only, no paper · irrelevant documents only (decline: no level, ask for evidence) |
 
 Combinations that cannot exist are removed before generation:
 - *irrelevant documents only*: document_state and document_relation do not apply, so one combination per control (3);
@@ -51,12 +51,17 @@ Combinations that cannot exist are removed before generation:
 <!-- If you have real ground truth somewhere, say where, and say explicitly that
      these rows are not it. -->
 
-## Leakage check — outward (what left)
+## Leakage check, outward (what left)
 
-- [ ] No real record was used as a seed.
-- [ ] No real entity names, IDs, or identifiers appear.
-- [ ] No distinctive internal formats that would identify the firm.
-- [ ] Rare categories were generated, not copied.
+- [x] No real record was used as a seed.
+- [x] No real entity names, IDs, or identifiers appear.
+- [x] No distinctive internal formats that would identify the firm.
+- [x] Rare categories were generated, not copied.
+
+How it was checked: 50 rows spread across all controls and all evidence values, with an automated pre-screen for e-mails, URLs, personal ID numbers, IBANs, phone numbers, company names and code-like references. Nothing of that kind was found. The person names in the rows (for example "Petra Novak") are invented by the generator and do not appear in the golden examples; I checked them against people I know at work and at clients. One code-like reference, `ORG-087`, does not exist in the real catalog. The 16 leak-check hits are schema IDs (`DOC-01`, `CIT-02`, control IDs) and years, not leaks.
+
+Removed after reading:
+- 1 row (POL-001, draft later adopted, full evidence): implementation level 5 is too generous; the documents only say implementation has started, and level 5 also needs updates and a yearly effectiveness review.
 
 ## Leakage check — inward (what the eval shares with the training data)
 
