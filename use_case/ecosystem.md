@@ -137,7 +137,7 @@ Two more things the probe cannot see:
 - **The model page loads, the weights do not.** `huggingface.co` answers through the proxy, but the weights come from a CDN (`*.cdn.hf.co`, `*.xethub.hf.co`) that the proxy refuses (407). The Week 1 prediction above was wrong: reaching the page is not the same as downloading the model.
 - **The PyTorch package index is refused too (407).** torch came from PyPI instead, as a much larger GPU build.
 - **How I got the model for Session 3:** I downloaded it once outside the firm network (phone hotspot, no VPN, no proxy) into the local cache; after that it loads from disk.
-- **For Weeks 8 and 9:** an allowlist entry for those hosts, or an internal model registry, is needed before an open-weights model can run on the firm's machines.
+- **For Weeks 8 and 9:** a local model is not a plausible path today. An allowlist entry for those hosts, or an internal model registry, is needed before an open-weights model can run on the firm's machines.
 
 ---
 

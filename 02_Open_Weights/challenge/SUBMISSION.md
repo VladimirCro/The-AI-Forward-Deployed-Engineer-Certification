@@ -30,5 +30,5 @@ My notes from going through 20 rows and the datasheet together.
 ## Update after submission (2026-10-20)
 
 - I relabelled all 548 rows with Opus 5.5: same documents, new levels, in `synthetic_v2.jsonl`.
-- It agrees with the project lead on all six rejected levels.
+- It agrees with the project lead on all six rejected levels (the prompt's rules came from that review, so this is not an independent test).
 - It changed 463 of 1,096 levels and found 313 rows whose documents do not match their recipe.
