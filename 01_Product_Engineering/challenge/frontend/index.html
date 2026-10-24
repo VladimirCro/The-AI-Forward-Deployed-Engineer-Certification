@@ -192,13 +192,13 @@
           for await (const event of job) {
             if (event.type === "data") {
               reply = event.data[0];
-              assessOut.textContent = reply;   // raw while streaming: the JSON is incomplete until the end
+              assessOut.textContent = reply;   // the endpoint returns the whole Response as JSON in one event
             } else if (event.type === "status" && event.stage === "error") {
               failed = true;
               showError(event.message || "Server nije mogao dovršiti procjenu.");
             }
           }
-          // 3. The stream is done, so the JSON is complete: render it.
+          // 3. The call is done, so the JSON is complete: render it.
           if (!failed) showAssessment(reply);
         } catch (err) {
           // Gateway down, network blocked, server stopped: say so instead of staying on "Working...".
