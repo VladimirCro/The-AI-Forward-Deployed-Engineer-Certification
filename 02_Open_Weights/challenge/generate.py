@@ -27,7 +27,7 @@ TOP_P = 0.9
 PER_COMBO = 2
 DEDUPE_THRESHOLD = 0.7
 WORKERS = 4
-SEED_LINES = (3, 5, 6)  # golden 4 left out, its level is disputed
+SEED_LINES = (3, 5, 6)  # 3 contradiction, 5 decline, 6 vacancy; golden 4 left out, its level is disputed
 
 NOT_APPLICABLE = "not applicable"
 DECLINE = "irrelevant documents only (decline: no level, ask for evidence)"
@@ -44,8 +44,10 @@ def possible_combos() -> list[dict]:
     seen, combos = set(), []
     for combo in combinations(AXES):
         if combo["implementation_evidence"] == DECLINE:
+            # irrelevant documents: state and relation do not apply (90 -> 3)
             combo |= {"document_state": NOT_APPLICABLE, "document_relation": NOT_APPLICABLE}
         elif combo["implementation_evidence"] == EVIDENCE_ONLY:
+            # no document: its state does not apply (90 -> 15)
             combo |= {"document_state": NOT_APPLICABLE}
         key = tuple(combo.values())
         if key not in seen:
