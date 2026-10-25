@@ -85,5 +85,5 @@ The same 548 rows were relabelled with `openai/claude-opus-5-5`: same documents,
 
 - The two models disagree on 42% of levels, with no clear lean up or down (the average change is -0.06). Where a person checked, the new levels agree with them, but the three rules in the prompt came from that same review, so these six rows are not an independent test. A consultant needs to check a fresh sample. Nobody has checked them on the other rows yet, so this is still prototyping data.
 - 313 rows do not match their recipe: the generator often added a policy where the recipe said "evidence only, no paper", or wrote documents that agree where the recipe said they contradict each other. These rows keep the new levels and a flag, but counts by axis are not reliable for them.
-- From now on I use `synthetic_v2.jsonl`. `synthetic_v1.jsonl` stays as submitted.
+- `synthetic_v2.jsonl` is a record of the relabel test; the set is generated again before Week 4. `synthetic_v1.jsonl` stays as submitted.
 - In v2, each level_statement is the catalog text for the new level. In v1, 39 level statements are the generator's own wording, and some do not match their level.
