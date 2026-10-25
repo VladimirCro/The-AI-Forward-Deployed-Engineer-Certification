@@ -105,6 +105,7 @@ def main() -> None:
             if level != row["output"][dim]["level"]:
                 changed += 1
             new["output"][dim]["level"] = level
+            new["output"][dim]["level_statement"] = catalog[row["input"]["control_id"]][dim].get(str(level)) if level else None
             new["output"][dim]["rationale"] = answer[f"{dim}_reason"]
         Response(**new["output"])
         new["relabel"] = {
