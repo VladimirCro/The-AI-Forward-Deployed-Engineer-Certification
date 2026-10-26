@@ -71,3 +71,17 @@ def estimate_prompt_cost(message: str, history: list[dict] | None = None) -> flo
     except Exception:
         return None
     return prompt_cost
+
+
+def chat_with_tools(messages: list[dict], tools: list[dict]):
+    """One model turn with tools offered; returns the assistant message (text or tool calls).
+
+    No temperature: newer models behind the gateway reject it, so every call runs at the
+    provider's default.
+    """
+    kwargs = {"model": MODEL, "messages": messages, "tools": tools, "timeout": 300}
+    if API_BASE:
+        kwargs["api_base"] = API_BASE
+    if EXTRA_HEADERS:
+        kwargs["extra_headers"] = EXTRA_HEADERS
+    return completion(**kwargs).choices[0].message

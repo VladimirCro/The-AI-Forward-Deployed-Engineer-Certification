@@ -28,9 +28,9 @@ SEED = 7
 # Noise that mentions the topic of the target control is left out: it could be a second right
 # answer that is not in the gold list.
 TOPIC = {
-    "POL-001": r"politik|strateg",
+    "POL-001": r"politi|strateg",  # "politi" also catches "politici", where the k turns into c
     "ORG-001": r"\bulog|odgovornost|matric|radnih mjesta|nositelj|zaduž|imenov|odgovorn|ovlašten",
-    "EDU-001": r"eduk|obuk|obuč|osposob|radionic|tečaj|izobraz|webinar|upozna|pohađ|razumijev|svjesn|onboarding|potvrd\w* o (čitanju|primitku)",
+    "EDU-001": r"eduk|obuk|obuč|osposob|radionic|tečaj|izobraz|webinar|upozna|pohađ|razumijev|svjesn|svijest|osvješ|onboarding|čitanj|pročita|poznat|potvrd\w* o (čitanju|primitku)",
 }
 DECISION_NUMBER = re.compile(r"\b\d{1,4}/20\d\d\b")
 
