@@ -1,6 +1,6 @@
 """Measure the retrieval techniques against the ten labelled cases.
 
-    uv run --env-file ../../.env python ../../03_Retrieval/challenge/measure.py      (from the app folder)
+    uv run --env-file ../../.env python measure.py      (from the app folder)
 
 Every case runs through every technique with the same model, the same task and the
 same pages. The table goes to 03_Retrieval/challenge/results.md; the answers and
@@ -9,19 +9,17 @@ traces, which quote the documents, go to use_case/data/retrieval_runs.json (giti
 
 import json
 import os
-import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-APP = ROOT / "01_Product_Engineering" / "challenge"
-sys.path.insert(0, str(APP))
-
 import retrieval as R
 
+APP = Path(__file__).resolve().parent
+ROOT = APP.parents[1]
+
 CASES = ROOT / "use_case" / "evals" / "retrieval.jsonl"
-TABLE = Path(__file__).resolve().parent / "results.md"
+TABLE = ROOT / "03_Retrieval" / "challenge" / "results.md"
 RUNS = ROOT / "use_case" / "data" / "retrieval_runs.json"
 WORKERS = 4
 DECLINE_MARKER = "no evidence found"

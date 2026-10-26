@@ -1,6 +1,6 @@
 """Build the fictional clients the retrieval is measured on.
 
-    uv run python 03_Retrieval/challenge/build_clients.py
+    uv run python build_clients.py      (from the app folder)
 
 Each client is one target row from synthetic_v1.jsonl (its documents are the gold
 answer, or nothing for a decline) plus noise: documents from rows of the other two controls, until the client
