@@ -11,6 +11,7 @@ from pathlib import Path
 from fastapi.responses import HTMLResponse
 from gradio import Server
 
+import assess
 from llm import stream_reply
 from schema import EvidenceDocument, Request, solve
 
@@ -41,6 +42,24 @@ def propose_control_maturity(control_id: str, evidence_documents: list[dict]) ->
     # Validate the input against the contract in schema.py: a bad request stops here.
     request = Request(control_id=control_id, evidence_documents=[EvidenceDocument(**doc) for doc in evidence_documents])
     return solve(request).model_dump_json()
+
+
+@app.api(name="assess_control_for_client")
+def assess_control_for_client(client_id: str, control_id: str) -> str:
+    """Assess one control for one client by finding the evidence in the client's own documents.
+
+    Searches the client's documents (keyword and meaning search together), keeps the
+    ones that support or contradict the control, and proposes a maturity level from
+    them. Returns a Response as JSON: verbatim quotes checked against the documents,
+    a proposed level for documentation and for implementation, contradictions, missing
+    evidence, and `sources`, the record ids of the documents the assessment rests on.
+
+    When no document supports or contradicts the control, returns no level, an
+    empty `sources` and the reason, instead of assessing from unrelated documents.
+
+    Never makes the final decision; the consultant does.
+    """
+    return assess.assess_control_for_client(client_id, control_id).model_dump_json()
 
 # --- The frontend ------------------------------------------------------------
 # Defining a route at "/" replaces Gradio's default UI with ours.

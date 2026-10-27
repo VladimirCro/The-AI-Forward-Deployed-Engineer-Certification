@@ -22,6 +22,8 @@ from litellm import completion, cost_per_token, token_counter
 MODEL = os.getenv("LLM_MODEL", "gpt-4.1-mini")
 API_BASE = os.getenv("LLM_API_BASE")  # only needed for self-hosted / gateway endpoints
 EXTRA_HEADERS = json.loads(os.getenv("LLM_EXTRA_HEADERS") or "{}")
+# Without it the gateway stops a reply at 4,096 tokens, which cuts a long assessment mid-JSON.
+MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "16000"))
 
 SYSTEM_PROMPT = os.getenv(
     "SYSTEM_PROMPT",
@@ -40,7 +42,7 @@ def stream_reply(message: str, history: list[dict] | None = None):
     messages.extend(history or [])
     messages.append({"role": "user", "content": message})
 
-    kwargs = {"model": MODEL, "messages": messages, "stream": True}
+    kwargs = {"model": MODEL, "messages": messages, "stream": True, "max_tokens": MAX_TOKENS}
     if API_BASE:
         kwargs["api_base"] = API_BASE
     if EXTRA_HEADERS:
