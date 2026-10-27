@@ -599,3 +599,8 @@ challenge, which carries the full detail.
 
 Everything after this week assumes your app answers from your data and can say
 where the answer came from.
+
+## Retrieval notes
+
+- **Top-k floor:** 8 of the 10 cases need more than one document (2 to 4), so every search returns 4 documents unless the agent asks for more.
+- **Decline:** when none of the documents the search found supports or contradicts the control, the endpoint returns no level, an empty `sources` and the reason, and does not run the assessment. Of the two decline cases, klijent-04 is declined. klijent-10 is not: documents written for another control (role holders signing that they received the policy) also show that employees were told about the policy, so the endpoint assesses it at level 2.
