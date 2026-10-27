@@ -4,7 +4,7 @@
 
 | Deliverable | Where |
 | --- | --- |
-| Video walkthrough (under five minutes) | TODO: Loom link |
+| Video walkthrough (under five minutes) | https://www.loom.com/share/7414155331124c01971508050067080d |
 | Ten labelled questions | `use_case/evals/retrieval.jsonl` |
 | Top-k floor | `## Retrieval notes` in `03_Retrieval/challenge/README.md` |
 | Schema: implemented, not redesigned | `use_case/decisions.md`, Week 3, first row (`sources` added to `Response`; `Request` and `solve()` unchanged) |

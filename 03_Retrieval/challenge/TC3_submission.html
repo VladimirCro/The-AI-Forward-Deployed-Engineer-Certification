@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TC3 submission</title>
+<style>
+:root{
+  --bg:#faf9f6; --card:#ffffff; --ink:#1c1c1a; --muted:#5d5b55; --line:#dcd9d0;
+  --accent:#9a3b12; --tint:#f3ece4; --link:#0b5cad;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16171a; --card:#1e2024; --ink:#ebeae6; --muted:#a3a198; --line:#34363b;
+    --accent:#e8a070; --tint:#26241f; --link:#7db7f0;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16171a; --card:#1e2024; --ink:#ebeae6; --muted:#a3a198; --line:#34363b;
+  --accent:#e8a070; --tint:#26241f; --link:#7db7f0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  padding:24px 16px 56px; overflow-wrap:break-word}
+main{max-width:760px; margin:0 auto}
+a{color:var(--link)}
+h1{font-size:2rem; line-height:1.15; margin:0 0 6px}
+h2{font-size:1.3rem; line-height:1.25; margin:40px 0 10px; padding-top:6px; border-top:1px solid var(--line)}
+p{margin:0 0 12px}
+.sub{color:var(--muted); margin-bottom:20px}
+code{font:.88em ui-monospace,Consolas,monospace; background:var(--tint); padding:1px 5px; border-radius:4px; overflow-wrap:anywhere}
+.box{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:0 0 12px}
+.wrap{overflow-x:auto; margin:0 0 12px; border:1px solid var(--line); border-radius:10px; background:var(--card)}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:.95rem}
+th,td{text-align:left; vertical-align:top; padding:8px 12px; border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{background:var(--tint); font-weight:600}
+ul,ol{margin:0 0 12px; padding-left:22px}
+li{margin-bottom:6px}
+.order{color:var(--muted); font-size:.95rem}
+.num{white-space:nowrap}
+</style>
+</head>
+<body>
+<main>
+<h1>TC3 submission</h1>
+<p class="sub">Week 3, Retrieval. Finding a client's evidence for a control, with sources.</p>
+
+<h2 id="summary">Summary</h2>
+<p>My tool proposes a maturity level for one cybersecurity control from a client's documents, with exact quotes. The consultant makes the final decision. Until this week the consultant had to pick the documents and paste them in. Now the tool finds them itself among about 150 documents per client, and every answer names the documents it came from.</p>
+<p>I measured four search techniques on ten labelled cases, chose hybrid search (keyword and meaning search merged), and built an endpoint that labels what it found, assesses only the documents that matter, checks every quote against its document, and says so when there is no evidence. All data is synthetic.</p>
+<p class="order">This page follows the order of the video: the cases, the four techniques and their results, the decision, the endpoint, the non-text content, bring it to work.</p>
+
+<h2 id="video">Video</h2>
+<p><a href="https://www.loom.com/share/7414155331124c01971508050067080d">Watch the video on Loom</a></p>
+<p>Under five minutes. It walks through the results table, the decision, and the endpoint answering two cases with sources.</p>
+
+<h2 id="deliverables">Every deliverable, with links</h2>
+<div class="wrap">
+<table>
+<tr><th>Deliverable</th><th>Where</th></tr>
+<tr><td>Ten labelled questions</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/retrieval.jsonl"><code>retrieval.jsonl</code></a></td></tr>
+<tr><td>Top-k floor</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/03_Retrieval/challenge/README.md"><code>README.md</code></a>, "Retrieval notes"</td></tr>
+<tr><td>Schema implemented, not redesigned</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>decisions.md</code></a>, Week 3, first row</td></tr>
+<tr><td>Retrieval code (BM25, direct corpus interaction, dense, hybrid)</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/retrieval.py"><code>retrieval.py</code></a></td></tr>
+<tr><td>The fictional clients</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/build_clients.py"><code>build_clients.py</code></a> (the documents are gitignored)</td></tr>
+<tr><td>Results table, settings, ranges, embedding token count</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/03_Retrieval/challenge/results.md"><code>results.md</code></a>, made by <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/measure.py"><code>measure.py</code></a></td></tr>
+<tr><td>The endpoint and its docstring</td><td><code>assess_control_for_client</code> in <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/app.py"><code>app.py</code></a>; the steps in <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/assess.py"><code>assess.py</code></a></td></tr>
+<tr><td>The endpoint on the ten cases, three runs</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/03_Retrieval/challenge/endpoint_results.md"><code>endpoint_results.md</code></a></td></tr>
+<tr><td>What it does on the decline question</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/03_Retrieval/challenge/README.md"><code>README.md</code></a>, "Retrieval notes"</td></tr>
+<tr><td>Retrieval decision and the four non-text answers</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>decisions.md</code></a>, Week 3</td></tr>
+<tr><td>Runs in Docker</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/03_Retrieval/challenge/SUBMISSION.md"><code>SUBMISSION.md</code></a>, "Run it"</td></tr>
+<tr><td>Demo to a real user</td><td>Scheduled for 2 November, see <a href="#user">below</a></td></tr>
+<tr><td>What I would swap to run this at work</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/03_Retrieval/challenge/README.md"><code>README.md</code></a>, "Bring it to work"</td></tr>
+<tr><td>Gateway and model notes</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/ecosystem.md"><code>ecosystem.md</code></a>, Week 3</td></tr>
+</table>
+</div>
+
+<h2 id="cases">The ten cases</h2>
+<p>The tool has no questions typed by people: a consultant asks it to assess one control for one client. So one case is a fictional client with about 150 documents and one control, and the label is every document the assessment needs. 8 of the 10 need more than one document (2 to 4), so every search returns 4. Two cases have no evidence at all.</p>
+<p>I chose the ten from the Week 2 data, one for each hard situation, and checked every label by reading the documents. The rest of each client is documents from the other two controls, without any that mention the control's topic.</p>
+<div class="wrap">
+<table>
+<tr><th>Case</th><th>Control</th><th>What makes it hard</th></tr>
+<tr><td>klijent-01</td><td>POL-001</td><td>The documents contradict each other and the policy itself is missing: the board claims full implementation, an internal audit says 78%.</td></tr>
+<tr><td>klijent-02</td><td>POL-001</td><td>The policy is adopted, then a later board decision suspends part of it; read receipts exist for only 34 of 127 people.</td></tr>
+<tr><td>klijent-03</td><td>POL-001</td><td>The adoption decision points to an annex with the policy text, and the annex was not handed over.</td></tr>
+<tr><td>klijent-04</td><td>POL-001</td><td>Decline: only an incident report and a list of security tools.</td></tr>
+<tr><td>klijent-05</td><td>ORG-001</td><td>The documents agree, but each covers a different part of the scale.</td></tr>
+<tr><td>klijent-06</td><td>ORG-001</td><td>Two versions of the rulebook, one key role left empty, 16 of 18 role holders confirmed.</td></tr>
+<tr><td>klijent-07</td><td>ORG-001</td><td>An email says four people were told and signed; the decision says two of three roles are still empty.</td></tr>
+<tr><td>klijent-08</td><td>EDU-001</td><td>The training plan has to be compared with what the policy requires and who was trained (187 of 195).</td></tr>
+<tr><td>klijent-09</td><td>EDU-001</td><td>Informal workshops with no attendance list, and a policy that is only on the intranet.</td></tr>
+<tr><td>klijent-10</td><td>EDU-001</td><td>Decline: only a server purchase plan.</td></tr>
+</table>
+</div>
+
+<h2 id="results">Four techniques, measured</h2>
+<p>The same agent loop from Session 5, the same task and the same pages for every technique. Three of them give the model the same search tool and differ only in how they rank: BM25 counts matching words, dense compares meaning with <code>gemini-embedding-2</code>, and hybrid merges the two rankings by rank (RRF, k = 60). Direct corpus interaction lists, greps and reads whole documents.</p>
+<p>Three runs on the final pages, out of 10:</p>
+<div class="wrap">
+<table>
+<tr><th>Technique</th><th>Complete (all gold cited)</th><th>Extra documents cited</th><th>Calls (mean)</th><th>Evidence read, chars (mean)</th></tr>
+<tr><td>Agentic RAG (BM25)</td><td class="num">6 to 7</td><td class="num">29 to 42</td><td class="num">4.9 to 5.4</td><td class="num">9,165 to 9,997</td></tr>
+<tr><td>DCI (wiki)</td><td class="num">7 to 8</td><td class="num">11 to 16</td><td class="num">9.2 to 9.8</td><td class="num">12,532 to 12,886</td></tr>
+<tr><td>Dense</td><td class="num">5 to 7</td><td class="num">39 to 53</td><td class="num">4.1 to 4.2</td><td class="num">7,880 to 8,145</td></tr>
+<tr><td>Hybrid (BM25 + dense, RRF)</td><td class="num">7 to 8</td><td class="num">35 to 46</td><td class="num">4.7 to 5.2</td><td class="num">9,310 to 10,130</td></tr>
+</table>
+</div>
+<p>BM25 and dense miss different documents: BM25 finds the policy cases, dense the training cases. Over all ten runs of the day, hybrid was never below the better of the two and above both in seven. Embedding cost was about 126,400 tokens per run, pages plus search queries [measured]. The full table, pass and latency are in <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/03_Retrieval/challenge/results.md"><code>results.md</code></a>.</p>
+<p>While measuring, the agent kept finding evidence the noise filter had missed, because Croatian says the same thing in many ways ("obaviješteni", "izjava", "Direktiva", "odgovoran"). I took those documents out three times. Every technique always ran on the same pages.</p>
+
+<h2 id="decision">The decision</h2>
+<div class="box">
+<p><b>Shipped:</b> hybrid search as the agent's search tool. Only the search is an agent: it decides when to search again. The assessment stays a pipeline.</p>
+<p><b>Rejected:</b> direct corpus interaction, BM25 alone, dense alone.</p>
+<p><b>Why:</b> DCI is as good on complete, but it makes about twice the calls and needs an index somebody keeps for every client. Nobody does that today, and clients send PDFs, scans, spreadsheets and emails. Long documents are untested for every technique. No vector database: 150 documents per client is one matrix product.</p>
+<p><b>What would change my mind:</b> if Week 4 shows more than 10% of wrong levels come from documents the search never found, the agent gets grep and read on top of hybrid. If clients deliver through a system that names and indexes every document, DCI.</p>
+</div>
+
+<h2 id="endpoint">The endpoint</h2>
+<p><code>assess_control_for_client(client_id, control_id)</code> returns the Week 1 <code>Response</code> with one new field, <code>sources</code>.</p>
+<ol>
+<li>Hybrid search finds the client's documents that may be evidence.</li>
+<li>One model call labels each of them: supports, contradicts or neutral.</li>
+<li>If nothing supports or contradicts the control, the answer is "no relevant documents" and the assessment does not run.</li>
+<li>The supporting and contradicting documents go into the Week 1 <code>solve()</code>.</li>
+<li>Every quote is checked against its document in code. A quote that is not there is dropped.</li>
+<li><code>sources</code> names the documents the assessment rests on.</li>
+</ol>
+<p>On the ten cases over three runs it was right 6, 8 and 9 times. klijent-04 was declined twice; once a draft rulebook from another control was labelled as supporting. klijent-10 was never declined: documents written for another control, such as role holders signing that they received the security rulebook, also show that employees were told about the policy, so the endpoint gives level 2. In real client folders one document often proves more than one control too.</p>
+
+<h2 id="nontext">Non-text content</h2>
+<p>Clients send PDFs exported from Word, scanned PDFs, spreadsheets, emails and screenshots. My test data has none of them yet. Scans will be the first I add.</p>
+<ul>
+<li><b>Visual or text as pixels?</b> Mostly text as pixels: scanned board decisions, minutes and signed attendance lists. The org chart is the one that is truly visual.</li>
+<li><b>Does the number live only in the pixels?</b> Yes: the date and number of a board decision, and the signatures on an attendance list. A misread decision number would still pass the quote check, so the reading needs its own check.</li>
+<li><b>Descriptions, or one parse per image?</b> No descriptions. Every scan is parsed once, when the client hands the documents over, through the same gateway.</li>
+<li><b>Video or audio?</b> None expected yet. A recorded training would need more than the transcript: it shows what was said, not who attended.</li>
+</ul>
+
+<h2 id="user">Demo to a real user</h2>
+<p>Scheduled with a consultant for Monday, 2 November, after the deadline. The consultant sends five situations from client work beforehand; I build a fictional client for each, run the endpoint live, and ask whether they would act on the answer, whether the sources convince them, and what they wanted to ask. Their answers and five new labelled cases go into the repo after the session.</p>
+
+<h2 id="work">Bring it to work</h2>
+<p>Consultants read every document by hand. A general AI assistant would not show which document a finding came from, and nobody has checked what it misses.</p>
+<ul>
+<li><b>Data:</b> the documents each client hands over for its self-assessment: Word and PDF policies, scanned board decisions and attendance lists, spreadsheets and emails. The scans need OCR before any search can see them.</li>
+<li><b>Model or endpoint:</b> the same internal AI gateway for the embedding model and the answer model, so client documents never leave our environment. About 126,400 embedding tokens per run for ten clients of short documents [measured]; real documents are much longer, so re-indexing after a chunking change is a budget line to check.</li>
+<li><b>Approval:</b> client consent to process their documents with AI, then a deployment review with DevOps and the security and privacy reviews by the teams that own them.</li>
+</ul>
+</main>
+</body>
+</html>
