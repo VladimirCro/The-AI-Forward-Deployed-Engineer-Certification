@@ -3,110 +3,180 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Rename this. It is your app. -->
     <title>Asistent za procjenu zrelosti kontrola</title>
     <style>
+      :root {
+        --bg: #f4f6f9; --card: #ffffff; --ink: #1c2430; --muted: #5d6878; --line: #dde2ea;
+        --accent: #1f4e8c; --accent-soft: #e8eff9;
+        --warn: #8a5a00; --warn-bg: #fff6e0; --warn-line: #f0d08a;
+        --bad: #a3271d; --bad-bg: #fdecea;
+        --none-bg: #eef1f5;
+      }
+      * { box-sizing: border-box; }
       body {
-        font-family: system-ui, sans-serif;
-        max-width: 44rem;
-        margin: 2rem auto;
-        padding: 0 1rem;
-        line-height: 1.5;
+        margin: 0; background: var(--bg); color: var(--ink);
+        font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
       }
-      #log {
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        padding: 1rem;
-        min-height: 20rem;
-        margin-bottom: 1rem;
-        white-space: pre-wrap;
-        overflow-y: auto;
+      header { background: var(--accent); color: #fff; padding: 1.1rem 1rem; }
+      header .wrap, main { max-width: 64rem; margin: 0 auto; padding: 0 1rem; }
+      header h1 { margin: 0; font-size: 1.35rem; font-weight: 650; }
+      header p { margin: 0.2rem 0 0; opacity: 0.85; font-size: 0.92rem; }
+      main { padding-top: 1.5rem; padding-bottom: 3rem; }
+      h2 { font-size: 1.1rem; margin: 0 0 0.75rem; }
+      .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 1.25rem; }
+
+      /* The Week 3 form: client and control on one line. */
+      #client-assess .row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: end; }
+      #client-assess .field { display: flex; flex-direction: column; gap: 0.25rem; min-width: 12rem; }
+      #client-assess .field.grow { flex: 1; min-width: 16rem; }
+      label { font-weight: 600; font-size: 0.85rem; color: var(--muted); }
+      select, input, textarea { font: inherit; padding: 0.55rem 0.6rem; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink); }
+      button {
+        font: inherit; font-weight: 600; padding: 0.6rem 1.3rem; border: 0; border-radius: 6px;
+        background: var(--accent); color: #fff; cursor: pointer;
       }
+      button:disabled { opacity: 0.6; cursor: wait; }
+      button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+      /* Results: the same look for both endpoints. */
+      .out { margin-top: 1.25rem; }
+      .out:empty { display: none; }
+      .out.raw, .out pre { white-space: pre-wrap; }
+      .out.error { color: var(--bad); background: var(--bad-bg); border-radius: 8px; padding: 1rem; }
+      .waiting { color: var(--muted); }
+      .waiting ol { margin: 0.5rem 0 0; padding-left: 1.2rem; }
+      .control-title { display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem; align-items: baseline; margin-bottom: 1rem; }
+      .control-title .id { font-weight: 700; color: var(--accent); background: var(--accent-soft); padding: 0.1rem 0.55rem; border-radius: 5px; }
+      .control-title .name { font-weight: 600; }
+      .dims { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); gap: 1rem; }
+      .dim { border: 1px solid var(--line); border-radius: 10px; padding: 1rem; background: #fff; min-width: 0; }
+      .dim h3 { margin: 0 0 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+      .level-row { display: flex; align-items: baseline; gap: 0.5rem; }
+      .level { font-size: 2.6rem; font-weight: 750; line-height: 1; color: var(--accent); }
+      .level small { font-size: 1rem; color: var(--muted); font-weight: 500; }
+      .level.none { font-size: 1.3rem; color: var(--muted); }
+      .statement { margin: 0.5rem 0; padding: 0.5rem 0.7rem; background: var(--accent-soft); border-radius: 6px; font-size: 0.92rem; }
+      .badge { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 4px; background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn-line); font-weight: 600; font-size: 0.8rem; }
+      .note { color: var(--muted); font-size: 0.9rem; margin: 0.4rem 0; }
+      .label-small { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 0.9rem 0 0.3rem; }
+      .rationale { margin: 0; }
+      .quote { margin: 0.5rem 0; padding: 0.6rem 0.75rem; border-left: 3px solid var(--accent); background: #fafbfd; border-radius: 0 6px 6px 0; }
+      .quote .where { display: flex; flex-wrap: wrap; gap: 0.4rem; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.25rem; }
+      .chip { display: inline-block; font: 600 0.78rem/1.5 ui-monospace, Menlo, Consolas, monospace; background: var(--none-bg); color: var(--ink); padding: 0 0.45rem; border-radius: 4px; }
+      .quote .text { font-style: italic; }
+      .extra { margin-top: 1rem; display: grid; gap: 0.75rem; }
+      .box { border-radius: 8px; padding: 0.75rem 1rem; }
+      .box h4 { margin: 0 0 0.35rem; font-size: 0.9rem; }
+      .box ul { margin: 0; padding-left: 1.2rem; }
+      .box.warn { background: var(--warn-bg); border: 1px solid var(--warn-line); }
+      .box.plain { background: var(--none-bg); }
+      .chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+      .declined { background: var(--none-bg); border-radius: 10px; padding: 1.1rem 1.25rem; }
+      .declined h3 { margin: 0 0 0.3rem; font-size: 1.05rem; }
+      details.json { margin-top: 1rem; font-size: 0.85rem; }
+      details.json pre { background: var(--none-bg); padding: 0.75rem; border-radius: 6px; overflow-x: auto; }
+
+      /* Week 1 tools, kept below and folded. */
+      details.tools { margin-top: 2rem; }
+      details.tools > summary { cursor: pointer; font-weight: 600; color: var(--muted); }
+      #assess { display: block; margin-top: 1rem; }
+      #assess label { display: block; margin: 0.75rem 0 0.25rem; }
+      #assess select, #assess input, #assess textarea { width: 100%; }
+      #assess textarea { min-height: 5rem; resize: vertical; }
+      #assess fieldset { border: 1px solid var(--line); border-radius: 6px; margin: 0.75rem 0; }
+      #assess button { margin-top: 0.75rem; }
+      #log { border: 1px solid var(--line); border-radius: 6px; padding: 1rem; min-height: 12rem; margin-bottom: 0.75rem; white-space: pre-wrap; overflow-y: auto; background: #fff; }
       .turn { margin-bottom: 1rem; }
       .who { font-weight: 600; }
-      form { display: flex; gap: 0.5rem; }
-      input { flex: 1; padding: 0.5rem; font: inherit; }
-      button { padding: 0.5rem 1rem; font: inherit; }
-      #assess { display: block; margin-top: 2.5rem; }
-      #assess label { display: block; font-weight: 600; margin: 0.75rem 0 0.25rem; }
-      #assess select, #assess input, #assess textarea {
-        width: 100%; box-sizing: border-box; padding: 0.5rem; font: inherit;
-      }
-      #assess textarea { min-height: 5rem; resize: vertical; }
-      #assess fieldset { border: 1px solid #ccc; border-radius: 6px; margin: 0.75rem 0; }
-      #assess button { margin-top: 0.75rem; }
-      #assessment-out {
-        border: 1px solid #ccc; border-radius: 6px; padding: 1rem;
-        min-height: 6rem; margin-top: 1rem; overflow-x: auto;
-      }
-      /* Raw text (streaming, parse failure, error) keeps its line breaks; the rendered view does not. */
-      #assessment-out.raw, #assessment-out.error, #assessment-out pre { white-space: pre-wrap; }
-      #assessment-out.error { border-color: #b00020; color: #b00020; }
-      #assessment-out h3, #assessment-out h4 { margin: 0.75rem 0 0.25rem; }
-      #assessment-out .level { font-size: 2.5rem; font-weight: 700; line-height: 1.1; }
-      #assessment-out .badge {
-        display: inline-block; padding: 0.1rem 0.5rem; border-radius: 4px;
-        background: #fff3cd; color: #7a5200; border: 1px solid #e0b84c; font-weight: 600;
-      }
-      #assessment-out .note { color: #555; font-size: 0.9rem; }
-      #assessment-out blockquote {
-        margin: 0.5rem 0; padding: 0.25rem 0.75rem; border-left: 3px solid #ccc;
-      }
-      #assessment-out .src { font-size: 0.85rem; color: #555; }
+      #form { display: flex; gap: 0.5rem; }
+      #form input { flex: 1; }
     </style>
   </head>
   <body>
-    <h1>Asistent za procjenu zrelosti kontrola</h1>
-    <p>
-      Predlaže razinu zrelosti jedne kontrole na temelju dokaza klijenta, s
-      citatima. Konačnu odluku donosi konzultant.
-    </p>
+    <header>
+      <div class="wrap">
+        <h1>Asistent za procjenu zrelosti kontrola</h1>
+        <p>Predlaže razinu zrelosti kontrole iz dokumenata klijenta, s citatima i izvorima. Konačnu odluku donosi konzultant.</p>
+      </div>
+    </header>
 
-    <form id="assess">
-      <h2>Prijedlog razine zrelosti kontrole</h2>
+    <main>
+      <form id="client-assess" class="card">
+        <h2>Procjena kontrole za klijenta</h2>
+        <div class="row">
+          <div class="field">
+            <label for="client-id">Klijent</label>
+            <select id="client-id">
+              <option>klijent-01</option><option>klijent-02</option><option>klijent-03</option>
+              <option>klijent-04</option><option>klijent-05</option><option>klijent-06</option>
+              <option>klijent-07</option><option>klijent-08</option><option>klijent-09</option>
+              <option>klijent-10</option>
+            </select>
+          </div>
+          <div class="field grow">
+            <label for="client-control">Kontrola</label>
+            <select id="client-control">
+              <option value="POL-001">POL-001 · Postojanje strateškog akta kibernetičke sigurnosne politike</option>
+              <option value="ORG-001">ORG-001 · Raspodjela uloga, odgovornosti i obveza</option>
+              <option value="EDU-001">EDU-001 · Upoznavanje zaposlenika s ključnim odrednicama kibernetičke sigurnosne politike</option>
+            </select>
+          </div>
+          <button type="submit" id="client-submit">Procijeni</button>
+        </div>
+        <div id="client-out" class="out"></div>
+      </form>
 
-      <label for="control">Kontrola</label>
-      <select id="control">
-        <option value="POL-001">POL-001</option>
-        <option value="ORG-001">ORG-001</option>
-        <option value="EDU-001">EDU-001</option>
-      </select>
+      <details class="tools">
+        <summary>Ostali alati (dokumenti zalijepljeni ručno, provjera modela)</summary>
 
-      <fieldset>
-        <legend>DOC-01</legend>
-        <label for="doc1-name">Naziv</label>
-        <input id="doc1-name" />
-        <label for="doc1-content">Sadržaj</label>
-        <textarea id="doc1-content"></textarea>
-      </fieldset>
+        <form id="assess" class="card">
+          <h2>Prijedlog razine iz zalijepljenih dokumenata</h2>
 
-      <fieldset>
-        <legend>DOC-02 (neobavezno)</legend>
-        <label for="doc2-name">Naziv</label>
-        <input id="doc2-name" />
-        <label for="doc2-content">Sadržaj</label>
-        <textarea id="doc2-content"></textarea>
-      </fieldset>
+          <label for="control">Kontrola</label>
+          <select id="control">
+            <option value="POL-001">POL-001</option>
+            <option value="ORG-001">ORG-001</option>
+            <option value="EDU-001">EDU-001</option>
+          </select>
 
-      <fieldset>
-        <legend>DOC-03 (neobavezno)</legend>
-        <label for="doc3-name">Naziv</label>
-        <input id="doc3-name" />
-        <label for="doc3-content">Sadržaj</label>
-        <textarea id="doc3-content"></textarea>
-      </fieldset>
+          <fieldset>
+            <legend>DOC-01</legend>
+            <label for="doc1-name">Naziv</label>
+            <input id="doc1-name" />
+            <label for="doc1-content">Sadržaj</label>
+            <textarea id="doc1-content"></textarea>
+          </fieldset>
 
-      <button type="submit">Predloži</button>
-      <div id="assessment-out" class="raw"></div>
-    </form>
+          <fieldset>
+            <legend>DOC-02 (neobavezno)</legend>
+            <label for="doc2-name">Naziv</label>
+            <input id="doc2-name" />
+            <label for="doc2-content">Sadržaj</label>
+            <textarea id="doc2-content"></textarea>
+          </fieldset>
 
-    <h2>Opći chat (provjera modela)</h2>
-    <div id="log"></div>
-    <form id="form">
-      <input id="input" placeholder="Pitajte nešto..." autocomplete="off" />
-      <button type="submit">Pošalji</button>
-    </form>
+          <fieldset>
+            <legend>DOC-03 (neobavezno)</legend>
+            <label for="doc3-name">Naziv</label>
+            <input id="doc3-name" />
+            <label for="doc3-content">Sadržaj</label>
+            <textarea id="doc3-content"></textarea>
+          </fieldset>
 
+          <button type="submit">Predloži</button>
+          <div id="assessment-out" class="out"></div>
+        </form>
+
+        <div class="card" style="margin-top: 1rem">
+          <h2>Opći chat (provjera modela)</h2>
+          <div id="log"></div>
+          <form id="form">
+            <input id="input" placeholder="Pitajte nešto..." autocomplete="off" />
+            <button type="submit">Pošalji</button>
+          </form>
+        </div>
+      </details>
+    </main>
 
     <script type="module">
       // NOTE: this loads the Gradio client from a public CDN. On a locked-down
@@ -119,6 +189,13 @@
       const log = document.getElementById("log");
       const form = document.getElementById("form");
       const input = document.getElementById("input");
+
+      // Names from catalog.json, so the result says which control it is about.
+      const CONTROL_NAMES = {
+        "POL-001": "Postojanje strateškog akta kibernetičke sigurnosne politike",
+        "ORG-001": "Raspodjela uloga, odgovornosti i obveza",
+        "EDU-001": "Upoznavanje zaposlenika s ključnim odrednicama kibernetičke sigurnosne politike",
+      };
 
       // The model has no memory. This array is the entire conversation.
       const history = [];
@@ -157,8 +234,8 @@
 
         history.push({ role: "user", content: message });
         history.push({ role: "assistant", content: reply });
-      }); 
-      
+      });
+
       const assessForm = document.getElementById("assess");
       const assessOut = document.getElementById("assessment-out");
 
@@ -177,13 +254,12 @@
 
         // Catch the empty form here, so the consultant gets a reason instead of a hang.
         if (evidence_documents.length === 0) {
-          showError("Dodajte barem jedan dokument sa sadržajem.");
+          showError(assessOut, "Dodajte barem jedan dokument sa sadržajem.");
           return;
         }
 
         // 2. Call the endpoint. The argument names must match the Python function's.
-        assessOut.classList.remove("error");
-        assessOut.classList.add("raw");
+        assessOut.className = "out raw";
         assessOut.textContent = "Obrađujem...";
         let reply = "";
         let failed = false;
@@ -195,14 +271,35 @@
               assessOut.textContent = reply;   // the endpoint returns the whole Response as JSON in one event
             } else if (event.type === "status" && event.stage === "error") {
               failed = true;
-              showError(event.message || "Server nije mogao dovršiti procjenu.");
+              showError(assessOut, event.message || "Server nije mogao dovršiti procjenu.");
             }
           }
           // 3. The call is done, so the JSON is complete: render it.
-          if (!failed) showAssessment(reply);
+          if (!failed) showAssessment(assessOut, reply);
         } catch (err) {
           // Gateway down, network blocked, server stopped: say so instead of staying on "Working...".
-          showError(err?.message || String(err));
+          showError(assessOut, err?.message || String(err));
+        }
+      });
+
+      // Week 3: the endpoint that finds the client's documents itself.
+      const clientForm = document.getElementById("client-assess");
+      const clientOut = document.getElementById("client-out");
+      const clientSubmit = document.getElementById("client-submit");
+
+      clientForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const client_id = document.getElementById("client-id").value;
+        const control_id = document.getElementById("client-control").value;
+        clientSubmit.disabled = true;
+        showWaiting(clientOut, client_id);
+        try {
+          const result = await client.predict("/assess_control_for_client", { client_id, control_id });
+          showAssessment(clientOut, result.data[0], client_id);
+        } catch (err) {
+          showError(clientOut, err?.message || String(err));
+        } finally {
+          clientSubmit.disabled = false;
         }
       });
 
@@ -225,29 +322,55 @@
         return node;
       }
 
+      function showWaiting(out, client_id) {
+        out.className = "out waiting";
+        out.textContent = "";
+        out.appendChild(el("div", `Radim na ${client_id}, obično minutu do dvije:`));
+        const steps = el("ol");
+        for (const step of [
+          "pretraga dokumenata klijenta (ključne riječi i značenje)",
+          "odabir dokumenata koji potvrđuju ili osporavaju kontrolu",
+          "prijedlog razine s obrazloženjem",
+          "provjera da je svaki citat doslovno u dokumentu",
+        ]) steps.appendChild(el("li", step));
+        out.appendChild(steps);
+      }
+
       function renderDimension(title, dim, citations) {
-        const box = el("section");
-        box.appendChild(el("h4", title));
-        box.appendChild(el("div", dim.level == null ? "Nema razine" : String(dim.level), "level"));
-        if (dim.level_statement) box.appendChild(el("div", dim.level_statement));
-        if (dim.low_confidence) box.appendChild(el("span", "Niska pouzdanost", "badge"));
+        const box = el("section", null, "dim");
+        box.appendChild(el("h3", title));
+        const row = el("div", null, "level-row");
+        if (dim.level == null) {
+          row.appendChild(el("div", "Nema razine", "level none"));
+        } else {
+          const level = el("div", String(dim.level), "level");
+          level.appendChild(el("small", " / 5"));
+          row.appendChild(level);
+        }
+        if (dim.low_confidence) row.appendChild(el("span", "Niska pouzdanost", "badge"));
+        box.appendChild(row);
+        if (dim.level_statement) box.appendChild(el("div", dim.level_statement, "statement"));
         if (dim.uncertainty_reason && (dim.low_confidence || dim.level == null)) {
           box.appendChild(el("div", dim.uncertainty_reason, "note"));
         }
-        box.appendChild(el("p", dim.rationale));
-        for (const id of dim.citation_ids || []) {
-          const c = citations.find((x) => x.citation_id === id);
-          if (!c) continue;   // a dangling id is a model mistake; skip it rather than break the page
-          const quote = el("blockquote");
-          quote.appendChild(el("div", `[${c.document_id}, ${c.location}]`, "src"));
-          quote.appendChild(el("div", c.text));
+        box.appendChild(el("div", "Obrazloženje", "label-small"));
+        box.appendChild(el("p", dim.rationale, "rationale"));
+        const quotes = (dim.citation_ids || []).map((id) => citations.find((x) => x.citation_id === id)).filter(Boolean);
+        if (quotes.length) box.appendChild(el("div", "Citati na kojima se temelji", "label-small"));
+        for (const c of quotes) {
+          const quote = el("div", null, "quote");
+          const where = el("div", null, "where");
+          where.appendChild(el("span", c.document_id, "chip"));
+          if (c.location) where.appendChild(el("span", c.location));
+          quote.appendChild(where);
+          quote.appendChild(el("div", `„${c.text}”`, "text"));
           box.appendChild(quote);
         }
         return box;
       }
 
-      function renderList(title, items) {
-        const box = el("section");
+      function renderList(title, items, kind) {
+        const box = el("section", null, `box ${kind}`);
         box.appendChild(el("h4", title));
         const ul = el("ul");
         for (const item of items) ul.appendChild(el("li", item));
@@ -255,37 +378,70 @@
         return box;
       }
 
-      function renderAssessment(data) {
+      function renderTitle(control_id, client_id) {
+        const title = el("div", null, "control-title");
+        title.appendChild(el("span", control_id, "id"));
+        title.appendChild(el("span", CONTROL_NAMES[control_id] || "", "name"));
+        if (client_id) title.appendChild(el("span", client_id, "chip"));
+        return title;
+      }
+
+      function renderAssessment(data, client_id) {
         const root = document.createDocumentFragment();
         const citations = data.citations || [];
-        root.appendChild(el("h3", data.control_id));
-        root.appendChild(renderDimension("Dokumentacija", data.documentation || {}, citations));
-        root.appendChild(renderDimension("Implementacija", data.implementation || {}, citations));
-        if (data.contradictions?.length) root.appendChild(renderList("Proturječja", data.contradictions));
-        if (data.missing_evidence?.length) root.appendChild(renderList("Nedostajući dokazi", data.missing_evidence));
-        const details = el("details");
+        const doc = data.documentation || {}, impl = data.implementation || {};
+        root.appendChild(renderTitle(data.control_id, client_id));
+
+        // A decline is a valid answer: show it as one, not as two empty dimensions.
+        if (doc.level == null && impl.level == null && !citations.length) {
+          const box = el("section", null, "declined");
+          box.appendChild(el("h3", "Nema relevantnih dokaza"));
+          box.appendChild(el("div", doc.uncertainty_reason || doc.rationale || ""));
+          if (data.missing_evidence?.length) box.appendChild(el("div", `Zatražiti od klijenta: ${data.missing_evidence.join(" ")}`, "note"));
+          root.appendChild(box);
+        } else {
+          const dims = el("div", null, "dims");
+          dims.appendChild(renderDimension("Dokumentacija", doc, citations));
+          dims.appendChild(renderDimension("Implementacija", impl, citations));
+          root.appendChild(dims);
+          const extra = el("div", null, "extra");
+          if (data.contradictions?.length) extra.appendChild(renderList("Proturječja među dokumentima", data.contradictions, "warn"));
+          if (data.missing_evidence?.length) extra.appendChild(renderList("Zatražiti od klijenta", data.missing_evidence, "plain"));
+          if (data.sources?.length) {
+            const box = el("section", null, "box plain");
+            box.appendChild(el("h4", "Izvori: dokumenti klijenta na kojima se procjena temelji"));
+            const chips = el("div", null, "chips");
+            for (const s of data.sources) chips.appendChild(el("span", s, "chip"));
+            box.appendChild(chips);
+            extra.appendChild(box);
+          }
+          root.appendChild(extra);
+        }
+
+        const details = el("details", null, "json");
         details.appendChild(el("summary", "Izvorni JSON"));
         details.appendChild(el("pre", JSON.stringify(data, null, 2)));
         root.appendChild(details);
         return root;
       }
 
-      function showAssessment(text) {
+      function showAssessment(out, text, client_id) {
         const data = parseReply(text);
-        assessOut.textContent = "";
+        out.textContent = "";
         if (!data) {
           // Never lose the model's output: show it as it came, plus a note.
-          assessOut.appendChild(el("div", "Odgovor nije moguće pročitati kao JSON", "note"));
-          assessOut.appendChild(el("div", text));
+          out.className = "out raw";
+          out.appendChild(el("div", "Odgovor nije moguće pročitati kao JSON", "note"));
+          out.appendChild(el("div", text));
           return;
         }
-        assessOut.classList.remove("raw");
-        assessOut.appendChild(renderAssessment(data));
+        out.className = "out";
+        out.appendChild(renderAssessment(data, client_id));
       }
 
-      function showError(message) {
-        assessOut.classList.add("error");
-        assessOut.textContent = `Greška: ${message}`;
+      function showError(out, message) {
+        out.className = "out error";
+        out.textContent = `Greška: ${message}`;
       }
     </script>
   </body>

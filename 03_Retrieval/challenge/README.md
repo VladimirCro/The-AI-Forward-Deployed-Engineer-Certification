@@ -599,3 +599,16 @@ challenge, which carries the full detail.
 
 Everything after this week assumes your app answers from your data and can say
 where the answer came from.
+
+## Retrieval notes
+
+- **Top-k floor:** 8 of the 10 cases need more than one document (2 to 4), so every search returns 4 documents unless the agent asks for more.
+- **Decline:** when none of the documents the search found supports or contradicts the control, the endpoint returns no level, an empty `sources` and the reason, and does not run the assessment. Over three runs, klijent-04 was declined twice; once a draft rulebook from another control was labelled as supporting. klijent-10 was never declined: documents written for another control (role holders signing that they received the security rulebook, an email telling staff about their roles) also show that employees were told about the policy, so the endpoint assesses it at level 2.
+
+## Bring it to work
+
+Consultants read every document by hand. A general AI assistant would not show which document a finding came from, and nobody has checked what it misses.
+
+- **Data:** the documents each client hands over for its self-assessment: Word and PDF policies, scanned board decisions and attendance lists, spreadsheets and emails. The scans need OCR before any search can see them.
+- **Model or endpoint:** the same internal AI gateway for both the embedding model (`gemini-embedding-2`) and the answer model, so client documents never leave our environment. Embedding cost: about 126,400 tokens per run for ten clients of about 150 short documents each, pages plus search queries [measured]; real documents are much longer, so re-indexing after a chunking change is a budget line to check, not a given.
+- **Approval:** client consent to process their documents with AI, then a deployment review with DevOps and the security and privacy reviews by the teams that own them.

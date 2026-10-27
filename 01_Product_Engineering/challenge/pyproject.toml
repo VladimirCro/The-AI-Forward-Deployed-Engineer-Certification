@@ -7,4 +7,5 @@ dependencies = [
     "gradio>=6.0",
     "litellm>=1.90",
     "fastapi>=0.141",
+    "rank-bm25>=0.2.2",
 ]

@@ -139,6 +139,12 @@ Two more things the probe cannot see:
 - **How I got the model for Session 3:** I downloaded it once outside the firm network (phone hotspot, no VPN, no proxy) into the local cache; after that it loads from disk.
 - **For Weeks 8 and 9:** a local model is not a plausible path today. An allowlist entry for those hosts, or an internal model registry, is needed before an open-weights model can run on the firm's machines.
 
+### 2026-10-26, Week 3: the new model and embeddings
+
+- **The new model rejects temperature.** Sonnet 5.5 refuses a request that sets `temperature` ("temperature is deprecated for this model"). The gateway passes that on as a 500 around the provider's 400, so LiteLLM's check for unsupported parameters does not catch it. The app now sends no temperature, which means two runs of the same ten cases do not give the same results.
+- **Embeddings go through a different route of the same gateway.** The model list shows the embedding models, but the usual embeddings route answers 404; the embedding route is listed separately, so the app has its own `EMBED_API_BASE`. The gateway also turns a list of texts into one vector, so the app sends one text per call.
+- **A local embedding model cannot be downloaded on the firm network.** The proxy refuses the model hosting's download hosts, the same as in Week 2.
+
 ---
 
 ## Week 9 — the full checklist

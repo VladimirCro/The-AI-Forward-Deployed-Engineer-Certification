@@ -7,7 +7,6 @@ FROM python:3.12-slim
 # Installed from PyPI rather than ghcr.io, which sits behind proxy authentication
 # on this network. Pinned to the version used locally.
 RUN pip install --no-cache-dir uv==0.12.16
-# ghcr.io is behind proxy authentication here; PyPI is reachable. Pinned to the local version.
 
 WORKDIR /app
 
@@ -22,7 +21,9 @@ COPY pyproject.toml uv.lock ./
 RUN uv export --frozen --no-dev --no-emit-project -o requirements.txt \
  && uv pip install --system --no-cache -r requirements.txt
 
-COPY llm.py app.py schema.py catalog.json ./
+COPY llm.py app.py schema.py retrieval.py assess.py catalog.json ./
+# The clients' documents are not in the image: they are data, mounted at run time
+# and found through CLIENTS_DIR.
 COPY frontend/ ./frontend/
 
 # Don't run as root. Your security review will ask about this.

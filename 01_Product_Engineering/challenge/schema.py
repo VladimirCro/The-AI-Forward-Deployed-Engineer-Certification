@@ -42,6 +42,7 @@ class Response(BaseModel):
     implementation: DimensionAssessment = Field(description="Maturity of the implementation: is it done in practice, such as adopted by the board and applied in the organisation's processes")
     contradictions: list[str] = Field(default_factory=list, description="Places where documents disagree, one per item, such as 'The intranet post (DOC-03) says the policy was adopted, the board minutes (DOC-02) say adoption was postponed'")
     missing_evidence: list[str] = Field(default_factory=list, description="Evidence to ask the client for before a confident assessment, one per item, such as 'Board decision adopting the policy'")
+    sources: list[str] = Field(default_factory=list, description="Record ids of the documents the assessment rests on: the ones the search found that support or contradict the control, such as ['r12-DOC-07', 'r12-DOC-09']. Filled in by the tool; empty when the documents were pasted into the request")
 
 def _control(control_id: str) -> dict:
     """The control's scale from the catalog: five statements for documentation, five for implementation."""
