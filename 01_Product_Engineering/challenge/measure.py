@@ -25,11 +25,13 @@ WORKERS = 4
 DECLINE_MARKER = "no evidence found"
 
 
-def techniques(pages: dict, index: str) -> dict:
+def techniques(pages: dict, index: str, vectors) -> dict:
     """Each technique as its tools, built over the same pages."""
     return {
         "Agentic RAG (BM25)": R.rag_tools(pages),
         "DCI (wiki)": R.dci_tools(pages, index),
+        "Dense": R.dense_tools(pages, vectors),
+        "Hybrid (BM25 + dense, RRF)": R.hybrid_tools(pages, vectors),
     }
 
 
@@ -59,8 +61,9 @@ def run_case(case: dict, catalog: dict) -> list[dict]:
     """One case through every technique."""
     pages, index = R.load_client(case["client"])
     question = R.task(case["control_id"], catalog)
+    vectors = R.embed_pages(pages)
     rows = []
-    for name, (tools, funcs) in techniques(pages, index).items():
+    for name, (tools, funcs) in techniques(pages, index, vectors).items():
         result = R.run_agent(question, tools, funcs)
         sources = R.found_documents(result["answer"], pages)
         rows.append({"client": case["client"], "control_id": case["control_id"], "kind": case["kind"],
@@ -77,7 +80,13 @@ def table(rows: list[dict]) -> str:
         f"Model `{os.getenv('LLM_MODEL')}` at the provider's default temperature (the model rejects one), "
         f"at most {R.MAX_TURNS} tool turns, BM25 top {R.TOP_K} per search (the model may ask for more), "
         "one page per document (no chunking inside documents), word split `\\w+` so Croatian letters count. "
-        "Ten fictional clients of about 150 documents each, built by `build_clients.py`; labels in `use_case/evals/retrieval.jsonl`.",
+        "Ten fictional clients of about 150 documents each, built by `build_clients.py`; labels in `use_case/evals/retrieval.jsonl`. "
+        f"Dense and hybrid embed with `{R.EMBEDDER.model_id}` through the gateway, one vector per page, one page per call; "
+        f"hybrid fuses the top {R.FIRST_STAGE} of BM25 and of dense with RRF k = {R.RRF_K}. "
+        "All three search techniques give the model the same `search_chunks` tool; only the ranking behind it differs.",
+        "",
+        f"Embedding tokens for this run: {R.EMBEDDER.tokens:,} [measured, as the endpoint reported them; every page of every client once, "
+        "plus every dense and hybrid query].",
         "",
         "| Technique | Pass | Complete (all gold cited) | Extra documents cited | Calls (mean) | Evidence read, chars (mean) | Latency, s (mean) |",
         "| --- | --- | --- | --- | --- | --- | --- |",

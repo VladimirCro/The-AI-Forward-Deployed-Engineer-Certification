@@ -139,6 +139,10 @@ Two more things the probe cannot see:
 - **How I got the model for Session 3:** I downloaded it once outside the firm network (phone hotspot, no VPN, no proxy) into the local cache; after that it loads from disk.
 - **For Weeks 8 and 9:** a local model is not a plausible path today. An allowlist entry for those hosts, or an internal model registry, is needed before an open-weights model can run on the firm's machines.
 
+### 2026-10-26, Week 3: the gateway key and the new model
+
+- **The new model rejects temperature.** Sonnet 5.5 refuses a request that sets `temperature` ("temperature is deprecated for this model"). The gateway passes that on as a 500 around the provider's 400, so LiteLLM's check for unsupported parameters does not catch it. The app now sends no temperature, which means two runs of the same ten cases do not give the same results.
+
 ---
 
 ## Week 9 — the full checklist
