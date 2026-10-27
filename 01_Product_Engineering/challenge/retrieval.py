@@ -23,7 +23,9 @@ from rank_bm25 import BM25Okapi
 
 from llm import chat_with_tools
 
-CLIENTS_DIR = Path(os.getenv("CLIENTS_DIR", Path(__file__).resolve().parents[2] / "use_case" / "data" / "clients"))
+# `or`, not a getenv default: the repo path does not exist inside the container, and a
+# default argument is worked out even when CLIENTS_DIR is set.
+CLIENTS_DIR = Path(os.getenv("CLIENTS_DIR") or Path(__file__).resolve().parents[2] / "use_case" / "data" / "clients")
 MAX_TURNS = 6
 TOP_K = 4  # the largest gold list has four documents
 RRF_K = 60  # Session 6's default

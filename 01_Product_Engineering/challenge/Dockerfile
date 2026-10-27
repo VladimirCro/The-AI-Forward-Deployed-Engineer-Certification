@@ -22,7 +22,9 @@ COPY pyproject.toml uv.lock ./
 RUN uv export --frozen --no-dev --no-emit-project -o requirements.txt \
  && uv pip install --system --no-cache -r requirements.txt
 
-COPY llm.py app.py schema.py catalog.json ./
+COPY llm.py app.py schema.py retrieval.py assess.py catalog.json ./
+# The clients' documents are not in the image: they are data, mounted at run time
+# and found through CLIENTS_DIR.
 COPY frontend/ ./frontend/
 
 # Don't run as root. Your security review will ask about this.
