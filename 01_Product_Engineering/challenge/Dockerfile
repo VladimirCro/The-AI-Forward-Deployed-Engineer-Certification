@@ -7,7 +7,6 @@ FROM python:3.12-slim
 # Installed from PyPI rather than ghcr.io, which sits behind proxy authentication
 # on this network. Pinned to the version used locally.
 RUN pip install --no-cache-dir uv==0.12.16
-# ghcr.io is behind proxy authentication here; PyPI is reachable. Pinned to the local version.
 
 WORKDIR /app
 

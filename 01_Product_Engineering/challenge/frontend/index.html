@@ -118,7 +118,7 @@
             <select id="client-control">
               <option value="POL-001">POL-001 · Postojanje strateškog akta kibernetičke sigurnosne politike</option>
               <option value="ORG-001">ORG-001 · Raspodjela uloga, odgovornosti i obveza</option>
-              <option value="EDU-001">EDU-001 · Upoznavanje zaposlenika s ključnim odrednicama politike</option>
+              <option value="EDU-001">EDU-001 · Upoznavanje zaposlenika s ključnim odrednicama kibernetičke sigurnosne politike</option>
             </select>
           </div>
           <button type="submit" id="client-submit">Procijeni</button>
@@ -325,7 +325,7 @@
       function showWaiting(out, client_id) {
         out.className = "out waiting";
         out.textContent = "";
-        out.appendChild(el("div", `Radim na ${client_id}, obično oko minutu:`));
+        out.appendChild(el("div", `Radim na ${client_id}, obično minutu do dvije:`));
         const steps = el("ol");
         for (const step of [
           "pretraga dokumenata klijenta (ključne riječi i značenje)",

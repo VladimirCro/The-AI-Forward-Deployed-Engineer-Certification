@@ -112,6 +112,6 @@ would notice.
 
 | Week | Decision | Why, and what you rejected |
 | --- | --- | --- |
-| 3 | Retrieval approach | <!-- TC3 --> |
+| 3 | Retrieval approach | Hybrid search (BM25 and dense, merged with RRF) in front of `solve()`. Rejected direct corpus interaction, BM25 alone and dense alone; the reasons are in the Week 3 rows of `decisions.md`. |
 | 5 | Agent architecture | <!-- TC5 --> |
 | 8 | Model | <!-- TC8 --> |

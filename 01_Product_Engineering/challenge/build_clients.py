@@ -29,7 +29,7 @@ SEED = 7
 # answer that is not in the gold list.
 TOPIC = {
     "POL-001": r"politi|strateg|direktiv",  # "politi" also catches "politici", where the k turns into c
-    "ORG-001": r"\bulog|odgovornost|matric|radnih mjesta|nositelj|zaduž|imenov|odgovorn|ovlašten",
+    "ORG-001": r"\bulog|odgovornost|matric|radnih mjesta|nositelj|zaduž|imenov|odgovorn|odgovoran|ovlašten",
     "EDU-001": r"eduk|obuk|obuč|osposob|radionic|tečaj|izobraz|webinar|upozna|pohađ|razumijev|svjesn|svijest|osvješ|onboarding|čitanj|pročita|poznat|obavije|izjav|test znanja|položi|provjer\w* znanja|potvrd\w* o (čitanju|primitku)",
 }
 DECISION_NUMBER = re.compile(r"\b\d{1,4}/20\d\d\b")

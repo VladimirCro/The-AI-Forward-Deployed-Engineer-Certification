@@ -54,8 +54,14 @@ def assess_control_for_client(client_id: str, control_id: str) -> str:
     a proposed level for documentation and for implementation, contradictions, missing
     evidence, and `sources`, the record ids of the documents the assessment rests on.
 
-    When no document supports or contradicts the control, returns no level, an
-    empty `sources` and the reason, instead of assessing from unrelated documents.
+    client_id is a client folder name, such as "klijent-01"; control_id is one of
+    POL-001, ORG-001, EDU-001. An unknown client or control is an error, raised
+    before any model call.
+
+    When the search finds nothing usable (no documents, none that supports or
+    contradicts the control, or no quote that is really in the documents), returns
+    no level, an empty `sources` and the reason, instead of assessing from
+    unrelated documents.
 
     Never makes the final decision; the consultant does.
     """

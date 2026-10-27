@@ -49,7 +49,7 @@ SYSTEM = (
 def load_client(client_id: str) -> tuple[dict[str, str], str]:
     """The client's pages by record id, and its index page."""
     folder = CLIENTS_DIR / client_id
-    if not folder.is_dir():
+    if folder.parent != CLIENTS_DIR or not folder.is_dir():
         raise ValueError(f"Unknown client: {client_id}")
     pages = {}
     for path in sorted(folder.glob("r*.md")):
@@ -82,15 +82,15 @@ class TextEmbedder:
     """
 
     def __init__(self):
-        if not EMBED_API_BASE:
-            # Without it LiteLLM sends the gateway key to the provider's public API.
-            raise RuntimeError("EMBED_API_BASE is not set")
         self.model_id = EMBED_MODEL
         self.tokens = 0
         self.lock = threading.Lock()
 
     def embed_one(self, text: str) -> list[float]:
         """One text, one call: the gateway merges a list of texts into a single vector."""
+        if not EMBED_API_BASE:
+            # Without it LiteLLM sends the gateway key to the provider's public API.
+            raise RuntimeError("EMBED_API_BASE is not set")
         response = embedding(model=EMBED_MODEL, input=[text], api_base=EMBED_API_BASE, timeout=120)
         with self.lock:
             self.tokens += int(getattr(response.usage, "total_tokens", 0) or 0)

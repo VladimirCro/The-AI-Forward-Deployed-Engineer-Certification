@@ -6,6 +6,7 @@ The steps:
 3. No document supports or contradicts: the answer is "no relevant documents", and solve() is not called.
 4. The supporting and contradicting documents go into the Week 1 Request and solve().
 5. Every quote is checked against its document in code; a quote that is not there is dropped.
+   No quote left: the answer is "no evidence", as in step 3.
 6. The Response names the documents it came from in `sources`.
 """
 
@@ -15,8 +16,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 import retrieval
-from llm import stream_reply
-from schema import CATALOG, DimensionAssessment, EvidenceDocument, Request, Response, solve
+from schema import CATALOG, DimensionAssessment, EvidenceDocument, Request, Response, _ask_model, solve
 
 
 class DocumentLabel(BaseModel):
@@ -50,10 +50,7 @@ def classify_documents(control_id: str, candidates: dict[str, str]) -> DocumentL
         'Reply with JSON only: {"documents": [{"record_id": "...", "label": "supports|contradicts|neutral", '
         '"reason": "one sentence"}]}, one entry per document.'
     )
-    reply = ""
-    for text_so_far in stream_reply(prompt):
-        reply = text_so_far
-    text = reply.strip().removeprefix("```json").removeprefix("```").removesuffix("```")
+    text = _ask_model(prompt).strip().removeprefix("```json").removeprefix("```").removesuffix("```")
     return DocumentLabels.model_validate_json(text)
 
 
@@ -93,6 +90,8 @@ def verify_citations(response: Response, documents: list[EvidenceDocument]) -> l
 
 def assess_control_for_client(client_id: str, control_id: str) -> Response:
     """Retrieve, classify, assess and check one control for one client."""
+    if control_id not in CATALOG:
+        raise ValueError(f"Unknown control: {control_id}")
     candidates = find_candidates(client_id, control_id)
     if not candidates:
         return decline_response(control_id, "Pretraga nije našla nijedan dokument za ovu kontrolu.")

@@ -77,13 +77,19 @@ def table(rows: list[dict]) -> str:
     lines = [
         f"# TC3 retrieval results ({date.today().isoformat()})",
         "",
-        f"Model `{os.getenv('LLM_MODEL')}` at the provider's default temperature (the model rejects one), "
-        f"at most {R.MAX_TURNS} tool turns, BM25 top {R.TOP_K} per search (the model may ask for more), "
+        f"Model `{os.getenv('LLM_MODEL')}` at the provider's default temperature (the model does not accept a temperature setting), "
+        f"at most {R.MAX_TURNS} tool turns, top {R.TOP_K} per search for BM25, dense and hybrid (the model may ask for up to 8), "
         "one page per document (no chunking inside documents), word split `\\w+` so Croatian letters count. "
         "Ten fictional clients of about 150 documents each, built by `build_clients.py`; labels in `use_case/evals/retrieval.jsonl`. "
         f"Dense and hybrid embed with `{R.EMBEDDER.model_id}` through the gateway, one vector per page, one page per call; "
         f"hybrid fuses the top {R.FIRST_STAGE} of BM25 and of dense with RRF k = {R.RRF_K}. "
-        "All three search techniques give the model the same `search_chunks` tool; only the ranking behind it differs.",
+        "All three search techniques give the model the same `search_chunks` tool; only the ranking behind it differs. "
+        "Noise documents that mention the control's topic are left out of each client, so the test is easier than a real client folder, "
+        "most of all for keyword search.",
+        "",
+        "Pass: every reviewed term from `retrieval.jsonl` appears in the answer. Complete: every gold document is cited. "
+        "A decline case passes only if the agent answers \"no evidence found\" and cites no document. "
+        "No technique declined on its own, which is why the endpoint labels the documents in a separate step.",
         "",
         f"Embedding tokens for this run: {R.EMBEDDER.tokens:,} [measured, as the endpoint reported them; every page of every client once, "
         "plus every dense and hybrid query].",

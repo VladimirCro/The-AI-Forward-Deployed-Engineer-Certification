@@ -9,12 +9,14 @@ use_case/data/endpoint_runs.json (gitignored).
 """
 
 import json
+import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from pathlib import Path
 
 import assess
+import retrieval
 
 APP = Path(__file__).resolve().parent
 ROOT = APP.parents[1]
@@ -46,19 +48,24 @@ def table(rows: list[dict]) -> str:
         "",
         "`assess_control_for_client`: hybrid retrieval, one call that labels each document supports, contradicts "
         "or neutral, `solve()` on the supporting and contradicting ones, every quote checked against its document. "
-        "Correct means: a decline case returns no level and no sources; any other case has every gold document in `sources`.",
+        "Correct means: a decline case returns no level and no sources; any other case has every gold document in `sources`. "
+        "Extra counts the sources that are not gold.",
+        "",
+        f"Same model and retrieval settings as `results.md`: `{os.getenv('LLM_MODEL')}`, hybrid search with RRF k = {retrieval.RRF_K}, "
+        f"top {retrieval.TOP_K} per search, at most {retrieval.MAX_TURNS} tool turns.",
         "",
         f"Correct: {correct}/{len(rows)}.",
         "",
-        "| Client | Control | Kind | Documentation | Implementation | Sources | Gold in sources | Correct | Latency, s |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Client | Control | Kind | Documentation | Implementation | Sources | Gold in sources | Extra | Correct | Latency, s |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for row in rows:
         case, response = row["case"], row["response"]
         sources = ", ".join(response["sources"]) or "none"
         gold = f"{len(row['found'])}/{len(case['gold'])}" if case["gold"] else "n/a"
+        extra = len([s for s in response["sources"] if s not in case["gold"]])
         lines.append(f"| {case['client']} | {case['control_id']} | {case['kind']} | {response['documentation']['level'] or '-'} "
-                     f"| {response['implementation']['level'] or '-'} | {sources} | {gold} | {'✅' if row['correct'] else '❌'} "
+                     f"| {response['implementation']['level'] or '-'} | {sources} | {gold} | {extra} | {'✅' if row['correct'] else '❌'} "
                      f"| {row['latency_s']} |")
     return "\n".join(lines) + "\n"
 
