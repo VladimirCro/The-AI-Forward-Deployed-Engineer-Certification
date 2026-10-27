@@ -604,3 +604,11 @@ where the answer came from.
 
 - **Top-k floor:** 8 of the 10 cases need more than one document (2 to 4), so every search returns 4 documents unless the agent asks for more.
 - **Decline:** when none of the documents the search found supports or contradicts the control, the endpoint returns no level, an empty `sources` and the reason, and does not run the assessment. Of the two decline cases, klijent-04 is declined. klijent-10 is not: documents written for another control (role holders signing that they received the policy) also show that employees were told about the policy, so the endpoint assesses it at level 2.
+
+## Bring it to work
+
+Consultants read every document a client sends for a control and look for the evidence by hand. Lately they have started pasting the documents into enterprise AI assistants to speed this up: nobody has measured what those answers miss, and they do not show which document a finding came from.
+
+- **Data:** the documents each client hands over for its self-assessment: Word and PDF policies, scanned board decisions and attendance lists, spreadsheets and emails. The scans need OCR before any search can see them.
+- **Model or endpoint:** the same internal AI gateway for both the embedding model (`gemini-embedding-2`) and the answer model, so client documents never leave our environment. Embedding cost: about 126,400 tokens for ten clients of about 150 short documents each [measured]; real documents are much longer, so re-indexing after a chunking change is a budget line to check, not a given.
+- **Approval:** client consent to process their documents with AI, then the deployment, security and privacy reviews already named in Week 2.
