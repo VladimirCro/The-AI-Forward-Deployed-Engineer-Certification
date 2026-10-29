@@ -39,7 +39,7 @@ Quicklinks are here to help you **easily navigate each week's materials** for th
 | 🎓 Session | ⏺️ Recording | 🖼️ Slides |
 |:-----------|:-------------|:-------------|
 | [Session 5 - Agentic Retrieval](../03_Retrieval/sessions/S5_Agentic_Retrieval.py) | [Recording!](https://us02web.zoom.us/rec/share/2N7OCVlMBM1zyIE-VzUaaiwLEfByKZNtfjGQuPBEAlU6EETnuPWn7ISeRrwNjPmL.5aCsDtyGW7elj1K8) <br> passcode: `lHhex*4.` | [Slides](https://canva.link/oxp3pbq8tlnd9a6) |
-| [Session 6 - Multimodal Retrieval](../03_Retrieval/sessions/S6_Multimodal_Retrieval.py) | Coming soon | Coming soon |
+| [Session 6 - Multimodal Retrieval](../03_Retrieval/sessions/S6_Multimodal_Retrieval.py) | [Recording!](https://us02web.zoom.us/rec/share/Mes_AsM362yK3wDlNOmkJYux0shqqdUPDrr2nZRc9eDHxKrIUUxqFvI3wsK9v-ZI.nSF1Fxup29WveNu2) <br> passcode: `5E!?2i7C` | [Slides](https://canva.link/l4wz4ni88qlpq1x) |
 
 ---
 
@@ -51,7 +51,7 @@ Quicklinks are here to help you **easily navigate each week's materials** for th
 
 | 🎓 Session | ⏺️ Recording | 🖼️ Slides |
 |:-----------|:-------------|:-------------|
-| [Session 7 - Practical Evals](../04_Evals/sessions/S7_Practical_Evals.py) | Coming soon | Coming soon |
+| [Session 7 - Practical Evals](../04_Evals/sessions/S7_Practical_Evals.py) | [Recording!](https://us02web.zoom.us/rec/share/fuUYayWPbhc5be28RuDAKqpIAV5elr05tol68j3mQTIVMIEQMblEpXVfe-uHjHD3.JND5CkaU1vmZ041v) <br> passcode: `r*b2uPE0` | [Slides](https://canva.link/m7ch49pue6hyrcy) |
 | [Session 8 - Agent Evals via Simulation](../04_Evals/sessions/S8_Agent_Evals_via_Simulation.py) | Coming soon | Coming soon |
 | [Session 8b - Agent Simulation from Scratch (self-study)](../04_Evals/sessions/S8b_Agent_Simulation_From_Scratch.py) | — | — |
 
