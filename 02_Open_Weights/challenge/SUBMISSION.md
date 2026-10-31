@@ -25,7 +25,7 @@ My notes from going through 20 rows and the datasheet together.
 
 - Never happens: nothing impossible, but six levels are not backed by the documents (examples 4, 5, 6, 8, 9 and 18 of the 20).
 - Missing: scans, big packages, technical evidence like config exports and logs, evidence sent later.
-- Worry if public: that the data looks validated when nobody checked the levels.
+- Worry if public: that someone takes the generated levels as an expert's answers. They look finished, but the model wrote them and no consultant has confirmed them.
 
 ## Update after submission (2026-10-20)
 

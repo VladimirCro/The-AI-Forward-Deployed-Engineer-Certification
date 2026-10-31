@@ -48,6 +48,7 @@ Prototyping data. The inputs look like real requests, but no consultant has conf
 - Real package size. Real clients send more and longer documents than these rows, so the sentence that decides the level is harder to find.
 - Technical evidence and evidence sent later are not in the data (from the project lead's review).
 - How often each situation happens. The percentages in this data are not like those at real clients: every combination got 2 rows, so each document state is about 16% of the rows.
+- Whether a row is really the case its recipe names. 313 of 548 rows do not follow their recipe (see the update at the end), so the coverage is smaller than the axis table suggests.
 
 ## What it must never be compared against
 
@@ -68,22 +69,41 @@ Removed after reading:
 ## Leakage check, inward (what the eval shares with the training data)
 
 **Are the goldens disjoint from anything the system was, or will be, tuned on?**
-No, overlap: goldens 3, 5 and 6 were shown to the generator as format examples, so this file and those goldens share a source. If Week 8 tunes on this file, scores on those three goldens are not independent.
+No, overlap: goldens 3, 5 and 6 were shown to the generator as format examples, so this file and those goldens share a source. If Week 8 tunes on this file, scores on those three goldens are not independent. Goldens 1 and 2 share documents with goldens 3 and 6, so they are not independent of this file either.
 
 **Overlap between `golden.jsonl` and this file, by the dedupe measure:** 0 rows at threshold 0.7 (the closest pair is 0.33).
 
 ## Update 2026-10-20: levels relabelled with a stronger model
 
-The same 548 rows were relabelled with `openai/claude-opus-5-5`: same documents, new levels, in `use_case/data/synthetic_v2.jsonl`, written by `02_Open_Weights/challenge/relabel.py`. The prompt has the catalog levels and three rules from the project lead's review: count from the documents, missing evidence is not proof that something is not done, and a postponement or a backup role is not a contradiction.
+Each row has two levels from 1 to 5, one for documentation and one for implementation, and each level has a fixed description in the catalog (`01_Product_Engineering/challenge/catalog.json`). For POL-001, implementation 2 means the policy is written but not adopted by the board, 3 means adopted.
 
-| | |
+The same 548 rows were relabelled with `openai/claude-opus-5-5`: same documents, new levels, in `use_case/data/synthetic_v2.jsonl`, written by `02_Open_Weights/challenge/relabel.py`. The prompt has the catalog levels and three rules from the project lead's review: count from the documents, missing evidence is not proof that something is not done, and a postponement or a backup role is not a contradiction. Opus did not see Haiku's levels.
+
+### Where the two models disagree
+
+| | Opus lower | Same | Opus higher | Most common |
+| --- | --- | --- | --- | --- |
+| Documentation | 155 | 344 | 23 | 3→2 (69), 4→3 (66) |
+| Implementation | 89 | 273 | 162 | 2→3 (101), 3→4 (24) |
+
+Another 34 changes are between a level and no level. In total 463 of 1,096 levels changed, almost all by one step.
+
+- Documentation mostly went down, because Opus only gives a level whose description is fully met. Typical case: the audit found 3 deviations, level 4 needs under 3% exceptions, and the documents never say 3 out of how many. Implementation mostly went up, because of the rule that missing evidence is not proof something isn't done. The average change (-0.06) hid these two opposite shifts.
+- Opus agrees with the project lead on all six rejected levels, but the rules came from that same review, so that is not an independent test. Nobody has checked the other changes yet, so this is still prototyping data.
+
+### Recipe check, a separate question
+
+In the same call, Opus was asked whether each row's documents really follow the axis combination it was generated from. For 313 of 548 rows it said no. This is Opus's judgement, not a person's.
+
+| The recipe asked for | Does not match |
 | --- | --- |
-| Levels changed | 463 of 1,096 (195 documentation, 268 implementation) |
-| Direction | 244 lower, 185 higher, 34 between a level and no level |
-| Rows whose documents do not match their recipe | 313 of 548 |
-| The six levels the project lead rejected | the new levels agree with the review on all six |
+| documents contradict each other | 103 of 109 |
+| paper only, no evidence of implementation | 125 of 173 |
+| evidence only, no paper | 23 of 27 |
 
-- The two models disagree on 42% of levels, with no clear lean up or down (the average change is -0.06). Where a person checked, the new levels agree with them, but the three rules in the prompt came from that same review, so these six rows are not an independent test. A consultant needs to check a fresh sample. Nobody has checked them on the other rows yet, so this is still prototyping data.
-- 313 rows do not match their recipe: the generator often added a policy where the recipe said "evidence only, no paper", or wrote documents that agree where the recipe said they contradict each other. These rows keep the new levels and a flag, but counts by axis are not reliable for them.
-- `synthetic_v2.jsonl` is a record of the relabel test; the set is generated again before Week 4. `synthetic_v1.jsonl` stays as submitted.
+For example, the recipe says paper only, but the generator still wrote that 247 employees finished the training. For contradictions, part of the reason is that the generator never got a definition of a contradiction and Opus did. These rows keep the new levels and a flag, but counts by axis are not reliable for them.
+
+### Status
+
+- `synthetic_v2.jsonl` is a record of the relabel test. `synthetic_v1.jsonl` stays as submitted. The set will be generated again before anything trains on it (Week 8), with the rules and the recipe check in the generator.
 - In v2, each level_statement is the catalog text for the new level. In v1, 39 level statements are the generator's own wording, and some do not match their level.
