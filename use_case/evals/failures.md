@@ -72,6 +72,7 @@ These did not change my verdict, but they are real and worth fixing:
 - A contradiction that is not one, such as "planned for April" and "held in April", or a wider job description against a short summary (synthetic-r252, r311, r339, r64).
 - Doubt that is written in the rationale but not flagged as low confidence (retrieval-klijent-06, synthetic-r484).
 - Asking for evidence the client already handed in (synthetic-r95).
+- A decline that does not say what to ask the client for: retrieval-klijent-04 asks only for "documents that prove this control". Added after the consultant's review on 2 Nov; she wants the policy and the proof of its adoption named.
 
 A stricter first read, which counted every imperfection like these, found something in 39 of 50 traces. The main count above uses my acceptance rule instead.
 
