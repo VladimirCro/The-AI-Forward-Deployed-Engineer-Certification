@@ -2,8 +2,8 @@
 
 ## `golden.jsonl`
 
-Five examples, written by hand, in TC1 Step 7. Five — not fifty, and not
-generated.
+Eight examples, written by hand: six in TC1 Step 7 and two in TC4, for gaps the
+week showed. Not fifty, and not generated.
 
 Each line is one object:
 
@@ -67,12 +67,62 @@ every later week runs. `python use_case/evals/run.py` is the whole interface.
 | File | What it is | Written in |
 | --- | --- | --- |
 | `failures.md` | What goes wrong, ranked, with counts — from fifty real traces. Every scorer traces back to a line here | TC4 Step 1 |
-| `human_scores.jsonl` | Twenty outputs you scored by hand: `{"input", "actual", "pass", "why"}`. The judge's agreement is measured against these | TC4 Step 1 |
+| `human_scores.jsonl` | Fifty outputs I scored by hand: `{"input", "actual", "pass", "why"}`. The judge's agreement is measured against these | TC4 Step 1 |
 | `harness.py` | Your scorers, `run_eval`, `report`, `bootstrap_ci`, the judge rubric | TC4 Steps 2–3 |
 | `synthetic.jsonl` | Generated failures, each with the original, the corruption and its failure mode | TC4 Step 4 |
-| `scenarios.py` | Three multi-turn scenarios — goal, `knows`, `success`, `must_not` — one a refusal | TC4 Step 5 |
+| `scenarios.py` | Not written: the endpoint answers one request and holds no conversation (`decisions.md`, Week 4) | TC4 Step 5 |
 | `run.py` | Points the harness at your endpoint and prints the report | TC4 Step 6 |
 | `baseline.json` | **The run itself**, saved with `helpers.harness.save`. Commit it | TC4 Step 6 |
+
+
+### Results, 2 Nov
+
+**Scorers, echo and oracle (Step 2).** Each scorer is averaged over the cases it is about. The app row replays the 50 answers I read in Step 1.
+
+| System | documents_found (45) | level_matches (6) | declines_when_no_evidence (5) | only_case_documents (50) |
+| --- | ---: | ---: | ---: | ---: |
+| echo | 0.00 | 0.17 | 1.00 | 1.00 |
+| oracle | 1.00 | 1.00 | 1.00 | 1.00 |
+| app, 1 Nov | 0.90 | 1.00 | 0.40 | 0.83 |
+
+Echo gives no level and no sources, so it passes the two scorers that only punish a wrong level or a wrong source. Read them together with documents_found, where echo scores 0.00. On level_matches echo gets 0.17 because golden-5 expects no level.
+
+**Judge (Step 3).** `judge_level_basis`, on Opus 5.5, asks one question for failures.md #2: is each level backed by the key condition that separates it from the level below.
+
+- Separation on the four settled goldens (4 and 6 are unresolved, so not known-good): accepted answers 1.00, echo 0.00, a wrong answer 0.00.
+- Agreement with my 50 verdicts: 0.62, chance floor 0.51. The first rubric scored 0.50 against a floor of 0.50.
+- Used as a separate column, not the headline.
+
+**Generated failures (Step 4).** Natural: I would not accept 24 of the 50 traces (search miss 9, level without basis 8, unrelated documents 7). Generated: 170 rows in `synthetic.jsonl`, from the 26 answers I accepted (161 distinct).
+
+| Failure mode | Difficulty | Generated | documents_found | level_matches | declines_when_no_evidence | only_case_documents | judge_level_basis |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| drop_source | easy | 24 | 1.00 | 0.00 | 0.00 | 0.08 | not run |
+| drop_source | hard | 24 | 1.00 | 0.00 | 0.00 | 0.08 | not run |
+| level_up | easy | 24 | 0.00 | 0.17 | 0.00 | 0.00 | 0.96 |
+| level_up | hard | 24 | 0.00 | 0.17 | 0.00 | 0.00 | 0.96 |
+| unrelated_source | easy | 24 | 0.00 | 0.00 | 0.00 | 1.00 | not run |
+| unrelated_source | hard | 24 | 0.00 | 0.00 | 0.00 | 1.00 | not run |
+| false_decline | easy | 24 | 1.00 | 0.17 | 0.00 | 0.00 | 0.00 |
+| skip_decline | easy | 2 | 0.00 | 0.50 | 1.00 | 1.00 | 1.00 |
+
+Easy and hard score the same, because these failures change the sources or the level number, which the scorers check exactly. For answers at level 4 the easy and hard level_up rows are the same answer, so this set does not test the judge on subtle cases. The judge does not read the sources, so it runs only on the level and decline modes.
+
+**Baseline (Step 6).** `run.py --save` on 52 cases (the 50 plus goldens 7 and 8), 2 Nov:
+
+| Scorer | Cases | Mean |
+| --- | ---: | ---: |
+| documents_found | 47 | 0.85 |
+| level_matches | 8 | 1.00 |
+| declines_when_no_evidence | 5 | 0.40 |
+| only_case_documents | 52 | 0.77 |
+| judge_level_basis | 52 | 0.85 |
+
+Headline: documents_found 0.85, 95% CI [0.77, 0.92] on 47 cases. Two answers crashed the app (invalid JSON from the model) and count as 0.
+
+```
+PASS  week4-baseline → week4-baseline  [declines_when_no_evidence +0.000  documents_found +0.000  judge_level_basis +0.000  level_matches +0.000  only_case_documents +0.000]
+```
 
 | Week | What uses these files |
 | --- | --- |
