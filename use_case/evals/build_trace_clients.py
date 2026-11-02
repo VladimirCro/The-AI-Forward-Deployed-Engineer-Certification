@@ -1,4 +1,4 @@
-"""Build a client for each golden and each picked synthetic row, so all fifty traces go through the Week 3 endpoint.
+"""Build a client for each golden and each picked synthetic row, so every case goes through the Week 3 endpoint.
 
 Same rules as the TC3 clients: the functions come from build_clients.py, which is not changed.
 Each client is the case's own documents plus noise from rows of the other two controls,
@@ -21,7 +21,7 @@ EVALS = Path(__file__).resolve().parent
 APP = EVALS.parents[1] / "01_Product_Engineering" / "challenge"
 sys.path.insert(0, str(EVALS))
 sys.path.insert(0, str(APP))
-from collect_traces import SYNTHETIC_COUNT, pick_synthetic, read_jsonl  # the same fifty cases
+from collect_traces import SYNTHETIC_COUNT, pick_synthetic, read_jsonl  # the same cases the traces came from
 
 from build_clients import CLIENT_SIZE, CLIENTS, OUT, mentions_topic, numbers, page
 
@@ -53,7 +53,7 @@ def main() -> None:
     noise_rows = read_jsonl(DATA / "synthetic_v1.jsonl")
     clients = trace_clients()
     # Rows that are a case somewhere (TC3 or here) are never used as noise.
-    cases = set(CLIENTS.values()) | {int(prefix[1:]) for prefix, _ in clients.values() if prefix.startswith("r")}
+    cases = set(CLIENTS.values()) | {int(prefix[1:]) for prefix, _ in clients.values()}
     rng = random.Random(SEED)
     manifest = {}
 

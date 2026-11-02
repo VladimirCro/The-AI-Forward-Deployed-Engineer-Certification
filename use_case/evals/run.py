@@ -13,7 +13,7 @@ use_case/data/synthetic_v2.jsonl, and the clients are built by build_clients.py
 (Week 3) and build_trace_clients.py (noise from synthetic_v1.jsonl). Runs from the
 app's environment, which has gradio_client.
 
-One run: 52 app calls and 60 judge calls (8 to calibrate, 52 to score), 52 minutes on 2 Nov.
+One run: 52 app calls and 62 judge calls (12 to calibrate, 50 to score; crashed cases are not scored), 52 minutes on 2 Nov.
 """
 
 import json

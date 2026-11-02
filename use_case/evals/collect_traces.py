@@ -1,4 +1,4 @@
-"""Collect fifty traces from the running app for the Step 1 trace pass.
+"""Collect a trace for every case from the running app for the Step 1 trace pass.
 
 The app must be running (the tc3-app container on port 7860). Every case goes
 through the Week 3 endpoint, /assess_control_for_client, the way a user or the
@@ -6,10 +6,11 @@ frontend would call it, so every trace is the whole flow: search, classify, asse
 check the quotes.
 
 - the 10 cases in retrieval.jsonl  -> their TC3 clients (klijent-01 to klijent-10)
-- the 6 goldens                    -> clients golden-1 to golden-6
+- the 8 goldens                    -> clients golden-1 to golden-8
 - 34 rows of synthetic_v2.jsonl    -> clients synthetic-r<row>
 
 The golden and synthetic clients are built first by build_trace_clients.py.
+traces_w4.jsonl holds the 50 traces of 1 Nov, before goldens 7 and 8; running this again overwrites it.
 
 Writes use_case/data/traces_w4.jsonl and traces_w4.md to read (both gitignored).
 
@@ -55,7 +56,7 @@ def pick_synthetic(rows: list[dict], count: int) -> list[tuple[int, dict]]:
 
 
 def all_cases() -> list[dict]:
-    """The fifty cases, each with what goes to the endpoint and what we expect back."""
+    """All cases (52), each with what goes to the endpoint and what we expect back."""
     cases = []
     for case in read_jsonl(EVALS / "retrieval.jsonl"):
         cases.append({"trace_id": f"retrieval-{case['client']}", "source": "retrieval.jsonl",
@@ -118,10 +119,11 @@ def main() -> None:
 
     client = Client(APP_URL, verbose=False)
     traces = []
-    for number, case in enumerate(all_cases(), start=1):
+    cases = all_cases()
+    for number, case in enumerate(cases, start=1):
         trace = call_endpoint(client, case)
         traces.append(trace)
-        print(f"{number:2}/50 {trace['trace_id']}: {trace['seconds']} s{'  ERROR' if trace['error'] else ''}", flush=True)
+        print(f"{number:2}/{len(cases)} {trace['trace_id']}: {trace['seconds']} s{'  ERROR' if trace['error'] else ''}", flush=True)
     with open(DATA / "traces_w4.jsonl", "w", encoding="utf-8") as out:
         for trace in traces:
             out.write(json.dumps(trace, ensure_ascii=False) + "\n")

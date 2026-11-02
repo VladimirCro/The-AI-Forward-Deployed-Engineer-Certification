@@ -31,7 +31,7 @@ ROOT = EVALS.parents[1]
 sys.path.insert(0, str(EVALS))
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "01_Product_Engineering" / "challenge"))  # llm.py, for the judge
-from collect_traces import all_cases, read_jsonl  # the same fifty cases the traces came from
+from collect_traces import all_cases, read_jsonl  # the same cases the traces came from
 from helpers.harness import run
 from helpers.judge import Judge
 
@@ -124,7 +124,7 @@ SCORERS = {
 }
 
 # Which cases each scorer is about. A scorer returns 1.0 on the others, so averaging it
-# over all fifty would hand every system free points: echo would score 0.9 on levels.
+# over all cases would hand every system free points: echo would score 0.9 on levels.
 APPLIES = {
     "documents_found": lambda case: bool(case["expected_sources"]),
     "level_matches": lambda case: bool(case["expected_levels"]),
@@ -134,7 +134,7 @@ APPLIES = {
 
 
 def harness_cases() -> list[dict]:
-    """The fifty cases in the shape helpers.harness.run expects: input as text, plus what is right."""
+    """All cases (52) in the shape helpers.harness.run expects: input as text, plus what is right."""
     cases = []
     for case in all_cases():
         trace_id = case["trace_id"]
@@ -266,7 +266,7 @@ class GatewayJudge(Judge):
 
 
 def golden_cases(cases: list[dict]) -> list[dict]:
-    """The six goldens with their accepted answer as `output`, the shape Judge.calibrate expects."""
+    """The goldens among `cases` with their accepted answer as `output`, the shape Judge.calibrate expects."""
     outputs = {f"golden-{n}": row["output"] for n, row in enumerate(read_jsonl(EVALS / "golden.jsonl"), start=1)}
     return [{**case, "output": json.dumps(outputs[case["trace_id"]], ensure_ascii=False)}
             for case in cases if case["trace_id"] in outputs]

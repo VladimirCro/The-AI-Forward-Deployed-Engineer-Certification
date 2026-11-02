@@ -68,12 +68,20 @@ every later week runs. `python use_case/evals/run.py` is the whole interface.
 | --- | --- | --- |
 | `failures.md` | What goes wrong, ranked, with counts — from fifty real traces. Every scorer traces back to a line here | TC4 Step 1 |
 | `human_scores.jsonl` | Fifty outputs I scored by hand: `{"input", "actual", "pass", "why"}`. The judge's agreement is measured against these | TC4 Step 1 |
-| `harness.py` | Your scorers, `run_eval`, `report`, `bootstrap_ci`, the judge rubric | TC4 Steps 2–3 |
+| `harness.py` | My four scorers, echo and oracle, `bootstrap_ci`, the judge rubric and the detection table | TC4 Steps 2–4 |
 | `synthetic.jsonl` | Generated failures, each with the original, the corruption and its failure mode | TC4 Step 4 |
 | `scenarios.py` | Not written: the endpoint answers one request and holds no conversation (`decisions.md`, Week 4) | TC4 Step 5 |
 | `run.py` | Points the harness at your endpoint and prints the report | TC4 Step 6 |
 | `baseline.json` | **The run itself**, saved with `helpers.harness.save`. Commit it | TC4 Step 6 |
 
+| Week | What uses these files |
+| --- | --- |
+| 5 | The demo leads with `baseline.json`'s headline number, and the critique goes after it. |
+| 6 | Every guardrail is re-run through `run.py`; the winning attack becomes a permanent case and a new line in `failures.md`. |
+| 7 | Three memory tests join `scenarios.py`. |
+| 8 | **The bar.** `harness.compare(harness.load("baseline.json"), finetuned)` is the pass/fail — and it refuses if the case set changed. |
+| 9 | The harness gates the deploy. |
+| 10 | A sampled version runs on live traffic. |
 
 ### Results, 2 Nov
 
@@ -89,11 +97,11 @@ Echo gives no level and no sources, so it passes the two scorers that only punis
 
 **Judge (Step 3).** `judge_level_basis`, on Opus 5.5, asks one question for failures.md #2: is each level backed by the key condition that separates it from the level below.
 
-- Separation on the four settled goldens (4 and 6 are unresolved, so not known-good): accepted answers 1.00, echo 0.00, a wrong answer 0.00.
+- Separation on the four settled goldens (4 and 6 are unresolved, so not known-good): oracle (the golden answers) 1.00, echo 0.00, a wrong answer 0.00.
 - Agreement with my 50 verdicts: 0.62, chance floor 0.51. The first rubric scored 0.50 against a floor of 0.50.
-- Used as a separate column, not the headline.
+- Agreement is weak (the course's own example calls 0.60 not used), so the judge sets no number I report. It stays in `run.py` as an extra column, to see whether it improves once the decision rules are written.
 
-**Generated failures (Step 4).** Natural: I would not accept 24 of the 50 traces (search miss 9, level without basis 8, unrelated documents 7). Generated: 170 rows in `synthetic.jsonl`, from the 26 answers I accepted (161 distinct).
+**Generated failures (Step 4).** Natural: I would not accept 24 of the 50 traces (search miss 9, level without basis 8, unrelated documents 7). Generated: 170 rows in `synthetic.jsonl`, from the 26 answers I accepted (161 distinct). Each cell is the share of broken answers that the scorer scored lower than the original answer, so 1.00 means it caught all of them.
 
 | Failure mode | Difficulty | Generated | documents_found | level_matches | declines_when_no_evidence | only_case_documents | judge_level_basis |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -106,7 +114,7 @@ Echo gives no level and no sources, so it passes the two scorers that only punis
 | false_decline | easy | 24 | 1.00 | 0.17 | 0.00 | 0.00 | 0.00 |
 | skip_decline | easy | 2 | 0.00 | 0.50 | 1.00 | 1.00 | 1.00 |
 
-Easy and hard score the same, because these failures change the sources or the level number, which the scorers check exactly. For answers at level 4 the easy and hard level_up rows are the same answer, so this set does not test the judge on subtle cases. The judge does not read the sources, so it runs only on the level and decline modes.
+Easy and hard score the same, because these failures change the sources or the level number, which the scorers check exactly. For answers at level 4 the easy and hard level_up rows are the same answer, so this set does not test the judge on subtle cases. The judge does not read the sources, so it runs only on the level and decline modes. level_matches knows the expected level only for the goldens, so it can catch only those rows, and the judge does not count a missing level as a failure (false_decline 0.00).
 
 **Baseline (Step 6).** `run.py --save` on 52 cases (the 50 plus goldens 7 and 8), 2 Nov:
 
@@ -116,19 +124,10 @@ Easy and hard score the same, because these failures change the sources or the l
 | level_matches | 8 | 1.00 |
 | declines_when_no_evidence | 5 | 0.40 |
 | only_case_documents | 52 | 0.77 |
-| judge_level_basis | 52 | 0.85 |
+| judge_level_basis (extra column, not reported) | 52 | 0.85 |
 
 Headline: documents_found 0.85, 95% CI [0.77, 0.92] on 47 cases. Two answers crashed the app (invalid JSON from the model) and count as 0.
 
 ```
 PASS  week4-baseline → week4-baseline  [declines_when_no_evidence +0.000  documents_found +0.000  judge_level_basis +0.000  level_matches +0.000  only_case_documents +0.000]
 ```
-
-| Week | What uses these files |
-| --- | --- |
-| 5 | The demo leads with `baseline.json`'s headline number, and the critique goes after it. |
-| 6 | Every guardrail is re-run through `run.py`; the winning attack becomes a permanent case and a new line in `failures.md`. |
-| 7 | Three memory tests join `scenarios.py`. |
-| 8 | **The bar.** `harness.compare(harness.load("baseline.json"), finetuned)` is the pass/fail — and it refuses if the case set changed. |
-| 9 | The harness gates the deploy. |
-| 10 | A sampled version runs on live traffic. |

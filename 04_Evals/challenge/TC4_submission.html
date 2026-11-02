@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TC4 submission</title>
+<style>
+:root{
+  --bg:#faf9f6; --card:#ffffff; --ink:#1c1c1a; --muted:#5d5b55; --line:#dcd9d0;
+  --accent:#9a3b12; --tint:#f3ece4; --link:#0b5cad;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16171a; --card:#1e2024; --ink:#ebeae6; --muted:#a3a198; --line:#34363b;
+    --accent:#e8a070; --tint:#26241f; --link:#7db7f0;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16171a; --card:#1e2024; --ink:#ebeae6; --muted:#a3a198; --line:#34363b;
+  --accent:#e8a070; --tint:#26241f; --link:#7db7f0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  padding:24px 16px 56px; overflow-wrap:break-word}
+main{max-width:760px; margin:0 auto}
+a{color:var(--link)}
+h1{font-size:2rem; line-height:1.15; margin:0 0 6px}
+h2{font-size:1.3rem; line-height:1.25; margin:40px 0 10px; padding-top:6px; border-top:1px solid var(--line)}
+p{margin:0 0 12px}
+.sub{color:var(--muted); margin-bottom:20px}
+code{font:.88em ui-monospace,Consolas,monospace; background:var(--tint); padding:1px 5px; border-radius:4px; overflow-wrap:anywhere}
+.box{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:0 0 12px}
+.wrap{overflow-x:auto; margin:0 0 12px; border:1px solid var(--line); border-radius:10px; background:var(--card)}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:.95rem}
+th,td{text-align:left; vertical-align:top; padding:8px 12px; border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{background:var(--tint); font-weight:600}
+ul,ol{margin:0 0 12px; padding-left:22px}
+li{margin-bottom:6px}
+.order{color:var(--muted); font-size:.95rem}
+.num{white-space:nowrap}
+.wide th,.wide td{padding:8px 6px}
+</style>
+</head>
+<body>
+<main>
+<h1>TC4 submission</h1>
+<p class="sub">Week 4, Evals. How often can a consultant use the answer?</p>
+
+<h2 id="summary">Summary</h2>
+<p>My tool proposes a maturity level for one cybersecurity control from a client's documents, with exact quotes and the documents it used. The consultant makes the final decision. This week I built an eval harness for the Week 3 endpoint, which assesses one control for one fictional client.</p>
+<p>I read fifty answers by hand and would not accept 24 of them. The harness scores the endpoint on 52 cases, compares every run with a saved baseline, and runs with one command. The headline is <code>documents_found</code>: 0.85, 95% CI [0.77, 0.92] on 47 cases. All data is synthetic.</p>
+<p class="order">The video follows the demo as I rehearsed it: the problem, the app on one case, the fifty answers, the numbers, one failure, what comes next, the consultant's review, bring it to work. This page follows the list of deliverables.</p>
+
+<h2 id="video">Video</h2>
+<p>Loom link added after recording.</p>
+<p>Under five minutes. It leads with the problem and shows one failure: klijent-10, where the client handed in only a server purchase plan and the app still gives a level.</p>
+
+<h2 id="deliverables">Every deliverable, with links</h2>
+<div class="wrap">
+<table>
+<tr><th>Deliverable</th><th>Where</th></tr>
+<tr><td>Video, the demo as rehearsed (under five minutes)</td><td><a href="#video">Above</a></td></tr>
+<tr><td>Failure taxonomy</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/failures.md"><code>failures.md</code></a></td></tr>
+<tr><td>Hand scores (50)</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/human_scores.jsonl"><code>human_scores.jsonl</code></a></td></tr>
+<tr><td>Scorers, judge rubric, interval</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/harness.py"><code>harness.py</code></a></td></tr>
+<tr><td>Scorer table with echo and oracle, calibration, detection table, baseline</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/README.md"><code>README.md</code></a>, "Results, 2 Nov"</td></tr>
+<tr><td>Generated failures</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/synthetic.jsonl"><code>synthetic.jsonl</code></a></td></tr>
+<tr><td>Goldens (8, goldens 7 and 8 added this week)</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/golden.jsonl"><code>golden.jsonl</code></a></td></tr>
+<tr><td>The fifty traces and their clients</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/collect_traces.py"><code>collect_traces.py</code></a>, <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/build_trace_clients.py"><code>build_trace_clients.py</code></a> (the traces and documents are gitignored)</td></tr>
+<tr><td><code>run.py</code> and the saved run</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/run.py"><code>run.py</code></a>, <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/baseline.json"><code>baseline.json</code></a></td></tr>
+<tr><td>Trajectory table</td><td>Not built, see <a href="#step5">Step 5</a></td></tr>
+<tr><td>Decision row</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>decisions.md</code></a>, Week 4, second row</td></tr>
+<tr><td>Step 7, demo review with a real user</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/stakeholders.md"><code>stakeholders.md</code></a>, Week 4; what it changed in <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>decisions.md</code></a>, Week 4, third row</td></tr>
+<tr><td>Swap lines</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/04_Evals/challenge/README.md"><code>README.md</code></a>, "Bring it to work"</td></tr>
+<tr><td>Gateway and model notes</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/ecosystem.md"><code>ecosystem.md</code></a>, Week 4</td></tr>
+<tr><td>Run it</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/04_Evals/challenge/SUBMISSION.md"><code>SUBMISSION.md</code></a>, "Run it". It still runs in Docker: the 52-case baseline on 2 Nov ran against the app in the <code>tc3-app</code> container, built with the Week 3 commands.</td></tr>
+</table>
+</div>
+
+<h2 id="taxonomy">Taxonomy and hand scores</h2>
+<p>I read fifty traces from the Week 3 endpoint: the 10 retrieval cases, the 6 goldens and 34 rows from the Week 2 data, each turned into a fictional client of about 150 documents. I would not accept 24 of the 50 answers and would accept 26.</p>
+<p>My rule: I accept an answer if a consultant could use it as a proposal, meaning the main conclusion is reasonable and it rests on the evidence of this case.</p>
+<div class="wrap">
+<table>
+<tr><th>#</th><th>Main reason</th><th>Count</th><th>Component</th></tr>
+<tr><td>1</td><td>The search misses an important document of the case</td><td class="num">9</td><td>Search</td></tr>
+<tr><td>2</td><td>The level has no basis in the evidence</td><td class="num">8</td><td>Assessment prompt</td></tr>
+<tr><td>3</td><td>It builds the answer on documents that are not evidence for this control</td><td class="num">7</td><td>Classifier</td></tr>
+</table>
+</div>
+<p>In 16 of the 24 the problem is which documents reach the assessment. Each failure has its own sentence in <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/failures.md"><code>failures.md</code></a>.</p>
+
+<h2 id="scorers">Scorers, echo and oracle</h2>
+<p>Each scorer is averaged over the cases it is about. The app row replays the 50 answers I read.</p>
+<div class="wrap">
+<table>
+<tr><th>System</th><th>documents_<wbr>found (45)</th><th>level_<wbr>matches (6)</th><th>declines_<wbr>when_<wbr>no_<wbr>evidence (5)</th><th>only_<wbr>case_<wbr>documents (50)</th></tr>
+<tr><td>echo</td><td class="num">0.00</td><td class="num">0.17</td><td class="num">1.00</td><td class="num">1.00</td></tr>
+<tr><td>oracle</td><td class="num">1.00</td><td class="num">1.00</td><td class="num">1.00</td><td class="num">1.00</td></tr>
+<tr><td>app,&nbsp;1&nbsp;Nov</td><td class="num">0.90</td><td class="num">1.00</td><td class="num">0.40</td><td class="num">0.83</td></tr>
+</table>
+</div>
+<p>Echo gives no level and no sources, so it passes the two scorers that only punish a wrong level or a wrong source. Read them together with documents_found, where echo scores 0.00. On level_matches echo gets 0.17 because golden-5 expects no level.</p>
+
+<h2 id="judge">Calibration and whether I used the judge</h2>
+<p>The judge, <code>judge_level_basis</code> on Opus 5.5, checks failure #2: is each level backed by the key condition that separates it from the level below.</p>
+<ul>
+<li><b>Separation</b> on the four settled goldens: oracle (the golden answers) 1.00, echo 0.00, a wrong answer 0.00.</li>
+<li><b>Agreement</b> with my 50 verdicts: 0.62, chance floor 0.51. The first rubric scored 0.50 against a floor of 0.50.</li>
+</ul>
+<p>Agreement is weak (the course's own example calls 0.60 not used), so the judge sets no number I report. It stays in <code>run.py</code> as an extra column, to see whether it improves once the decision rules are written. It catches only 2 of the 8 level failures in <code>failures.md</code> #2.</p>
+
+<h2 id="detection">Detection</h2>
+<p>Natural: I would not accept 24 of the 50 traces (search miss 9, level without basis 8, unrelated documents 7). Generated: 170 rows in <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/synthetic.jsonl"><code>synthetic.jsonl</code></a>, from the 26 answers I accepted (161 distinct). Each cell is the share of broken answers that the scorer scored lower than the original answer, so 1.00 means it caught all of them.</p>
+<div class="wrap">
+<table class="wide">
+<tr><th>Failure mode</th><th>Difficulty</th><th>Generated</th><th>documents_<wbr>found</th><th>level_<wbr>matches</th><th>declines_<wbr>when_<wbr>no_<wbr>evidence</th><th>only_<wbr>case_<wbr>documents</th><th>judge_<wbr>level_<wbr>basis</th></tr>
+<tr><td>drop_<wbr>source</td><td>easy</td><td class="num">24</td><td class="num">1.00</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">0.08</td><td>not run</td></tr>
+<tr><td>drop_<wbr>source</td><td>hard</td><td class="num">24</td><td class="num">1.00</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">0.08</td><td>not run</td></tr>
+<tr><td>level_<wbr>up</td><td>easy</td><td class="num">24</td><td class="num">0.00</td><td class="num">0.17</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">0.96</td></tr>
+<tr><td>level_<wbr>up</td><td>hard</td><td class="num">24</td><td class="num">0.00</td><td class="num">0.17</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">0.96</td></tr>
+<tr><td>unrelated_<wbr>source</td><td>easy</td><td class="num">24</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">1.00</td><td>not run</td></tr>
+<tr><td>unrelated_<wbr>source</td><td>hard</td><td class="num">24</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">1.00</td><td>not run</td></tr>
+<tr><td>false_<wbr>decline</td><td>easy</td><td class="num">24</td><td class="num">1.00</td><td class="num">0.17</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">0.00</td></tr>
+<tr><td>skip_<wbr>decline</td><td>easy</td><td class="num">2</td><td class="num">0.00</td><td class="num">0.50</td><td class="num">1.00</td><td class="num">1.00</td><td class="num">1.00</td></tr>
+</table>
+</div>
+<p>Easy and hard score the same, because these failures change the sources or the level number, which the scorers check exactly. For answers at level 4 the easy and hard level_up rows are the same answer, so this set does not test the judge on subtle cases. The judge does not read the sources, so it runs only on the level and decline modes. level_matches knows the expected level only for the goldens, so it can catch only those rows, and the judge does not count a missing level as a failure (false_decline 0.00).</p>
+
+<h2 id="step5">Step 5, trajectories</h2>
+<p>Skipped. The endpoint answers one request and holds no conversation, so there is no trajectory table and no <code>pass^k</code>. This is written in the decision row.</p>
+
+<h2 id="headline">Headline and the saved run</h2>
+<p><code>run.py --save</code> on 52 cases (the 50 plus goldens 7 and 8), 2 Nov:</p>
+<div class="wrap">
+<table>
+<tr><th>Scorer</th><th>Cases</th><th>Mean</th></tr>
+<tr><td>documents_found</td><td class="num">47</td><td class="num">0.85</td></tr>
+<tr><td>level_matches</td><td class="num">8</td><td class="num">1.00</td></tr>
+<tr><td>declines_when_no_evidence</td><td class="num">5</td><td class="num">0.40</td></tr>
+<tr><td>only_case_documents</td><td class="num">52</td><td class="num">0.77</td></tr>
+<tr><td>judge_level_basis (extra column, not reported)</td><td class="num">52</td><td class="num">0.85</td></tr>
+</table>
+</div>
+<p><code>baseline.json</code> stores means over all 52 cases; <code>run.py</code> reports each scorer over the cases it is about, which is this table.</p>
+<div class="box">
+<p><b>Headline:</b> documents_found 0.85, 95% CI [0.77, 0.92] on 47 cases. Two answers crashed the app on invalid JSON from the model and count as 0.</p>
+<p><code>PASS  week4-baseline → week4-baseline  [declines_when_no_evidence +0.000  documents_found +0.000  judge_level_basis +0.000  level_matches +0.000  only_case_documents +0.000]</code></p>
+</div>
+
+<h2 id="decision">The decision row</h2>
+<p>From <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>decisions.md</code></a>, Week 4, second row.</p>
+<div class="box">
+<p><b>Decision:</b> Headline: <code>documents_found</code>, 0.85, 95% CI [0.77, 0.92] on 47 cases (52 cases in all, with goldens 7 and 8), saved in <code>use_case/evals/baseline.json</code> (<code>compare()</code> PASS). Two of the 52 answers crashed the app because the model returned invalid JSON; they count as 0, as the course harness does. On the 50 cases of 1 and 2 Nov, before goldens 7 and 8, the same scorer gave 0.90 both times. The judge (<code>judge_level_basis</code>, Opus 5.5) sets no number I report: its agreement is weak (the course's own example calls 0.60 not used). It stays in <code>run.py</code> as an extra column, to see whether it improves once the decision rules are written.</p>
+<p><b>What you rejected:</b> The judge as the headline: the first rubric failed agreement (0.50 against a chance floor of 0.50); the second passed separation (settled goldens 1.00, echo and a wrong answer 0.00) but agrees with my 50 verdicts only 0.62 against a floor of 0.51, and catches only 2 of the 8 level failures in <code>failures.md</code> #2. Step 5 scenarios, because the app answers one request and holds no conversation.</p>
+<p><b>Why:</b> It traces to the top line of <code>failures.md</code>: the search misses an important document. That also answers the Week 3 condition on missed documents: they are the top failure, so the next change is the search and the classifier, measured with <code>run.py</code>. It does not cover whether the level is right (only six of the eight goldens have a settled level), the reasoning (the judge column, which misses a level 1 given for lack of evidence and levels set too low), or real client documents (synthetic, short, three controls). Answers vary between runs, and on 47 cases the interval is about eight points each way, so Week 8 cannot show a smaller gain.</p>
+<p><b>What would change your mind:</b> Decision rules written per level (the key condition, level 1, levels too low) and confirmed by the consultant, then a judge that passes agreement on them; structured output, so a bad reply cannot crash the app; or more cases, so the interval narrows.</p>
+</div>
+
+<h2 id="user">Step 7, demo review with a real user</h2>
+<p>Done in writing on 2 November with the GRC consultant: the five-minute demo (problem, numbers, one failure, next steps) and three questions. There was no time for a live session before the deadline, so I sent her the demo and eight cases and she answered in writing. A two-hour session with her is booked for Thursday, 5 November.</p>
+<ul>
+<li><b>What would you do differently on Monday?</b> She would run a limited pilot with mandatory consultant review and measure the time really saved, including review and corrections.</li>
+<li><b>What would convince you the number is wrong?</b> An independent review of all 50 answers against rules agreed in advance that gives different results, with the exact version of every answer kept.</li>
+<li><b>What did you expect to see?</b> The assessment date, the original document one click away, and a view of which condition of the level is confirmed and which is not.</li>
+</ul>
+<p>From eight examples she would not yet confirm that most failures are in the search; for that she wants the findings for all 50 grouped. She confirmed two rules: a missing record alone does not give level 1, and a level with an open check is fine only if the check does not decide the level. On the five cases where the 2 Nov answer had the same levels as the one I read on 1 Nov, her verdict matched mine four times.</p>
+<p>What it changed: a decline that does not say what to ask the client for is now listed in <code>failures.md</code> as an issue to fix. Next I send her <code>failures.md</code> with all 50 grouped, write the decision rules with her, and plan how the pilot measures time.</p>
+
+<h2 id="work">Bring it to work</h2>
+<p>Nobody measures how often a control level in a self-assessment is right: a consultant sets it by hand, and nobody knows how often two consultants would set different levels for the same client. In golden 4 the reference assessment says 3 and the consultant says 2.</p>
+<ul>
+<li><b>Data:</b> fifty controls from finished self-assessments, where the consultant who worked with the client already set the final level. Those levels are the verdicts that already exist.</li>
+<li><b>Model or endpoint:</b> the same internal AI gateway, Opus as the judge and Sonnet as the app, so client documents and answers never leave our environment. One <code>run.py</code> makes 62 judge calls (12 to calibrate, 50 to score; the two crashed answers are not scored) and 52 app calls, 52 minutes [measured, 2 Nov], so it runs nightly, not on every commit.</li>
+<li><b>Approval:</b> client consent to use their finished self-assessments for measurement, access to the archive of those assessments, then a deployment review with DevOps, and security and privacy reviews.</li>
+</ul>
+</main>
+</body>
+</html>
