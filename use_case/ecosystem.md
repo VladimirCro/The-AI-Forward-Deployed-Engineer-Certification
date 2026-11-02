@@ -145,6 +145,12 @@ Two more things the probe cannot see:
 - **Embeddings go through a different route of the same gateway.** The model list shows the embedding models, but the usual embeddings route answers 404; the embedding route is listed separately, so the app has its own `EMBED_API_BASE`. The gateway also turns a list of texts into one vector, so the app sends one text per call.
 - **A local embedding model cannot be downloaded on the firm network.** The proxy refuses the model hosting's download hosts, the same as in Week 2.
 
+### 2026-11-01, Week 4: the model setting and the judge
+
+- **Sonnet 5.5 stopped working through the gateway.** The gateway turns thinking off with a value this model now rejects ("send thinking between_tools instead of disabled"). The app sends the accepted value from `.env` (`LLM_THINKING=between_tools`); it is a plain word, not JSON, because uv and Docker read quotes in `.env` differently.
+- **The judge runs on Opus 5.5 through the same gateway** and needs the same setting. The course's judge helper does not send it, so `harness.py` wraps it without changing `helpers/`.
+- **The embedding route answered 500 once on 2 Nov** and worked on the retry. A run should retry a failed call before counting it.
+
 ---
 
 ## Week 9 — the full checklist
