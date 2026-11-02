@@ -22,6 +22,9 @@ from litellm import completion, cost_per_token, token_counter
 MODEL = os.getenv("LLM_MODEL", "gpt-4.1-mini")
 API_BASE = os.getenv("LLM_API_BASE")  # only needed for self-hosted / gateway endpoints
 EXTRA_HEADERS = json.loads(os.getenv("LLM_EXTRA_HEADERS") or "{}")
+# The gateway turns thinking off with a value Sonnet 5.5 rejects; .env sends the one it accepts (between_tools).
+# A plain word, not JSON, because uv and docker read quotes in .env differently.
+THINKING = os.getenv("LLM_THINKING")
 # Without it the gateway stops a reply at 4,096 tokens, which cuts a long assessment mid-JSON.
 MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "16000"))
 
@@ -47,6 +50,8 @@ def stream_reply(message: str, history: list[dict] | None = None):
         kwargs["api_base"] = API_BASE
     if EXTRA_HEADERS:
         kwargs["extra_headers"] = EXTRA_HEADERS
+    if THINKING:
+        kwargs["extra_body"] = {"thinking": {"type": THINKING}}
 
     reply = ""
     for chunk in completion(**kwargs):
@@ -86,4 +91,6 @@ def chat_with_tools(messages: list[dict], tools: list[dict]):
         kwargs["api_base"] = API_BASE
     if EXTRA_HEADERS:
         kwargs["extra_headers"] = EXTRA_HEADERS
+    if THINKING:
+        kwargs["extra_body"] = {"thinking": {"type": THINKING}}
     return completion(**kwargs).choices[0].message
