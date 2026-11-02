@@ -175,6 +175,21 @@ def make_replay():
     return lambda question: answers[question]
 
 
+def bootstrap_ci(scores, n_resamples: int = 5000, level: float = 0.95, seed: int = 0):
+    """Confidence interval for a mean, by resampling (Session 7, Task 5).
+
+    Resample the scores with replacement thousands of times; the spread of those
+    means is how much the number would move on a different set of the same size.
+    """
+    import numpy as np
+
+    rng = np.random.default_rng(seed)
+    arr = np.asarray(scores, dtype=float)
+    means = arr[rng.integers(0, len(arr), size=(n_resamples, len(arr)))].mean(axis=1)
+    lo, hi = np.percentile(means, [(1 - level) / 2 * 100, (1 + level) / 2 * 100])
+    return float(arr.mean()), float(lo), float(hi)
+
+
 # ----------------------------------------------------------------- Step 3: the judge
 
 JUDGE_MODEL = "openai/claude-opus-5-5"  # a different, stronger model than the app's Sonnet 5.5
