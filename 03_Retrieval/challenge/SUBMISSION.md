@@ -55,4 +55,4 @@ Then open http://localhost:7860, pick a client and a control, and press "Procije
 
 ## Step 6, demo to a real user
 
-Scheduled with a consultant for Monday, 2 November 2026, after the deadline. The consultant sends five situations from client work beforehand; I build a fictional client for each, run the endpoint live, and ask the three questions from the challenge. Their answers, the five new labelled cases and what they changed go into `use_case/stakeholders.md`, `use_case/evals/retrieval.jsonl` and `use_case/decisions.md` after the session.
+Done in writing on 2 November 2026, after the deadline. The data is synthetic, so the consultant asked me to choose the cases: I ran eight through the endpoint and she answered the three questions for each. Her answers are in `use_case/stakeholders.md` (Week 3) and what they changed in `use_case/decisions.md` (Week 3). Four of the cases go into `use_case/evals/retrieval.jsonl` after the TC4 baseline.
