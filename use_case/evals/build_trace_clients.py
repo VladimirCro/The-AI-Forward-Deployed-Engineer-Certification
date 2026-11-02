@@ -27,16 +27,24 @@ from build_clients import CLIENT_SIZE, CLIENTS, OUT, mentions_topic, numbers, pa
 
 DATA = EVALS.parent / "data"
 SEED = 7
+FIRST_GOLDENS = 6  # the goldens that existed on 1 Nov, when the fifty traces were collected
 
 
 def trace_clients() -> dict[str, tuple[str, dict]]:
-    """Client name -> (record id prefix, row with input documents) for the 6 goldens and the synthetic sample."""
+    """Client name -> (record id prefix, row with input documents), in the order the noise is drawn.
+
+    The first six goldens and the synthetic sample come first, in the order of 1 Nov,
+    so their noise stays exactly as the traces saw it; goldens added later come last.
+    """
+    goldens = list(enumerate(read_jsonl(EVALS / "golden.jsonl"), start=1))
     clients = {}
-    for number, row in enumerate(read_jsonl(EVALS / "golden.jsonl"), start=1):
-        # r9001 to r9006: the app only reads ids shaped r<number>-DOC-<number>, and synthetic rows stop at 547.
+    for number, row in goldens[:FIRST_GOLDENS]:
+        # r9001 and up: the app only reads ids shaped r<number>-DOC-<number>, and synthetic rows stop at 547.
         clients[f"golden-{number}"] = (f"r{9000 + number}", row)
     for index, row in pick_synthetic(read_jsonl(DATA / "synthetic_v2.jsonl"), SYNTHETIC_COUNT):
         clients[f"synthetic-r{index}"] = (f"r{index}", row)
+    for number, row in goldens[FIRST_GOLDENS:]:
+        clients[f"golden-{number}"] = (f"r{9000 + number}", row)
     return clients
 
 
@@ -50,6 +58,9 @@ def main() -> None:
     manifest = {}
 
     for client, (prefix, row) in clients.items():
+        # A golden added after 1 Nov draws from its own generator, so adding it changes no other client.
+        number = int(client.split("-")[1]) if client.startswith("golden-") else 0
+        draw = random.Random(f"{SEED}-{client}") if number > FIRST_GOLDENS else rng
         if client in CLIENTS:
             raise SystemExit(f"{client} would overwrite a TC3 client")
         control = row["input"]["control_id"]
@@ -59,7 +70,7 @@ def main() -> None:
         skipped = {"other case": 0, "same decision number": 0, "mentions the control": 0}
 
         candidates = [i for i, r in enumerate(noise_rows) if r["input"]["control_id"] != control]
-        rng.shuffle(candidates)
+        draw.shuffle(candidates)
         for i in candidates:
             if len(pages) >= CLIENT_SIZE:
                 break

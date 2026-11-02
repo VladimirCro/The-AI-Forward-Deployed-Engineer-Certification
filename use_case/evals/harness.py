@@ -1,23 +1,29 @@
-"""TC4 harness: the cases, three model-free scorers, and the echo and oracle checks.
+"""TC4 harness: the cases, four model-free scorers, the judge, and the generated failures.
 
 The loop, the averages and saving a run come from the course's helpers/harness.py
-(`run`, `save`, `load`, `compare`). This file adds what is ours: which cases, what
-"correct" means for each of them, and three scorers that each catch one line of
-failures.md.
+(`run`, `save`, `load`, `compare`) and the judge from helpers/judge.py. This file
+adds what is ours: which cases, what "correct" means for each of them, and the
+scorers, each tied to one line of failures.md.
 
     cd 01_Product_Engineering/challenge
     uv run --no-sync python ../../use_case/evals/harness.py
+        prints the echo / oracle / app table (Step 2). The app column replays the
+        answers in use_case/data/traces_w4.jsonl, so it needs no model call.
+    uv run --no-sync --env-file ../../.env python ../../use_case/evals/harness.py judge
+        checks the judge (Step 3): separation, then agreement with my verdicts,
+        about 60 Opus calls.
+    uv run --no-sync --env-file ../../.env python ../../use_case/evals/harness.py synthetic [--judge]
+        breaks my accepted answers into synthetic.jsonl and prints the detection
+        table (Step 4); --judge runs the judge over them too, about 110 Opus calls.
 
-prints the echo / oracle / app table; with `judge` at the end it checks the Step 3
-judge (separation, then agreement with my verdicts; about 60 Opus calls); with
-`synthetic` it breaks my accepted answers into synthetic.jsonl and prints the
-detection table (add `--judge` to run the judge over them too, about 200 Opus calls). The app column replays the answers the app
-gave on 1 Nov 2026 (use_case/data/traces_w4.jsonl), so it needs no model call;
-run.py (Step 6) calls the app live.
+Everything in use_case/data/ stays local, so a clean checkout cannot run this: the
+cases come from use_case/data/synthetic_v2.jsonl and the traces from traces_w4.jsonl.
 """
 
 import json
+import os
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 EVALS = Path(__file__).resolve().parent
@@ -41,7 +47,7 @@ UNRESOLVED_GOLDENS = {"golden-4", "golden-6"}
 # Goldens whose level is unresolved: any level in the list is accepted.
 LEVEL_RANGES = {
     ("golden-4", "implementation"): [2, 3],  # 58 % coverage, threshold for 3 not agreed
-    ("golden-6", "implementation"): [3, 4],  # consultant: 4 only once the stand-in is clarified
+    ("golden-6", "implementation"): [3, 4],  # 3 as before, or 4 if the stand-in took over all duties (consultant, 1 Nov)
 }
 
 
@@ -175,6 +181,13 @@ def make_replay():
     return lambda question: answers[question]
 
 
+def traced_cases() -> list[dict]:
+    """The cases that have a 1 Nov trace: the fifty read in Step 1. Goldens added later have none."""
+    traced = {json.dumps(json.loads(line)["input"], ensure_ascii=False)
+              for line in TRACES.read_text(encoding="utf-8").splitlines()}
+    return [case for case in harness_cases() if case["input"] in traced]
+
+
 def bootstrap_ci(scores, n_resamples: int = 5000, level: float = 0.95, seed: int = 0):
     """Confidence interval for a mean, by resampling (Session 7, Task 5).
 
@@ -190,9 +203,20 @@ def bootstrap_ci(scores, n_resamples: int = 5000, level: float = 0.95, seed: int
     return float(arr.mean()), float(lo), float(hi)
 
 
+def subset_means(report, cases: list[dict]):
+    """The same run with each scorer averaged over the cases it is about, so compare() sees real drops."""
+    means = {}
+    for label in report.means:
+        applies = APPLIES.get(label, lambda case: True)
+        scores = [result.scores[label] for result, case in zip(report.results, cases) if applies(case)]
+        means[label] = sum(scores) / len(scores)
+    return replace(report, means=means)
+
+
 # ----------------------------------------------------------------- Step 3: the judge
 
-JUDGE_MODEL = "openai/claude-opus-5-5"  # a different, stronger model than the app's Sonnet 5.5
+# A different, stronger model than the app's Sonnet 5.5; set in .env like the app's model.
+JUDGE_MODEL = os.getenv("LLM_JUDGE_MODEL", "openai/claude-opus-5-5")
 
 # One checkable property, for failures.md #2: the level has no basis in the evidence.
 # Second wording (2 Nov): the first one failed agreement (0.50 vs floor 0.50) because it
@@ -226,11 +250,16 @@ class GatewayJudge(Judge):
     def _ask(self, prompt: str) -> str:
         from litellm import completion
 
-        from llm import API_BASE, THINKING
+        from llm import API_BASE, EXTRA_HEADERS, THINKING
 
-        kwargs = {"model": self.model, "messages": [{"role": "user", "content": prompt}], "timeout": self.timeout}
+        # Same settings as the app's calls in llm.py, plus retries: a gateway error once
+        # (2 Nov) must not turn into a 0 from the judge.
+        kwargs = {"model": self.model, "messages": [{"role": "user", "content": prompt}],
+                  "timeout": self.timeout, "num_retries": self.max_retries}
         if API_BASE:
             kwargs["api_base"] = API_BASE
+        if EXTRA_HEADERS:
+            kwargs["extra_headers"] = EXTRA_HEADERS
         if THINKING:
             kwargs["extra_body"] = {"thinking": {"type": THINKING}}
         return completion(**kwargs).choices[0].message.content or ""
@@ -245,7 +274,7 @@ def golden_cases(cases: list[dict]) -> list[dict]:
 
 def check_judge() -> None:
     """Separation on the goldens (accepted vs wrong vs echo), then agreement with my fifty verdicts."""
-    cases = harness_cases()
+    cases = traced_cases()
     judge = GatewayJudge(None, rubric=LEVEL_BASIS_RUBRIC, model=JUDGE_MODEL)
 
     # Goldens 4 and 6 have unresolved levels, so their answers are not known-good and
@@ -423,5 +452,5 @@ if __name__ == "__main__":
         print(table)
         (EVALS.parent / "data" / "detection_table.md").write_text(table + "\n", encoding="utf-8")
         sys.exit()
-    cases = harness_cases()
+    cases = traced_cases()
     print(scorer_table(cases, {"echo": echo, "oracle": make_oracle(cases), "app (1 Nov)": make_replay()}))

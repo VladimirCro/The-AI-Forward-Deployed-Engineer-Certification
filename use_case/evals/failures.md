@@ -15,7 +15,7 @@ My rule: I accept an answer if a consultant could use it as a proposal, meaning 
 | Synthetic rows from Week 2 (`synthetic_v2.jsonl`) | 34 | 18 | 16 |
 | **Total** | **50** | **24** | **26** |
 
-Each golden and each synthetic row was turned into a fictional client: its own documents plus about 145 noise documents from rows of the other two controls, with the same noise rules as the Week 3 clients. That way every case goes through the search, as a real request would.
+Each golden and each synthetic row was turned into a fictional client: its own documents plus 145 to 151 noise documents from rows of the other two controls, with the same noise rules as the Week 3 clients. That way every case goes through the search, as a real request would.
 
 ## Why I would not accept them, ranked
 
@@ -65,11 +65,12 @@ My own sentence from `human_scores.jsonl`, under its main reason.
 - **synthetic-r505:** It uses an unrelated approval of policy version 2.2 to make this client's documentation appear updated.
 - **synthetic-r180:** It should decline because the infrastructure plan does not evidence security roles, but it assigns levels from unrelated documents.
 - **synthetic-r77:** It gives a single 3/3 assessment before establishing which company the documents belong to.
+
 ## Smaller issues in answers I would accept
 
-These did not change my verdict, but they are real and worth fixing:
+These did not change my verdict, but they should be fixed:
 
-- A contradiction that is not one, such as "planned for April" and "held in April", or a wider job description against a short summary (synthetic-r252, r311, r339, r64).
+- A contradiction that is not one, such as a draft's roles being shared before the rulebook is adopted, or a wider job description against a short summary (synthetic-r252, r311, r339, r64).
 - Doubt that is written in the rationale but not flagged as low confidence (retrieval-klijent-06, synthetic-r484).
 - Asking for evidence the client already handed in (synthetic-r95).
 - A decline that does not say what to ask the client for: retrieval-klijent-04 asks only for "documents that prove this control". Added after the consultant's review on 2 Nov; she wants the policy and the proof of its adoption named.

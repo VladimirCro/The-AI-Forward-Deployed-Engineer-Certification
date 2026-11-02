@@ -2,17 +2,18 @@
 
     cd 01_Product_Engineering/challenge
     uv run --no-sync --env-file ../../.env python ../../use_case/evals/run.py
+        runs the cases live and compares the run with baseline.json (PASS or not).
+    ... python ../../use_case/evals/run.py --save
+        the same, and saves the run as the new baseline. Only when re-baselining on purpose.
 
 Needs the app running (tc3-app container on port 7860) with the fictional clients
-mounted. The clients are data, so they are not in git: build them with
-build_clients.py (Week 3) and build_trace_clients.py, from use_case/data/synthetic_v1.jsonl.
+mounted, and .env with LLM_THINKING=between_tools. Everything in use_case/data/ stays
+local, so a clean checkout cannot run this: the cases come from
+use_case/data/synthetic_v2.jsonl, and the clients are built by build_clients.py
+(Week 3) and build_trace_clients.py (noise from synthetic_v1.jsonl). Runs from the
+app's environment, which has gradio_client.
 
-Runs the fifty cases live through /assess_control_for_client, scores them with the
-four model-free scorers and the judge, saves the run to baseline.json, and compares
-the saved file with the run, which must print PASS. About 50 app calls (50 minutes)
-and about 60 judge calls.
-
-    python ../../use_case/evals/run.py --compare   compares a new run with baseline.json
+One run: 52 app calls and 60 judge calls (8 to calibrate, 52 to score), 52 minutes on 2 Nov.
 """
 
 import json
@@ -22,7 +23,7 @@ from pathlib import Path
 EVALS = Path(__file__).resolve().parent
 sys.path.insert(0, str(EVALS))
 from harness import (APPLIES, JUDGE_MODEL, LEVEL_BASIS_RUBRIC, SCORERS, UNRESOLVED_GOLDENS,
-                     GatewayJudge, bootstrap_ci, golden_cases, harness_cases)
+                     GatewayJudge, bootstrap_ci, golden_cases, harness_cases, subset_means)
 from helpers import harness as course
 
 APP_URL = "http://localhost:7860"
@@ -48,7 +49,10 @@ def scorers_with_judge(cases: list[dict]) -> dict:
     judge = GatewayJudge(None, rubric=LEVEL_BASIS_RUBRIC, model=JUDGE_MODEL)
     calibration = judge.calibrate([case for case in golden_cases(cases) if case["trace_id"] not in UNRESOLVED_GOLDENS])
     print(f"Judge separation: accepted {calibration.accepted:.2f}, wrong {calibration.wrong:.2f}, passed {calibration.passed}")
-    return {**SCORERS, "judge_level_basis": judge.score} if calibration.passed else dict(SCORERS)
+    # Stop rather than drop the column: a run without the judge would not compare with the baseline.
+    if not calibration.passed:
+        sys.exit("The judge failed separation; fix it before running, or the run will not compare.")
+    return {**SCORERS, "judge_level_basis": judge.score}
 
 
 def summary(report, cases: list[dict]) -> str:
@@ -68,17 +72,18 @@ def summary(report, cases: list[dict]) -> str:
 
 
 def main() -> None:
-    """Run live, print the summary, save or compare the baseline."""
+    """Run live, print the summary, compare with the baseline; save it only with --save."""
     cases = harness_cases()
     scorers = scorers_with_judge(cases)
-    name = "week4-candidate" if "--compare" in sys.argv else "week4-baseline"
+    name = "week4-baseline" if "--save" in sys.argv else "week4-candidate"
     report = course.run(cases, endpoint(), scorers, name=name,
                          progress=lambda done, total: print(f"{done}/{total}", flush=True))
     print(report)
     print(summary(report, cases))
-    if "--compare" not in sys.argv:
+    if "--save" in sys.argv:
         course.save(report, BASELINE)
-    print(course.compare(course.load(BASELINE), report))
+    # Compare per-scorer means over the cases each scorer is about, on both sides.
+    print(course.compare(subset_means(course.load(BASELINE), cases), subset_means(report, cases)))
 
 
 if __name__ == "__main__":
