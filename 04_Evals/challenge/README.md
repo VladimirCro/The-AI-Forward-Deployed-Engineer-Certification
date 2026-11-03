@@ -734,3 +734,11 @@ challenge, which carries the full detail.
 
 Everything after this week assumes your app has a number, an interval, and a
 saved run to be measured against.
+
+## Bring it to work
+
+Nobody measures how often a control level in a self-assessment is right: a consultant sets it by hand, and nobody knows how often two consultants would set different levels for the same client. In golden 4 the reference assessment says 3 and the consultant says 2.
+
+- **Data:** fifty controls from finished self-assessments, where the consultant who worked with the client already set the final level. Those levels are the verdicts that already exist.
+- **Model or endpoint:** the same internal AI gateway, Opus as the judge and Sonnet as the app, so client documents and answers never leave our environment. One `run.py` makes 62 judge calls (12 to calibrate, 50 to score; the two crashed answers are not scored) and 52 app calls, 52 minutes [measured, 2 Nov], so it runs nightly, not on every commit.
+- **Approval:** client consent to use their finished self-assessments for measurement, access to the archive of those assessments, then a deployment review with DevOps, and security and privacy reviews.

@@ -17,7 +17,7 @@
 | Retrieval decision and the four non-text answers | `use_case/decisions.md`, Week 3 |
 | Model for the whole app | `use_case/decisions.md`, Week 3 |
 | Runs in Docker | `01_Product_Engineering/challenge/Dockerfile`; the commands are under "Run it" below |
-| Demo to a real user | Scheduled, see Step 6 below |
+| Demo to a real user | Done in writing on 2 Nov, see Step 6 below |
 | What I would swap to run this at work | `## Bring it to work` in `03_Retrieval/challenge/README.md` |
 | Gateway and model notes | `use_case/ecosystem.md`, Week 3 |
 
@@ -25,7 +25,7 @@
 
 The tool has no questions typed by people: a consultant asks it to assess one control for one client. So one case is a fictional client with about 150 documents and one control, and the labelled answer is every document the assessment needs. 8 of the 10 need more than one document, and 2 have no evidence at all.
 
-I chose the ten from the Week 2 data, one for each hard situation in its recipes, and checked every label by reading the documents. The consultant's own situations are added after the demo on 2 November.
+I chose the ten from the Week 2 data, one for each hard situation in its recipes, and checked every label by reading the documents. Four of the eight cases from the consultant's review go into `retrieval.jsonl` after the TC4 baseline.
 
 | Case | Control | What makes it hard |
 | --- | --- | --- |
@@ -55,4 +55,4 @@ Then open http://localhost:7860, pick a client and a control, and press "Procije
 
 ## Step 6, demo to a real user
 
-Scheduled with a consultant for Monday, 2 November 2026, after the deadline. The consultant sends five situations from client work beforehand; I build a fictional client for each, run the endpoint live, and ask the three questions from the challenge. Their answers, the five new labelled cases and what they changed go into `use_case/stakeholders.md`, `use_case/evals/retrieval.jsonl` and `use_case/decisions.md` after the session.
+Done in writing on 2 November 2026, after the deadline. The data is synthetic, so the consultant asked me to choose the cases: I ran eight through the endpoint and she answered the three questions for each. Her answers are in `use_case/stakeholders.md` (Week 3) and what they changed in `use_case/decisions.md` (Week 3). Four of the cases go into `use_case/evals/retrieval.jsonl` after the TC4 baseline.
