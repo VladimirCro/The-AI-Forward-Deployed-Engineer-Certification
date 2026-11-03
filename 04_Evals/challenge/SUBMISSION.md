@@ -2,13 +2,13 @@
 
 An eval harness for the Week 3 endpoint, which assesses one control for one fictional client. It scores the endpoint on 52 cases, compares every run with a saved baseline, and runs with one command.
 
-Loom video: (link added after recording)
+Loom video: https://www.loom.com/share/aaf6f0425bde4d69bf2602971abfcfba
 
 ## Where each deliverable is
 
 | Deliverable | Where |
 | --- | --- |
-| Video, the demo as rehearsed (under five minutes) | Link above |
+| Video, the five-minute demo | Link above |
 | Failure taxonomy | `use_case/evals/failures.md` |
 | Hand scores (50) | `use_case/evals/human_scores.jsonl` |
 | Scorers, judge rubric, interval | `use_case/evals/harness.py` |

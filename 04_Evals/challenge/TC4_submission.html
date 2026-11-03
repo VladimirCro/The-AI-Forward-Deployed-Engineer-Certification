@@ -52,17 +52,17 @@ li{margin-bottom:6px}
 <h2 id="summary">Summary</h2>
 <p>My tool proposes a maturity level for one cybersecurity control from a client's documents, with exact quotes and the documents it used. The consultant makes the final decision. This week I built an eval harness for the Week 3 endpoint, which assesses one control for one fictional client.</p>
 <p>I read fifty answers by hand and would not accept 24 of them. The harness scores the endpoint on 52 cases, compares every run with a saved baseline, and runs with one command. The headline is <code>documents_found</code>: 0.85, 95% CI [0.77, 0.92] on 47 cases. All data is synthetic.</p>
-<p class="order">The video follows the demo as I rehearsed it: the problem, the app on one case, the fifty answers, the numbers, one failure, what comes next, the consultant's review, bring it to work. This page follows the list of deliverables.</p>
+<p class="order">The video is the demo for the whole tool so far: the problem, the user, how the tool works with the decision behind each step, how good it is today, one failure, what each week taught me, what comes next. This page follows the list of deliverables.</p>
 
 <h2 id="video">Video</h2>
-<p>Loom link added after recording.</p>
-<p>Under five minutes. It leads with the problem and shows one failure: klijent-10, where the client handed in only a server purchase plan and the app still gives a level.</p>
+<p><a href="https://www.loom.com/share/aaf6f0425bde4d69bf2602971abfcfba">Watch the video on Loom</a></p>
+<p>Under five minutes. It leads with the problem and shows one failure: klijent-10, a client with nothing on training that still gets a level from unrelated documents.</p>
 
 <h2 id="deliverables">Every deliverable, with links</h2>
 <div class="wrap">
 <table>
 <tr><th>Deliverable</th><th>Where</th></tr>
-<tr><td>Video, the demo as rehearsed (under five minutes)</td><td><a href="#video">Above</a></td></tr>
+<tr><td>Video, the five-minute demo</td><td><a href="#video">Above</a></td></tr>
 <tr><td>Failure taxonomy</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/failures.md"><code>failures.md</code></a></td></tr>
 <tr><td>Hand scores (50)</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/human_scores.jsonl"><code>human_scores.jsonl</code></a></td></tr>
 <tr><td>Scorers, judge rubric, interval</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/harness.py"><code>harness.py</code></a></td></tr>
