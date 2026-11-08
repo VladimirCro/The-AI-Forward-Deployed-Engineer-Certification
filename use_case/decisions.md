@@ -57,6 +57,35 @@ search and run it.
 3. **Descriptions, or one parse per image?** No descriptions. Every scan is parsed once, when the client hands the documents over, through the same gateway, so the documents stay inside the contracted processing.
 4. **Video or audio?** None expected yet. The first would be a recorded training session, and the transcript would not be enough: it shows what was said, not who attended.
 
+## Week 5 — what the room asked
+
+I was not at Session 9, so these are the rubric's questions plus the replies to my TC4 post on Maven.
+
+**Marked**
+
+- **Fair:** "Show 'would accept' next to 0.85." documents_found is 0.85, but I would accept 26 of 50 answers (52%), and someone outside the project reads 0.85 as "85% good". *Change:* every place that shows 0.85 also shows "would accept: 26 of 50".
+- **Fair:** "The app doesn't show that the consultant decides." I say the tool proposes and she decides, but the screen shows a level as if it were final, and nothing records her decision. *Change:* the answer is labelled as a proposal, with a step where she accepts or changes the level.
+- **Open:** "What did you consider and reject?" For search I measured four techniques in Week 3. For the architecture I have no measured alternative yet. Step 6 answers it.
+
+**The rest, answered**
+
+- *Who has this problem?* A GRC consultant who runs these self-assessments for clients.
+- *Have you shown it to her?* Yes: the first demo in Week 1, and eight answers in writing on 2 Nov. She would accept five.
+- *What if you do nothing?* About four consultant-days per client, mostly reading evidence (CHARTER.md).
+- *Biggest problem, or easiest to build?* Not measured. The four days are her numbers.
+- *What is the denominator?* 47 cases for the headline, 50 traces read by hand, 5 no-evidence cases.
+- *Where did the eval set come from?* Goldens written in Week 1 before the system, generated cases from Week 2, traces from Week 4.
+- *What does the number not cover?* Whether the level is right. And all data is synthetic.
+- *Better than what?* The saved run of 52 cases. There is no comparison with the consultant's own time yet.
+- *Would your judge score a wrong answer highly?* Possibly. It agreed with me 62% of the time against 51% by chance, so it sets no number I report.
+- *What would change your mind?* For search, the Week 3 condition. For the architecture, Step 6.
+- *What breaks first at 10× volume?* Not measured yet. Step 5 measures what one call costs.
+- *How much data does each call return?* About 2 KB per search call and about 4.7 calls per request. Step 5 measures the cost.
+- *What would you rewrite to deploy at work?* Reading scanned documents (OCR), the client's consent, and the security review.
+- *Worst failure you have seen?* klijent-10: no evidence about training, and the tool still gave a level from unrelated documents.
+- *What does it do when it doesn't know?* It should give no level. It does that in 2 of 5 no-evidence cases (0.40), the riskiest number.
+- *What would you not let it do unsupervised?* Set the final level. The consultant always decides.
+
 ---
 
 The last column is the one people skip and the one people ask about. "We chose
