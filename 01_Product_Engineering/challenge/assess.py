@@ -88,11 +88,14 @@ def verify_citations(response: Response, documents: list[EvidenceDocument]) -> l
     return dropped
 
 
-def assess_control_for_client(client_id: str, control_id: str) -> Response:
-    """Retrieve, classify, assess and check one control for one client."""
+def assess_control_for_client(client_id: str, control_id: str, find=find_candidates) -> Response:
+    """Retrieve, classify, assess and check one control for one client.
+
+    `find` is the search, passed in so TC5 can swap in the skill and count either one.
+    """
     if control_id not in CATALOG:
         raise ValueError(f"Unknown control: {control_id}")
-    candidates = find_candidates(client_id, control_id)
+    candidates = find(client_id, control_id)
     if not candidates:
         return decline_response(control_id, "Pretraga nije našla nijedan dokument za ovu kontrolu.")
 

@@ -638,3 +638,33 @@ challenge, which has the full detail.
 
 Everything after this week assumes you chose your architecture with a
 measurement and can say what would change it.
+
+---
+
+## Week 5: the second way, measured
+
+**Dispatcher.** Asked for a tool that does not exist, the model gets back `Unknown tool: lookup_team. Available tools: search_documents`. Arguments that do not parse come back as `Arguments were not a JSON object with queries: ...`, and the model tries once more (`skill.py`, `dispatch`).
+
+**Both ways, the same two requests** (measured 8 Nov, `measure.py`):
+
+| Request | Way | Model calls | Capability calls | Seconds | Tokens | Embedding tokens |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| klijent-01 POL-001 | tool | 6 | 7 | 58.9 | 27,836 | 12,606 |
+| klijent-01 POL-001 | skill | 3 | 7 | 66.7 | 8,746 | not visible |
+| klijent-05 ORG-001 | tool | 5 | 4 | 59.4 | 17,075 | 12,353 |
+| klijent-05 ORG-001 | skill | 3 | 10 | 84.8 | 8,960 | not visible |
+
+The tool loop asked for 3 searches in its first turn on both requests, so its 4 to 7 searches took 3 to 4 model turns. The skill plans every search in one call. Its searches run in a subprocess, so the counter in my process could not see them: run.py writes one line per search and I counted those. The embedding tokens for its queries are not counted at all.
+
+**Real response size** (measured): the tool loop's searches return 1.8 to 2.0 KB each, 4 to 7 per request; the skill's return about 1.0 KB each, 7 to 10 per request. These are whole pages of my synthetic documents, none above the 1,000-character cut. Real client documents are longer.
+
+At ten times the volume both ways cost ten times more. The difference is document size: the tool loop reads every search result back into its conversation, so with real documents a few times longer than mine its tokens grow with them, while the skill passes the results on once. The Week 3 endpoint also embeds all 150 pages on every request, about 12,500 tokens, and at ten times the volume it needs the cache the skill already has.
+
+**Do both find the documents?** (`accuracy.py`, the ten Week 3 cases, one run each):
+
+| | documents_found (8 cases) | Declined with no evidence | Extra sources |
+| --- | ---: | ---: | ---: |
+| tool | 0.85 | 1 of 2 | 9 |
+| skill | 0.78 | 1 of 2 | 11 |
+
+In one run each, the skill found slightly fewer of the labelled documents (0.78 against 0.85: worse on four cases, better on one), because it plans every search before it sees a result. One run cannot separate them, since the same code moved by a case or two between runs in Week 3, so I would rerun before calling it a loss.

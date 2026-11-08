@@ -12,6 +12,7 @@ from fastapi.responses import HTMLResponse
 from gradio import Server
 
 import assess
+import skill
 from llm import stream_reply
 from schema import EvidenceDocument, Request, solve
 
@@ -66,6 +67,18 @@ def assess_control_for_client(client_id: str, control_id: str) -> str:
     Never makes the final decision; the consultant does.
     """
     return assess.assess_control_for_client(client_id, control_id).model_dump_json()
+
+
+@app.api(name="assess_control_with_skill")
+def assess_control_with_skill(client_id: str, control_id: str) -> str:
+    """The same assessment as assess_control_for_client, with the search done as a skill.
+
+    The model reads the control's SKILL.md (what the control asks for, without the
+    level scale), plans its searches in one call, and a script runs each search over
+    the client's documents. Everything after the search is the same. Same arguments,
+    errors and declines as assess_control_for_client.
+    """
+    return skill.assess_control_with_skill(client_id, control_id).model_dump_json()
 
 # --- The frontend ------------------------------------------------------------
 # Defining a route at "/" replaces Gradio's default UI with ours.
