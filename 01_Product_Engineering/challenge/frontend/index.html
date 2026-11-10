@@ -58,6 +58,12 @@
       .statement { margin: 0.5rem 0; padding: 0.5rem 0.7rem; background: var(--accent-soft); border-radius: 6px; font-size: 0.92rem; }
       .badge { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 4px; background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn-line); font-weight: 600; font-size: 0.8rem; }
       .note { color: var(--muted); font-size: 0.9rem; margin: 0.4rem 0; }
+      .decision { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px dashed var(--line); }
+      .decision-buttons, .decision-form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.4rem; }
+      .decision-form[hidden] { display: none; }   /* display: flex above would otherwise win over hidden */
+      .decision-form textarea { flex: 1 1 14rem; min-height: 3rem; }
+      button.secondary { background: #fff; color: var(--accent); border: 1px solid var(--accent); }
+      .decided { font-weight: 600; color: var(--accent); }
       .label-small { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 0.9rem 0 0.3rem; }
       .rationale { margin: 0; }
       .quote { margin: 0.5rem 0; padding: 0.6rem 0.75rem; border-left: 3px solid var(--accent); background: #fafbfd; border-radius: 0 6px 6px 0; }
@@ -336,9 +342,9 @@
         out.appendChild(steps);
       }
 
-      function renderDimension(title, dim, citations) {
+      function renderDimension(title, dim, citations, decision) {
         const box = el("section", null, "dim");
-        box.appendChild(el("h3", title));
+        box.appendChild(el("h3", `${title}: prijedlog alata`));
         const row = el("div", null, "level-row");
         if (dim.level == null) {
           row.appendChild(el("div", "Nema razine", "level none"));
@@ -366,6 +372,55 @@
           quote.appendChild(el("div", `„${c.text}”`, "text"));
           box.appendChild(quote);
         }
+        if (decision) box.appendChild(renderDecision(decision, dim));
+        return box;
+      }
+
+      // Week 5: the tool proposes, the consultant decides, and her decision is recorded.
+      function renderDecision(ctx, dim) {
+        const box = el("div", null, "decision");
+        const proposed = dim.level == null ? "" : String(dim.level);
+        const accept = el("button", "Prihvati");
+        const change = el("button", "Promijeni", "secondary");
+        accept.type = change.type = "button";
+        const form = el("div", null, "decision-form");
+        form.hidden = true;
+        const select = document.createElement("select");
+        for (const value of ["", "1", "2", "3", "4", "5"]) {
+          const option = el("option", value || "Bez razine");
+          option.value = value;
+          option.selected = value === proposed;
+          select.appendChild(option);
+        }
+        const reason = el("textarea");
+        reason.placeholder = "Razlog promjene (obavezno)";
+        const save = el("button", "Spremi odluku");
+        save.type = "button";
+        form.append(select, reason, save);
+        const status = el("div", null, "note");
+
+        async function send(decided, why) {
+          status.textContent = "Spremam...";
+          try {
+            await client.predict("/record_consultant_decision", { ...ctx, proposed_level: proposed, decided_level: decided, reason: why });
+            const text = decided === proposed
+              ? `Odluka konzultanta: prihvaćeno (${proposed || "bez razine"}).`
+              : `Odluka konzultanta: ${proposed || "bez razine"} → ${decided || "bez razine"}. Razlog: ${why}`;
+            box.replaceChildren(el("div", text, "decided"));
+          } catch (err) {
+            status.textContent = err?.message || String(err);
+          }
+        }
+
+        accept.addEventListener("click", () => send(proposed, ""));
+        change.addEventListener("click", () => { form.hidden = !form.hidden; });
+        save.addEventListener("click", () => {
+          if (select.value !== proposed && !reason.value.trim()) { status.textContent = "Upiši razlog promjene."; return; }
+          send(select.value, reason.value.trim());
+        });
+        const buttons = el("div", null, "decision-buttons");
+        buttons.append(accept, change);
+        box.append(el("div", "Odluka konzultanta", "label-small"), buttons, form, status);
         return box;
       }
 
@@ -401,8 +456,10 @@
           root.appendChild(box);
         } else {
           const dims = el("div", null, "dims");
-          dims.appendChild(renderDimension("Dokumentacija", doc, citations));
-          dims.appendChild(renderDimension("Implementacija", impl, citations));
+          // Only the client flow records a decision: it is the one tied to a client.
+          const decision = (dimension) => client_id && { client_id, control_id: data.control_id, dimension };
+          dims.appendChild(renderDimension("Dokumentacija", doc, citations, decision("documentation")));
+          dims.appendChild(renderDimension("Implementacija", impl, citations, decision("implementation")));
           root.appendChild(dims);
           const extra = el("div", null, "extra");
           if (data.contradictions?.length) extra.appendChild(renderList("Proturječja među dokumentima", data.contradictions, "warn"));

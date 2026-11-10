@@ -5,19 +5,25 @@ queueing, streaming, and MCP for free, but you bring your own frontend. That
 split is the point: the API is the product, the UI is disposable.
 """
 
+import json
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi.responses import HTMLResponse
 from gradio import Server
 
 import assess
+import skill
 from llm import stream_reply
-from schema import EvidenceDocument, Request, solve
+from schema import CATALOG, EvidenceDocument, Request, solve
 
 app = Server()
 
 FRONTEND = Path(__file__).parent / "frontend" / "index.html"
+# The consultant's accept or change, one JSON line each. Outside the clients' folder, which is mounted read-only.
+DECISIONS = Path(os.getenv("DECISIONS_FILE") or "/tmp/consultant_decisions.jsonl")
+LEVELS = {"", "1", "2", "3", "4", "5"}
 
 # --- The API -----------------------------------------------------------------
 # The `-> str` return annotation is REQUIRED. Without it Gradio infers zero
@@ -66,6 +72,44 @@ def assess_control_for_client(client_id: str, control_id: str) -> str:
     Never makes the final decision; the consultant does.
     """
     return assess.assess_control_for_client(client_id, control_id).model_dump_json()
+
+
+@app.api(name="assess_control_with_skill")
+def assess_control_with_skill(client_id: str, control_id: str) -> str:
+    """The same assessment as assess_control_for_client, with the search done as a skill.
+
+    The model reads the control's SKILL.md (what the control asks for, without the
+    level scale), plans its searches in one call, and a script runs each search over
+    the client's documents. Everything after the search is the same. Same arguments,
+    errors and declines as assess_control_for_client.
+    """
+    return skill.assess_control_with_skill(client_id, control_id).model_dump_json()
+
+
+@app.api(name="record_consultant_decision")
+def record_consultant_decision(client_id: str, control_id: str, dimension: str, proposed_level: str,
+                               decided_level: str, reason: str) -> str:
+    """Record the consultant's decision on one proposed level: accepted as is, or changed.
+
+    dimension is "documentation" or "implementation"; levels are "1" to "5", or "" for
+    no level. A changed level needs a reason. The tool only proposes; this is the
+    consultant's answer, kept with the time it was given.
+    """
+    if control_id not in CATALOG:
+        raise ValueError(f"Unknown control: {control_id}")
+    if dimension not in ("documentation", "implementation"):
+        raise ValueError(f"Unknown dimension: {dimension}")
+    if proposed_level not in LEVELS or decided_level not in LEVELS:
+        raise ValueError('Levels are "1" to "5", or "" for no level.')
+    if decided_level != proposed_level and not reason.strip():
+        raise ValueError("A changed level needs a reason.")
+    record = {"client_id": client_id, "control_id": control_id, "dimension": dimension,
+              "proposed_level": proposed_level or None, "decided_level": decided_level or None,
+              "changed": decided_level != proposed_level, "reason": reason.strip(),
+              "decided_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+    with DECISIONS.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(record, ensure_ascii=False) + "\n")
+    return json.dumps(record, ensure_ascii=False)
 
 # --- The frontend ------------------------------------------------------------
 # Defining a route at "/" replaces Gradio's default UI with ours.

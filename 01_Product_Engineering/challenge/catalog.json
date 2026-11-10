@@ -14,7 +14,14 @@
       "3": "Strateški akt je dokumentiran, sadrži sve osnovne elemente i formalno je usvojen od strane upravljačkog tijela.",
       "4": "Strateški akt je dokumentiran, sadrži sve osnovne elemente, formalno usvojen od strane upravljačkog tijela i implementiran u poslovne procese subjekta, uzimajući u obzir poslovne prioritete subjekta.",
       "5": "Strateški akt je dokumentiran, sadrži sve osnovne elemente, formalno je usvojen od strane upravljačkog tijela i implementiran u poslovne procese subjekta te ažuriran po potrebi kao i po provedbi procjene djelotvornosti mjera koja se provodi najmanje jednom tijekom tekuće godine."
-    }
+    },
+    "target_state": "Strateški akt mora biti dokumentiran, mora sadržavati sve osnovne elemente, mora biti formalno usvojen od strane upravljačkog tijela i implementiran u poslovne procese subjekta te mora biti ažuriran po potrebi, kao i nakon provedbe procjene djelotvornosti mjera koja se mora provoditi najmanje jednom tijekom tekuće godine.",
+    "references": [
+      "ISO/IEC 27001:2022 (5.2)",
+      "ISO 22301:2019 (6.2)",
+      "NIST SP 800-53 Rev. 5 (PM-1)",
+      "NIST CSF v2.0 (Kategorija GV)"
+    ]
   },
   "ORG-001": {
     "name": "Raspodjela uloga, odgovornosti i obveza",
@@ -31,7 +38,14 @@
       "3": "Uloge i odgovornosti su u cijelosti definirane i formalno dokumentirane, ali nisu komunicirane relevantnim zaposlenicima koji su uključeni u provedbu sigurnosnih mjera.",
       "4": "Uloge i odgovornosti su formalno dokumentirane i komunicirane relevantnim zaposlenicima koji su uključeni u provedbu sigurnosnih mjera.",
       "5": "Uloge i odgovornosti su jasno definirane, formalno dokumentirane, komunicirane relevantnim zaposlenicima koji su uključeni u provedbu sigurnosnih mjera i revidirane i ažurirane u skladu sbposlovnim potrebama i promjenama unutar subjekta."
-    }
+    },
+    "target_state": "Uloge i odgovornosti moraju biti jasno definirane, formalno dokumentirane, komunicirane relevantnim zaposlenicima koji su uključeni u provedbu sigurnosnih mjera i revidirane i ažurirane u skladu sbposlovnim potrebama i promjenama unutar subjekta.",
+    "references": [
+      "ISO/IEC 27001:2022 (5.3, A.5.3, A.5.4)",
+      "ISO 22301:2019 (5.3)",
+      "ISO/IEC 27005:2022",
+      "NIST SP 800-53 Rev. 5 (PM-1, PM-2, RA-1)"
+    ]
   },
   "EDU-001": {
     "name": "Upoznavanje zaposlenika s ključnim odrednicama kibernetičke sigurnosne politike",
@@ -48,6 +62,13 @@
       "3": "Edukacija se provodi, ali ne obuhvaća sve potrebne elemente posebno u vezi s upravljanjem sigurnosnim rizicima i njihovim potencijalnim utjecajem na usluge i aktivnosti subjekta ili nije dostupna svim relevantnim zaposlenicima.",
       "4": "Edukacija obuhvaća sve potrebne elemente i dostupna je svim relevantnim zaposlenicima.",
       "5": "Edukacija je potpuno implementirana i uz sve potrebne elemente provodi se redovito za sve zaposlenike."
-    }
+    },
+    "target_state": "Edukacija mora biti potpuno implementirana i uz sve potrebne elemente provoditi se redovito za sve zaposlenike.",
+    "references": [
+      "ISO/IEC 27001:2022 (A.5.4, A.6.3)",
+      "ISO 22301:2019 (7.3)",
+      "NIST SP 800-53 Rev. 5 (AT-2, AT-3, PM-13)",
+      "NIST CSF v2.0 (PR.AT-1)"
+    ]
   }
 }
