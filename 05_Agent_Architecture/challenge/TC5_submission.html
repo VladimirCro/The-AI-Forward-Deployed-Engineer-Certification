@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TC5 submission</title>
+<style>
+:root{
+  --bg:#faf9f6; --card:#ffffff; --ink:#1c1c1a; --muted:#5d5b55; --line:#dcd9d0;
+  --accent:#9a3b12; --tint:#f3ece4; --link:#0b5cad;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16171a; --card:#1e2024; --ink:#ebeae6; --muted:#a3a198; --line:#34363b;
+    --accent:#e8a070; --tint:#26241f; --link:#7db7f0;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16171a; --card:#1e2024; --ink:#ebeae6; --muted:#a3a198; --line:#34363b;
+  --accent:#e8a070; --tint:#26241f; --link:#7db7f0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  padding:24px 16px 56px; overflow-wrap:break-word}
+main{max-width:760px; margin:0 auto}
+a{color:var(--link)}
+h1{font-size:2rem; line-height:1.15; margin:0 0 6px}
+h2{font-size:1.3rem; line-height:1.25; margin:40px 0 10px; padding-top:6px; border-top:1px solid var(--line)}
+p{margin:0 0 12px}
+.sub{color:var(--muted); margin-bottom:20px}
+code{font:.88em ui-monospace,Consolas,monospace; background:var(--tint); padding:1px 5px; border-radius:4px; overflow-wrap:anywhere}
+pre{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin:0 0 12px; overflow-x:auto}
+pre code{background:none; padding:0; overflow-wrap:normal; white-space:pre}
+.box{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:0 0 12px}
+.wrap{overflow-x:auto; margin:0 0 12px; border:1px solid var(--line); border-radius:10px; background:var(--card)}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:.95rem}
+th,td{text-align:left; vertical-align:top; padding:8px 12px; border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{background:var(--tint); font-weight:600}
+ul,ol{margin:0 0 12px; padding-left:22px}
+li{margin-bottom:6px}
+.order{color:var(--muted); font-size:.95rem}
+.num{white-space:nowrap}
+td.num,th.num{text-align:right}
+.wide th,.wide td{padding:8px 6px}
+</style>
+</head>
+<body>
+<main>
+<h1>TC5 submission</h1>
+<p class="sub">Week 5, Agent Architecture.</p>
+
+<h2 id="summary">Summary</h2>
+<p>A second way for the Week 3 endpoint, which assesses one control for one fictional client. I built the search as a skill, measured it against the tool loop on the same two requests and on the Week 3 cases, and kept the tool loop. The architecture row in <code>use_case/decisions.md</code> says why and what would make me switch.</p>
+
+<h2 id="video">Video</h2>
+<p><a href="https://www.loom.com/share/b6583334a0bf4c1ea22e2f5496e98805">Watch the video on Loom</a></p>
+
+<h2 id="deliverables">Where each deliverable is</h2>
+<div class="wrap">
+<table>
+<tr><th>Deliverable</th><th>Where</th></tr>
+<tr><td>Video, the refined five-minute demo</td><td><a href="#video">Above</a></td></tr>
+<tr><td>What changed after critique</td><td><a href="#critique">The paragraph below</a>, and the top of <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/05_Agent_Architecture/challenge/README.md#week-5-the-second-way-measured"><code>## Week 5: the second way, measured</code></a> in <code>05_Agent_Architecture/challenge/README.md</code></td></tr>
+<tr><td>The room's questions, with their marks</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>use_case/decisions.md</code></a>, "Week 5 — what the room asked"</td></tr>
+<tr><td>The second way, and why</td><td><a href="#second-way">"The second way, and why"</a> below</td></tr>
+<tr><td>The second implementation</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/skill.py"><code>skill.py</code></a>, <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/tree/main/01_Product_Engineering/challenge/skills"><code>skills/</code></a> (a <code>SKILL.md</code> per control and <code>run.py</code>), <code>assess_control_with_skill</code> in <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/app.py"><code>app.py</code></a></td></tr>
+<tr><td>The dispatcher's failure messages</td><td><code>dispatch</code> in <code>skill.py</code>, and the README section</td></tr>
+<tr><td>Demo-scale measurement and the parallel-tool-call count</td><td>README section; <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/05_Agent_Architecture/challenge/measure.py"><code>measure.py</code></a></td></tr>
+<tr><td>Real-size row</td><td>README section</td></tr>
+<tr><td>Whether the skill finds the documents</td><td>README section; <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/05_Agent_Architecture/challenge/accuracy.py"><code>accuracy.py</code></a></td></tr>
+<tr><td>Architecture row</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>use_case/decisions.md</code></a>, Week 5, first row</td></tr>
+<tr><td>Step 7, the refined demo shown to the consultant</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/stakeholders.md"><code>use_case/stakeholders.md</code></a>, Week 5; what it changed in <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>use_case/decisions.md</code></a>, Week 5, second row</td></tr>
+<tr><td>Swap lines</td><td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/05_Agent_Architecture/challenge/README.md#bring-it-to-work"><code>## Bring it to work</code></a> in <code>05_Agent_Architecture/challenge/README.md</code></td></tr>
+<tr><td>It still runs in Docker</td><td>Last paragraph of the README section; commands in <a href="#run">"Run it"</a> below</td></tr>
+<tr><td>Repo link on Maven</td><td>Posted after this is pushed</td></tr>
+<tr><td>Comments on two other submissions</td><td>After the deadline</td></tr>
+</table>
+</div>
+
+<h2 id="critique">What changed after critique</h2>
+<p>The room's questions (decisions.md, Week 5) gave me two fixes. The headline now always sits next to what I would accept: documents_found 0.85, and I would accept 26 of 50 answers. The screen now says each level is the tool's proposal, with an accept or change step that needs a reason and is recorded. The open question, what I rejected, I answered by building a second way and measuring it (below, and the architecture row). The consultant's review of the refined demo changed one more thing: her worst case is a level that is too high with real quotes that don't prove the condition. Every accept or change is now recorded with its reason, and counting the proposals above her decision is the next step.</p>
+
+<h2 id="room">The room's questions</h2>
+<p>In <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>use_case/decisions.md</code></a>, under "Week 5 — what the room asked": two fair, one open, the rest answered. I was not at Session 9, so these are the rubric's questions plus the replies to my TC4 post on Maven.</p>
+<ul>
+<li><b>Fair:</b> "Show 'would accept' next to 0.85." The Week 5 texts and the demo show "would accept: 26 of 50" next to 0.85.</li>
+<li><b>Fair:</b> "The app doesn't show that the consultant decides." The answer is labelled as a proposal, with a step where she accepts or changes the level.</li>
+<li><b>Open:</b> "What did you consider and reject?" Answered by the skill below and the architecture row.</li>
+</ul>
+
+<h2 id="second-way">The second way, and why</h2>
+<p><b>Second way: a skill.</b> Question 4 picked it: what each control asks for and what counts as evidence is knowledge the consultant owns, and it will change more often than the code. Questions 1 and 2 were no: the capability is not an existing API at work, and only my own frontend calls it. Question 3 was yes (in Week 3 about 4.7 searches of about 2 KB per request; 4 to 9 in this week's runs), but Code Mode needs a sandbox I don't have, so it stays a paragraph.</p>
+<p><b>Closest alternative I did not pick: a subagent.</b> The search does read a lot to return a little (in Week 3 about 9,300 characters for 3 or 4 documents), but it already runs as one fixed step with its own prompt, so a second model in front of it adds a call without new information.</p>
+
+<h2 id="dispatcher">The dispatcher</h2>
+<p>Asked for a tool that does not exist, the model gets back <code>Unknown tool: lookup_team. Available tools: search_documents</code>. Arguments that do not parse come back as <code>Arguments were not a JSON object with queries: ...</code>, and the model tries once more (<a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/skill.py"><code>skill.py</code></a>, <code>dispatch</code>).</p>
+
+<h2 id="demo-scale">Both ways at demo scale</h2>
+<p>The same two requests, measured 8 Nov with <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/05_Agent_Architecture/challenge/measure.py"><code>measure.py</code></a>:</p>
+<div class="wrap">
+<table>
+<tr><th>Request</th><th>Way</th><th class="num">Model calls</th><th class="num">Capability calls</th><th class="num">Seconds</th><th class="num">Tokens</th><th class="num">Embedding tokens</th></tr>
+<tr><td>klijent-01 POL-001</td><td>tool</td><td class="num">6</td><td class="num">7</td><td class="num">58.9</td><td class="num">27,836</td><td class="num">12,606</td></tr>
+<tr><td>klijent-01 POL-001</td><td>skill</td><td class="num">3</td><td class="num">7</td><td class="num">66.7</td><td class="num">8,746</td><td class="num">not visible</td></tr>
+<tr><td>klijent-05 ORG-001</td><td>tool</td><td class="num">5</td><td class="num">4</td><td class="num">59.4</td><td class="num">17,075</td><td class="num">12,353</td></tr>
+<tr><td>klijent-05 ORG-001</td><td>skill</td><td class="num">3</td><td class="num">10</td><td class="num">84.8</td><td class="num">8,960</td><td class="num">not visible</td></tr>
+</table>
+</div>
+<p>Parallel tool calls: yes. The tool loop asked for 3 searches in its first turn on both requests, so its 4 to 7 searches took 3 to 4 model turns. The skill plans every search in one call.</p>
+<p>The skill's searches run in a subprocess, so the counter in my process could not see them: <code>run.py</code> writes one line per search and I counted those. The embedding tokens for its queries are not counted at all.</p>
+<p>No request in my use case needs a single search: every assessment ran at least four, so both requests are the "several calls" kind.</p>
+
+<h2 id="real-size">Real response size</h2>
+<p>Measured 8 and 9 Nov. The searches already return whole pages of my synthetic documents, so demo size is the real size of this data. Real client documents are longer.</p>
+<div class="wrap">
+<table>
+<tr><th>Way</th><th class="num">Bytes per search</th><th class="num">Searches per request</th><th class="num">Model tokens per request</th></tr>
+<tr><td>tool loop</td><td class="num">1,824 to 2,113</td><td class="num">4 to 9</td><td class="num">17,075 to 39,437</td></tr>
+<tr><td>skill, planned up front</td><td class="num">927 to 1,009</td><td class="num">7 to 10</td><td class="num">7,846 to 9,049</td></tr>
+<tr><td>skill in a loop, up to 8 results per search</td><td class="num">1,914 to 1,989</td><td class="num">4 to 8</td><td class="num">13,724 to 31,994</td></tr>
+</table>
+</div>
+<p>At ten times the volume each way costs ten times its tokens: for the tool loop about 170,000 to 395,000 model tokens for ten requests, plus about 125,000 embedding tokens, because the Week 3 endpoint embeds all 150 pages on every request.</p>
+<p>Whether they find the documents (<a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/05_Agent_Architecture/challenge/accuracy.py"><code>accuracy.py</code></a>, 8 Week 3 cases with labelled documents): tool loop 0.93 on average over six runs, the skill planned up front 0.79 over six, the skill in a loop with up to 8 results per search 0.92 over three. So the token saving came from reading fewer results, not from the skill. The full table is in the <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/05_Agent_Architecture/challenge/README.md#week-5-the-second-way-measured">README section</a>.</p>
+
+<h2 id="decision">Architecture row</h2>
+<p>From <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>use_case/decisions.md</code></a>, Week 5, first row.</p>
+<div class="box">
+<p><b>Decision:</b> a tool. The search stays a tool loop in my own process. What each control asks for will live in a markdown file per control that the consultant can edit.</p>
+<p><b>Closest reject:</b> the skill, which I built in three versions. Planned up front it read 2 to 4 times fewer tokens but found fewer documents (0.79 against 0.93). In a loop with as many results per search as the tool it found as many (0.92) and cost about as many tokens, while every search ran in a subprocess my counter could not see.</p>
+<p><b>Why:</b> questions 1 and 2 no; question 3 yes, but Code Mode needs a sandbox; question 4 yes, but the control is always known in advance, so the model never has to choose a skill and progressive disclosure buys nothing; question 5 is already handled by the search step. The consultant also expects the tool to search again when a key condition is unclear, which a loop does.</p>
+<p><b>Switch condition:</b> a real skill if one request has to work across many controls; Code Mode, once there is a sandbox, if real documents make one search return more than about 10 KB; MCP if a second client needs the assessment.</p>
+</div>
+
+<h2 id="user">Step 7, demo review</h2>
+<p>Done in writing on 9 November with the GRC consultant, because she prefers to review written material: what changed after critique, one answer with the accept or change step, the klijent-10 failure, the numbers and the architecture I measured, then the three questions.</p>
+<ul>
+<li><b>What would you do differently on Monday?</b> Run it on one of the three controls next to her own review and measure how much time it really saves once checking is counted.</li>
+<li><b>What did I say that you did not believe?</b> She does not yet trust the proposed levels: it declines correctly in only 2 of 5 no-evidence cases, and it still has to show it recognises what a document proves.</li>
+<li><b>What is the worst thing this could do?</b> A level that is too high, with a convincing rationale and real quotes that do not prove the condition, which she misses and accepts.</li>
+</ul>
+<p>What changed (<a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>use_case/decisions.md</code></a>, Week 5, second row): a proposed level higher than her decision will be counted on its own, next to the headline, and when the evidence a level needs is missing the tool will give no level with a reason and the next step. Decided, not built yet: today every accept or change is recorded with its reason, and nothing counts them yet. Her full answers are in <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/stakeholders.md"><code>use_case/stakeholders.md</code></a>, Week 5.</p>
+
+<h2 id="work">Swap lines</h2>
+<p>Under <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/05_Agent_Architecture/challenge/README.md#bring-it-to-work"><code>## Bring it to work</code></a> in <code>05_Agent_Architecture/challenge/README.md</code>. The capability is the search over one client's documents, which the assessment runs as a tool loop.</p>
+<ul>
+<li><b>Data:</b> about 50 to 200 files per client; today 4 to 9 searches per request, 1.8 to 2.1 KB per search, 17,075 to 39,437 model tokens per request (measured, 8 and 9 Nov).</li>
+<li><b>Model or endpoint:</b> the same internal AI gateway; the documents arrive as files, not behind an existing API; the app team holds the gateway key.</li>
+<li><b>Approval:</b> client consent, a deployment review, and the security and privacy reviews. No sandbox, because I kept the tool loop.</li>
+</ul>
+
+<h2 id="run">Run it</h2>
+<p>The clients must be built by <code>build_clients.py</code>, from the Week 2 data that is gitignored (see the <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/04_Evals/challenge/SUBMISSION.md">Week 4 submission</a>), and <code>.env</code> needs <code>LLM_THINKING=between_tools</code>. Run <code>uv sync</code> once in <code>01_Product_Engineering/challenge</code>.</p>
+<pre><code>cd 01_Product_Engineering/challenge
+uv run --no-sync --env-file ../../.env python ../../05_Agent_Architecture/challenge/measure.py klijent-01 POL-001
+uv run --no-sync --env-file ../../.env python ../../05_Agent_Architecture/challenge/accuracy.py</code></pre>
+<p><code>measure.py</code> prints the four columns for one request, both ways. <code>accuracy.py</code> runs the ten Week 3 cases each way; <code>accuracy.py "skill loop"</code> runs only one way.</p>
+<p>Docker, from the repo root, with the Week 3 commands:</p>
+<pre><code>docker build -t enterprise-fde-challenge 01_Product_Engineering/challenge
+docker run --rm -p 7860:7860 --env-file .env \
+  -v "$PWD/use_case/data/clients:/data/clients:ro" -e CLIENTS_DIR=/data/clients \
+  enterprise-fde-challenge</code></pre>
+<p>On 9 Nov in the container both assessment endpoints answered klijent-03 POL-001 with documentation 3 and implementation 4 and all three labelled documents (56 s for the tool loop, 150 s for the skill), and <code>record_consultant_decision</code> wrote its record.</p>
+</main>
+</body>
+</html>

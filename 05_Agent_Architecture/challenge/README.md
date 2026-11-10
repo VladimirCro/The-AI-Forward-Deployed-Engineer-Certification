@@ -643,6 +643,8 @@ measurement and can say what would change it.
 
 ## Week 5: the second way, measured
 
+**What changed after critique.** The room's questions (decisions.md, Week 5) gave me two fixes. The headline now always sits next to what I would accept: documents_found 0.85, and I would accept 26 of 50 answers. The screen now says each level is the tool's proposal, with an accept or change step that needs a reason and is recorded. The open question, what I rejected, I answered by building a second way and measuring it (below, and the architecture row). The consultant's review of the refined demo changed one more thing: her worst case is a level that is too high with real quotes that don't prove the condition. Every accept or change is now recorded with its reason, and counting the proposals above her decision is the next step.
+
 **Dispatcher.** Asked for a tool that does not exist, the model gets back `Unknown tool: lookup_team. Available tools: search_documents`. Arguments that do not parse come back as `Arguments were not a JSON object with queries: ...`, and the model tries once more (`skill.py`, `dispatch`).
 
 **Both ways, the same two requests** (measured 8 Nov, `measure.py`):
@@ -656,15 +658,35 @@ measurement and can say what would change it.
 
 The tool loop asked for 3 searches in its first turn on both requests, so its 4 to 7 searches took 3 to 4 model turns. The skill plans every search in one call. Its searches run in a subprocess, so the counter in my process could not see them: run.py writes one line per search and I counted those. The embedding tokens for its queries are not counted at all.
 
-**Real response size** (measured): the tool loop's searches return 1.8 to 2.0 KB each, 4 to 7 per request; the skill's return about 1.0 KB each, 7 to 10 per request. These are whole pages of my synthetic documents, none above the 1,000-character cut. Real client documents are longer.
+**Real response size** (measured 8 and 9 Nov). The searches already return whole pages of my synthetic documents (none above the 1,000-character cut), so demo size is the real size of this data. Real client documents are longer.
 
-At ten times the volume both ways cost ten times more. The difference is document size: the tool loop reads every search result back into its conversation, so with real documents a few times longer than mine its tokens grow with them, while the skill passes the results on once. The Week 3 endpoint also embeds all 150 pages on every request, about 12,500 tokens, and at ten times the volume it needs the cache the skill already has.
-
-**Do both find the documents?** (`accuracy.py`, the ten Week 3 cases, one run each):
-
-| | documents_found (8 cases) | Declined with no evidence | Extra sources |
+| Way | Bytes per search | Searches per request | Model tokens per request |
 | --- | ---: | ---: | ---: |
-| tool | 0.85 | 1 of 2 | 9 |
-| skill | 0.78 | 1 of 2 | 11 |
+| tool loop | 1,824 to 2,113 | 4 to 9 | 17,075 to 39,437 |
+| skill, planned up front | 927 to 1,009 | 7 to 10 | 7,846 to 9,049 |
+| skill in a loop, up to 8 results per search | 1,914 to 1,989 | 4 to 8 | 13,724 to 31,994 |
 
-In one run each, the skill found slightly fewer of the labelled documents (0.78 against 0.85: worse on four cases, better on one), because it plans every search before it sees a result. One run cannot separate them, since the same code moved by a case or two between runs in Week 3, so I would rerun before calling it a loss.
+At ten times the volume each way costs ten times its tokens: for the tool loop that is about 170,000 to 395,000 model tokens for ten requests, plus about 125,000 embedding tokens, because the Week 3 endpoint embeds all 150 pages on every request (about 12,500 tokens each); the skill's cache shows that part can drop to almost nothing. The tool loop also reads every result back into its conversation, so with real documents a few times longer its tokens grow with them.
+
+No request in my use case needs a single search: every assessment ran at least four, so both requests in Step 4 are the "several calls" kind.
+
+**Do they find the documents?** (`accuracy.py`, the 8 Week 3 cases with labelled documents, plus the 2 no-evidence cases):
+
+| Way | Runs | documents_found, lowest to highest | Average | klijent-10 declined |
+| --- | ---: | ---: | ---: | ---: |
+| tool loop (level scale in the task) | 6 | 0.85 to 1.00 | 0.93 | 1 of 6 |
+| skill, planned up front | 6 | 0.75 to 0.85 | 0.79 | 0 of 6 |
+| skill in a loop, 4 results per search | 3 | 0.78 to 0.82 | 0.81 | 0 of 3 |
+| skill in a loop, up to 8 results per search | 3 | 0.88 to 0.96 | 0.92 | 0 of 3 |
+
+The ways differ in three things: what the search is told (the level scale or the control's description), how many results a search returns (the tool may ask for up to 8, the skill first had 4), and whether the model plans every search up front or searches in a loop. With the loop and the same number of results, the skill finds as many documents as the tool (0.92 against 0.93) and costs about as many tokens. So the token saving came from reading fewer results, not from the skill, and the control's description finds the documents as well as the level scale. Neither way reliably declines klijent-10.
+
+**It still runs in Docker** (9 Nov, the Week 3 build and run commands). In the container both assessment endpoints answered klijent-03 POL-001 with documentation 3 and implementation 4 and all three labelled documents (56 s for the tool loop, 150 s for the skill, whose first call embeds the client's pages), and `record_consultant_decision` wrote its record.
+
+## Bring it to work
+
+The search over one client's documents, which the assessment runs as a tool loop: every result goes back into the conversation, so with real policies and minutes that run to many pages, each search would read back far more than the 2 KB per search I measured on synthetic data.
+
+- **Data:** the documents a client hands over for its self-assessment, about 50 to 200 files, many of them several pages long. Today 4 to 9 searches per request, 1.8 to 2.1 KB per search, 17,075 to 39,437 model tokens per request [measured, 8 and 9 Nov]; with real documents both grow.
+- **Model or endpoint:** the same internal AI gateway for the search and the assessment. The client's documents are not behind an existing API: they arrive as files. The gateway key is held by the app team as a masked CI variable, written into a Kubernetes secret at deploy time.
+- **Approval:** client consent to process their documents with AI, a deployment review with DevOps (production needs a manual approval by the app owner), and the security and privacy reviews. No sandbox, because I kept the tool loop; Code Mode would need one first.
