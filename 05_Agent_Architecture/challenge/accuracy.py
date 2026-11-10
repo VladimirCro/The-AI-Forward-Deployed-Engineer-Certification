@@ -20,7 +20,8 @@ import assess
 import skill
 
 CASES = APP.parents[1] / "use_case" / "evals" / "retrieval.jsonl"
-WAYS = {"tool": assess.assess_control_for_client, "skill": skill.assess_control_with_skill}
+WAYS = {"tool": assess.assess_control_for_client, "skill": skill.assess_control_with_skill,
+        "skill loop": skill.assess_control_with_skill_loop}
 
 
 def run(way: str, case: dict) -> dict:
@@ -38,16 +39,18 @@ def run(way: str, case: dict) -> dict:
 
 def main() -> None:
     cases = [json.loads(line) for line in CASES.read_text(encoding="utf-8").splitlines() if line.strip()]
-    jobs = [(way, case) for case in cases for way in WAYS]
+    # Optional: only some ways, e.g. accuracy.py "skill loop"
+    ways = {w: WAYS[w] for w in sys.argv[1:]} or WAYS
+    jobs = [(way, case) for case in cases for way in ways]
     with ThreadPoolExecutor(max_workers=4) as pool:
         rows = list(pool.map(lambda job: run(*job), jobs))
-    print("| Case | Kind | Tool: found | Tool: extra | Skill: found | Skill: extra |")
-    print("| --- | --- | ---: | ---: | ---: | ---: |")
+    print("| Case | Kind | " + " | ".join(f"{w}: found | {w}: extra" for w in ways) + " |")
+    print("| --- | --- |" + " ---: | ---: |" * len(ways))
     for case in cases:
-        tool, sk = (next(r for r in rows if r["case"] == case["client"] and r["way"] == w) for w in WAYS)
+        mine = [next(r for r in rows if r["case"] == case["client"] and r["way"] == w) for w in ways]
         cell = lambda r: ("declined" if r["declined"] else "not declined") if r["kind"] == "decline" else f"{r['found']:.2f}"
-        print(f"| {case['client']} | {case['kind']} | {cell(tool)} | {tool['extra']} | {cell(sk)} | {sk['extra']} |")
-    for way in WAYS:
+        print(f"| {case['client']} | {case['kind']} | " + " | ".join(f"{cell(r)} | {r['extra']}" for r in mine) + " |")
+    for way in ways:
         mine = [r for r in rows if r["way"] == way]
         found = [r["found"] for r in mine if r["found"] is not None]
         declines = [r["declined"] for r in mine if r["kind"] == "decline"]

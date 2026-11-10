@@ -109,6 +109,11 @@ def endpoint_with_skill(client_id: str, control_id: str) -> str:
     return skill.assess_control_with_skill(client_id, control_id).model_dump_json()
 
 
+def endpoint_with_skill_loop(client_id: str, control_id: str) -> str:
+    """The skill used in a search loop (skill.py)."""
+    return skill.assess_control_with_skill_loop(client_id, control_id).model_dump_json()
+
+
 def measure(way, client_id: str, control_id: str) -> dict:
     """Run one way on one request and count what it did."""
     meter, counter, first = Meter(), SearchCounter(), FirstTurn()
@@ -147,5 +152,6 @@ def measure(way, client_id: str, control_id: str) -> dict:
 
 if __name__ == "__main__":
     client_id, control_id = sys.argv[1], sys.argv[2]
-    for name, way in (("endpoint today", endpoint_today), ("with the skill", endpoint_with_skill)):
+    for name, way in (("endpoint today", endpoint_today), ("with the skill", endpoint_with_skill),
+                      ("skill in a loop", endpoint_with_skill_loop)):
         print(f"{client_id} {control_id}, {name}:", measure(way, client_id, control_id))

@@ -1,4 +1,4 @@
-"""Search one client's documents: python run.py klijent-01 "odluka uprave o usvajanju politike"
+"""Search one client's documents: python run.py klijent-01 "odluka uprave o usvajanju politike" [k]
 
 Prints the top documents for the query, the same text the search tool returns in
 the Week 3 endpoint. The skill runs this as a subprocess, so no counter in the
@@ -34,10 +34,11 @@ def client_vectors(client_id: str, pages: dict[str, str]) -> np.ndarray:
 
 
 def main() -> None:
-    client_id, query = sys.argv[1], " ".join(sys.argv[2:])
+    client_id, query = sys.argv[1], sys.argv[2]
+    k = int(float(sys.argv[3])) if len(sys.argv) > 3 else retrieval.TOP_K
     pages, _ = retrieval.load_client(client_id)
     _, funcs = retrieval.hybrid_tools(pages, client_vectors(client_id, pages))
-    result = funcs["search_chunks"](query)
+    result = funcs["search_chunks"](query, k)
     log = os.getenv("SKILL_CALL_LOG")
     if log:
         with open(log, "a", encoding="utf-8") as f:
