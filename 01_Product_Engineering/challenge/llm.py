@@ -27,6 +27,9 @@ EXTRA_HEADERS = json.loads(os.getenv("LLM_EXTRA_HEADERS") or "{}")
 THINKING = os.getenv("LLM_THINKING")
 # Without it the gateway stops a reply at 4,096 tokens, which cuts a long assessment mid-JSON.
 MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "16000"))
+# A gateway hiccup (429, 5xx) should not fail a whole assessment. LiteLLM retries only those.
+NUM_RETRIES = 2
+TIMEOUT = 300
 
 SYSTEM_PROMPT = os.getenv(
     "SYSTEM_PROMPT",
@@ -45,7 +48,8 @@ def stream_reply(message: str, history: list[dict] | None = None):
     messages.extend(history or [])
     messages.append({"role": "user", "content": message})
 
-    kwargs = {"model": MODEL, "messages": messages, "stream": True, "max_tokens": MAX_TOKENS}
+    kwargs = {"model": MODEL, "messages": messages, "stream": True, "max_tokens": MAX_TOKENS,
+              "timeout": TIMEOUT, "num_retries": NUM_RETRIES}
     if API_BASE:
         kwargs["api_base"] = API_BASE
     if EXTRA_HEADERS:
@@ -86,7 +90,8 @@ def chat_with_tools(messages: list[dict], tools: list[dict]):
     No temperature: newer models behind the gateway reject it, so every call runs at the
     provider's default.
     """
-    kwargs = {"model": MODEL, "messages": messages, "tools": tools, "timeout": 300}
+    kwargs = {"model": MODEL, "messages": messages, "tools": tools, "max_tokens": MAX_TOKENS,
+              "timeout": TIMEOUT, "num_retries": NUM_RETRIES}
     if API_BASE:
         kwargs["api_base"] = API_BASE
     if EXTRA_HEADERS:
