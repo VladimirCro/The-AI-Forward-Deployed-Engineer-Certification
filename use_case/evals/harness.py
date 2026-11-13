@@ -52,12 +52,16 @@ LEVEL_RANGES = {
 
 
 def parse(actual: str) -> dict:
-    """The app's answer as a dict; anything that is not JSON counts as an empty answer."""
-    try:
-        reply = json.loads(actual)
-    except (TypeError, ValueError):
-        return {}
-    return reply if isinstance(reply, dict) else {}
+    """The app's answer as a dict.
+
+    An answer that is not a JSON object with both dimensions raises, so helpers.harness
+    scores the case 0. Before, it counted as an empty answer, and an empty answer has no
+    level and no sources: echo scored 1.0 on declines_when_no_evidence.
+    """
+    reply = json.loads(actual)
+    if not isinstance(reply, dict) or not {"documentation", "implementation"} <= reply.keys():
+        raise ValueError("The answer is not a Response: documentation or implementation is missing.")
+    return reply
 
 
 def documents_found(actual: str, case: dict) -> float:
@@ -150,9 +154,12 @@ def harness_cases() -> list[dict]:
             for dimension in ("documentation", "implementation"):
                 level = case["reference"][dimension]["level"]
                 expected_levels[dimension] = LEVEL_RANGES.get((trace_id, dimension), [level])
+        expected = {"expected_sources": expected_sources, "expected_levels": expected_levels,
+                    "should_decline": decline}
+        # helpers.harness fingerprints input and output only, so what is right goes in output too:
+        # changing an expected level or a decline case then changes the fingerprint and compare() refuses.
         cases.append({"trace_id": trace_id, "input": json.dumps(case["input"], ensure_ascii=False),
-                      "expected_sources": expected_sources, "expected_levels": expected_levels,
-                      "should_decline": decline})
+                      "output": json.dumps(expected, ensure_ascii=False), **expected})
     return cases
 
 
@@ -165,9 +172,10 @@ def make_oracle(cases: list[dict]):
     """The best system: answers each case with exactly what is right. Every scorer must give it 1.0."""
     answers = {}
     for case in cases:
-        levels = {dimension: {"level": allowed[0]} for dimension, allowed in case["expected_levels"].items()}
-        if case["should_decline"]:
-            levels = {"documentation": {"level": None}, "implementation": {"level": None}}
+        # Both dimensions always, as the app answers: no level where the case expects none.
+        levels = {"documentation": {"level": None}, "implementation": {"level": None}}
+        if not case["should_decline"]:
+            levels.update({dimension: {"level": allowed[0]} for dimension, allowed in case["expected_levels"].items()})
         answers[case["input"]] = json.dumps({**levels, "sources": case["expected_sources"]}, ensure_ascii=False)
     return lambda question: answers[question]
 

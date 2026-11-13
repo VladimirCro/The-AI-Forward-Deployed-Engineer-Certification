@@ -17,6 +17,7 @@ One run: 52 app calls and 62 judge calls (12 to calibrate, 50 to score; crashed 
 """
 
 import json
+import statistics
 import sys
 from pathlib import Path
 
@@ -68,6 +69,10 @@ def summary(report, cases: list[dict]) -> str:
     lines.append(f"Headline {HEADLINE}: {mean:.2f}, 95% CI [{lo:.2f}, {hi:.2f}] on {len(headline)} cases")
     if report.errors:
         lines.append(f"{report.errors} cases errored and scored 0")
+    # The endpoint's time per case, so a guardrail put in front of it shows up as latency, not only as scores.
+    seconds = sorted(result.seconds for result in report.results)
+    p95 = seconds[round(0.95 * (len(seconds) - 1))]
+    lines.append(f"Seconds per case: median {statistics.median(seconds):.1f}, p95 {p95:.1f}, max {seconds[-1]:.1f}")
     return "\n".join(lines)
 
 
