@@ -21,7 +21,7 @@ import numpy as np
 from litellm import embedding
 from rank_bm25 import BM25Okapi
 
-from llm import chat_with_tools
+from llm import NUM_RETRIES, chat_with_tools
 
 # `or`, not a getenv default: the repo path does not exist inside the container, and a
 # default argument is worked out even when CLIENTS_DIR is set.
@@ -91,7 +91,9 @@ class TextEmbedder:
         if not EMBED_API_BASE:
             # Without it LiteLLM sends the gateway key to the provider's public API.
             raise RuntimeError("EMBED_API_BASE is not set")
-        response = embedding(model=EMBED_MODEL, input=[text], api_base=EMBED_API_BASE, timeout=120)
+        # About 150 of these per request, so one gateway hiccup would otherwise fail the whole case.
+        response = embedding(model=EMBED_MODEL, input=[text], api_base=EMBED_API_BASE, timeout=120,
+                             num_retries=NUM_RETRIES)
         with self.lock:
             self.tokens += int(getattr(response.usage, "total_tokens", 0) or 0)
         return response.data[0]["embedding"]

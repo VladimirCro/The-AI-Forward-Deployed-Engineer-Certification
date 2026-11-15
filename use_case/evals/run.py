@@ -17,6 +17,7 @@ One run: 52 app calls and 62 judge calls (12 to calibrate, 50 to score; crashed 
 """
 
 import json
+import statistics
 import sys
 from pathlib import Path
 
@@ -28,6 +29,9 @@ from helpers import harness as course
 
 APP_URL = "http://localhost:7860"
 BASELINE = EVALS / "baseline.json"
+# Three runs of the same app on 13 Nov moved the judge by 0.07 and only_case_documents by 0.04,
+# so the course default of 0.02 called noise a regression (decisions.md, Week 6).
+TOLERANCE = 0.08
 HEADLINE = "documents_found"  # failures.md #1, the top line: the search misses an important document
 
 
@@ -68,6 +72,10 @@ def summary(report, cases: list[dict]) -> str:
     lines.append(f"Headline {HEADLINE}: {mean:.2f}, 95% CI [{lo:.2f}, {hi:.2f}] on {len(headline)} cases")
     if report.errors:
         lines.append(f"{report.errors} cases errored and scored 0")
+    # The endpoint's time per case, so a guardrail put in front of it shows up as latency, not only as scores.
+    seconds = sorted(result.seconds for result in report.results)
+    p95 = seconds[round(0.95 * (len(seconds) - 1))]
+    lines.append(f"Seconds per case: median {statistics.median(seconds):.1f}, p95 {p95:.1f}, max {seconds[-1]:.1f}")
     return "\n".join(lines)
 
 
@@ -81,9 +89,12 @@ def main() -> None:
     print(report)
     print(summary(report, cases))
     if "--save" in sys.argv:
+        # A run where the app was down scores 0 everywhere, and compare() against it would pass anything.
+        if report.errors > len(cases) // 10:
+            sys.exit(f"{report.errors} of {len(cases)} cases errored; not saving this run as the baseline.")
         course.save(report, BASELINE)
     # Compare per-scorer means over the cases each scorer is about, on both sides.
-    print(course.compare(subset_means(course.load(BASELINE), cases), subset_means(report, cases)))
+    print(course.compare(subset_means(course.load(BASELINE), cases), subset_means(report, cases), tolerance=TOLERANCE))
 
 
 if __name__ == "__main__":
