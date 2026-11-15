@@ -29,6 +29,9 @@ from helpers import harness as course
 
 APP_URL = "http://localhost:7860"
 BASELINE = EVALS / "baseline.json"
+# Three runs of the same app on 13 Nov moved the judge by 0.07 and only_case_documents by 0.04,
+# so the course default of 0.02 called noise a regression (decisions.md, Week 6).
+TOLERANCE = 0.08
 HEADLINE = "documents_found"  # failures.md #1, the top line: the search misses an important document
 
 
@@ -86,9 +89,12 @@ def main() -> None:
     print(report)
     print(summary(report, cases))
     if "--save" in sys.argv:
+        # A run where the app was down scores 0 everywhere, and compare() against it would pass anything.
+        if report.errors > len(cases) // 10:
+            sys.exit(f"{report.errors} of {len(cases)} cases errored; not saving this run as the baseline.")
         course.save(report, BASELINE)
     # Compare per-scorer means over the cases each scorer is about, on both sides.
-    print(course.compare(subset_means(course.load(BASELINE), cases), subset_means(report, cases)))
+    print(course.compare(subset_means(course.load(BASELINE), cases), subset_means(report, cases), tolerance=TOLERANCE))
 
 
 if __name__ == "__main__":
