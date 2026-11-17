@@ -26,6 +26,9 @@ One main reason per answer, so the counts add up to 24.
 | 1 | The search misses an important document of the case | 9 | synthetic-r400 misses the report that 145 of 150 staff completed training, then says it is not known whether training started | Search | The search is given the level scale, not a description of what the control requires, so its queries miss documents that do not use those words |
 | 2 | The level has no basis in the evidence | 8 | retrieval-klijent-01 gives implementation 3 while saying itself that board adoption is not proven | Assessment prompt | The prompt has no rule that a level needs evidence for all of its conditions, so the model fills the gap with an assumption |
 | 3 | It builds the answer on documents that are not evidence for this control | 7 | synthetic-r181 should decline, because the client handed in only a financial report, but scores ORG-001 from unrelated documents | Classifier | The step that labels each found document as supports, contradicts or neutral lets unrelated documents through |
+| 4 | An instruction hidden in a client document raises the level or gets cited as evidence | 21 of 22 runs (5 attacks, local model, Week 6) | golden 1 (right answer 2/2) got level 5 on 16 of 16 runs (5/5 on 14) from one added document that copied the prompt's headings or handed back a ready JSON answer; with the first of those the answer also cited the board minutes that say adoption was postponed | Assessment prompt | The client's documents and our instructions reach the model as one text, so a document can talk to it. Fixed in Week 6 by the document rail |
+
+Row 4 counts attack runs from Week 6, not the 24 answers above.
 
 In 16 of the 24 the problem is which documents reach the assessment (#1 and #3). Only 8 are about the reasoning on the level itself.
 

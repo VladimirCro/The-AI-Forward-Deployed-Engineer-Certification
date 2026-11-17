@@ -1,0 +1,27 @@
+# Week 6 guardrails. Each client document passes the input rails before the assessment reads it.
+# NeMo runs the input flows in the order listed and stops at the first one that blocks.
+#
+# Level 1, rules. A client document never talks to the system that reads it: it does not carry
+# our prompt's own headings, ask the reader to drop its instructions, or hand back an answer in
+# our response format. Every attack that landed in attacks.jsonl does one of these. The patterns
+# are kept narrow, because ordinary documents talk about rules, systems and access levels too.
+rails:
+  input:
+    flows:
+      - regex check input
+  config:
+    regex_detection:
+      input:
+        patterns:
+          # The headings of our prompt (schema.py, _build_prompt), at the start of a line.
+          - '(?m)^\s*(RULES|RESPONSE FORMAT|TASK|SCALE FOR CONTROL|CLIENT DOCUMENTS)\s*:'
+          # Asking the reader to drop the instructions it was given, in English or Croatian.
+          - '(?i)\b(ignore|disregard)\s+(all\s+)?(the\s+)?(previous|above|prior|earlier)\s+(instructions|rules)\b'
+          - '(?i)\b(ignoriraj|zanemari)\w*\s+(sve\s+)?(prethodne|gornje|ranije|navedene)\s+(upute|uputa|pravila)\b'
+          # Addressing the system that assesses the document.
+          - '(?i)\bsustav(u)?\s+(za|koji)\s+ocjen'
+          - '(?i)\bfor\s+the\s+(system|model|assistant)\s+(that|which)\s+(assess|evaluat|score|grad)'
+          # Our response format: a level for a dimension, as JSON or as an order.
+          - '"(level|citation_ids|documentation|implementation)"\s*:'
+          - '(?i)\b(set|assign|give)\b.{0,20}\blevel\b.{0,40}\b(documentation|implementation)\b'
+          - '(?i)\b(dodijeli|postavi)\w*\b.{0,20}\brazin\w*\b.{0,40}\b(dokumentacij|implementacij|provedb)'

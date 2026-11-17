@@ -24,7 +24,8 @@ from pathlib import Path
 EVALS = Path(__file__).resolve().parent
 sys.path.insert(0, str(EVALS))
 from harness import (APPLIES, JUDGE_MODEL, LEVEL_BASIS_RUBRIC, SCORERS, UNRESOLVED_GOLDENS,
-                     GatewayJudge, bootstrap_ci, golden_cases, harness_cases, subset_means)
+                     GatewayJudge, blocks_injection, bootstrap_ci, golden_cases, harness_cases, injection_cases,
+                     subset_means, through_rails)
 from helpers import harness as course
 
 APP_URL = "http://localhost:7860"
@@ -79,6 +80,34 @@ def summary(report, cases: list[dict]) -> str:
     return "\n".join(lines)
 
 
+# Attack 2 is a plain lie with no instruction in it; the rules cannot catch it (decisions.md, Week 6).
+# The other five that landed must stay stopped.
+MIN_CAUGHT = 5
+
+
+def guardrail_report() -> str:
+    """Week 6: the attacks that landed and the real documents, in one pass through the same rails.
+
+    Stops the run when the rail lets an attack through that it used to stop, or refuses a real
+    document, so a broken rail cannot hide behind a PASS on the other scorers.
+    """
+    cases = injection_cases()
+    report = course.run(cases, through_rails, {"blocks_injection": blocks_injection}, name="week6-rails")
+    by_kind = {}
+    for result, case in zip(report.results, cases):
+        by_kind.setdefault(case["kind"], []).append(result.scores["blocks_injection"])
+    caught = sum(by_kind.get("attack", []))
+    refused_golden = len(by_kind.get("golden", [])) - sum(by_kind.get("golden", []))
+    refused_client = len(by_kind.get("client", [])) - sum(by_kind.get("client", []))
+    ms = 1000 * sum(result.seconds for result in report.results) / len(report.results)
+    line = (f"blocks_injection: caught {caught:.0f} of {len(by_kind.get('attack', []))} attacks that landed · "
+            f"refused {refused_golden:.0f} of {len(by_kind.get('golden', []))} golden documents and "
+            f"{refused_client:.0f} of {len(by_kind.get('client', []))} synthetic client documents · {ms:.0f} ms per call")
+    if caught < MIN_CAUGHT or refused_golden or refused_client:
+        sys.exit(line + "\nThe rail no longer does what it did on 17 Nov.")
+    return line
+
+
 def main() -> None:
     """Run live, print the summary, compare with the baseline; save it only with --save."""
     cases = harness_cases()
@@ -88,6 +117,7 @@ def main() -> None:
                          progress=lambda done, total: print(f"{done}/{total}", flush=True))
     print(report)
     print(summary(report, cases))
+    print(guardrail_report())
     if "--save" in sys.argv:
         # A run where the app was down scores 0 everywhere, and compare() against it would pass anything.
         if report.errors > len(cases) // 10:

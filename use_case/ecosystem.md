@@ -151,6 +151,25 @@ Two more things the probe cannot see:
 - **The judge runs on Opus 5.5 through the same gateway** and needs the same setting. The course's judge helper does not send it, so `harness.py` wraps it without changing `helpers/`.
 - **The embedding route answered 500 once on 2 Nov** and worked on the retry. A run should retry a failed call before counting it.
 
+### 2026-11-17, Week 6: the attack model, and who writes what the app reads
+
+**Who can write to what the app reads**
+
+| Source | Who writes it | Risk |
+| --- | --- | --- |
+| The client's documents (policies, minutes, reports) | the client and its staff, sometimes a supplier | this is the incident: any of them can put text in front of the model, and a false but plausible document cannot be told from a real one |
+| The control catalog (`catalog.json`) | us, from the regulator's public catalog | low; a change goes through a PR |
+| What each control asks for (`skills/<control>/SKILL.md`) | the consultant, later | medium; it needs a version and who confirmed it |
+| The prompts (`schema.py`, `retrieval.py`) | us | low; a change goes through a PR |
+
+**The attack model**
+
+- **Attacks go to a model on this laptop, never to the gateway.** `qwen2.5:3b` and `nomic-embed-text` run in Ollama at `localhost:11434`; `use_case/evals/attack.py` stops if `INJECTION_API_BASE` is not local.
+- **The work proxy blocks model downloads from the command line.** Ollama itself installs from its GitHub release without sudo. The two model files were downloaded from the model page and loaded from disk with `ollama create`.
+- **Level 0:** the gateway is a closed API with no logits. Constrained decoding exists only if the provider's structured output is switched on through it, and nobody has measured that.
+- **The small model is weaker than the app's model even without an attack.** On golden 1 it gave documentation 3 once in five clean runs, where the right answer is 2. An attack that lands on it says what the app lets through with that model, not necessarily with Sonnet.
+- **For Week 9:** a local model for testing needs an approved way to get model files onto the firm's machines.
+
 ---
 
 ## Week 9 — the full checklist
