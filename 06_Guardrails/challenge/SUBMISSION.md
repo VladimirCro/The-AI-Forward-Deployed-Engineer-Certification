@@ -2,7 +2,7 @@
 
 I attacked my own assessment endpoint with documents a client could hand in. Two attacks turned a level 2 into a level 5. I fixed it with a NeMo rail that checks every document before the model reads it, and the attacks are now a scored case in the harness.
 
-Loom video: [LOOM LINK]
+Loom video: https://www.loom.com/share/97d0feef3ac8410eaa885664bfc5c82f
 
 ## Where each deliverable is
 

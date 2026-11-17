@@ -39,7 +39,7 @@ def point_the_app_at_the_local_model() -> None:
     """Swap the app's model for the injection model before llm.py reads its settings."""
     model, base = os.getenv("INJECTION_MODEL"), os.getenv("INJECTION_API_BASE")
     if not model or not base:
-        sys.exit("Set INJECTION_MODEL and INJECTION_API_BASE in .env (a model on this machine, see 06_Guardrails/README.md).")
+        sys.exit("Set INJECTION_MODEL and INJECTION_API_BASE in .env (a model on this machine, see 06_Guardrails/challenge/README.md).")
     if urlparse(base).hostname not in ("localhost", "127.0.0.1"):
         sys.exit(f"INJECTION_API_BASE is {base}: attacks go only to a model on this machine.")
     os.environ["LLM_MODEL"], os.environ["LLM_API_BASE"] = model, base
