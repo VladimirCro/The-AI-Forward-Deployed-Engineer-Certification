@@ -96,6 +96,21 @@ def _parse(reply: str) -> Response:
     text = reply.strip().removeprefix("```json").removeprefix("```").removesuffix("```")
     return Response.model_validate_json(text)
 
+def _stopped_documents(request: Request) -> dict[str, str]:
+    """Document id -> the guardrail rung that stopped it (guard.py)."""
+    # Imported here, so the Week 2 scripts that only need Request and Response do not need NeMo.
+    from guard import stopped_documents
+    return stopped_documents(request.evidence_documents)
+
+def _stopped_response(request: Request, stopped: dict[str, str]) -> Response:
+    """No level, and what the consultant should check: the documents the guardrail stopped."""
+    names = {doc.document_id: doc.name for doc in request.evidence_documents}
+    reason = "Dokument sadrži upute sustavu za ocjenu umjesto dokaza, pa procjena nije napravljena: " + \
+             ", ".join(f"{doc_id} ({names[doc_id]})" for doc_id in stopped) + ". Provjeri dokument s klijentom."
+    no_level = DimensionAssessment(low_confidence=False, uncertainty_reason=reason, rationale=reason)
+    return Response(control_id=request.control_id, documentation=no_level, implementation=no_level.model_copy(),
+                    missing_evidence=[f"Provjera dokumenta {doc_id} ({names[doc_id]}) s klijentom" for doc_id in stopped])
+
 def _fill_level_statements(response: Response, control: dict) -> None:
     """Fill in the regulator's exact statement for each proposed level."""
     pairs = [
@@ -119,12 +134,16 @@ def solve(request: Request) -> Response:
     """
     # 1. The control's scale from the catalog; an unknown control stops here.
     control = _control(request.control_id)
-    # 2. One prompt: task, scale, documents, rules.
+    # 2. Week 6: a document that talks to the model does not reach it, and no level is given.
+    stopped = _stopped_documents(request)
+    if stopped:
+        return _stopped_response(request, stopped)
+    # 3. One prompt: task, scale, documents, rules.
     prompt = _build_prompt(request, control)
-    # 3. The model's full reply.
+    # 4. The model's full reply.
     reply = _ask_model(prompt)
-    # 4. Check it against the contract.
+    # 5. Check it against the contract.
     response = _parse(reply)
-    # 5. The level statements come from the catalog, not from the model.
+    # 6. The level statements come from the catalog, not from the model.
     _fill_level_statements(response, control)
     return response

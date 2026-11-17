@@ -107,6 +107,9 @@ def assess_control_for_client(client_id: str, control_id: str, find=find_candida
     documents = [to_document(record_id, candidates[record_id]) for record_id in relevant]
     response = solve(Request(control_id=control_id, evidence_documents=documents))
     verify_citations(response, documents)
+    if response.documentation.level is None and response.implementation.level is None:
+        # Any reply with no level (a decline, or a document the guardrails stopped) keeps its own reason and has no sources.
+        return response
     if not response.citations:
         return decline_response(control_id, "Nijedan citat nije nađen doslovno u dokumentima.")
     response.sources = relevant
