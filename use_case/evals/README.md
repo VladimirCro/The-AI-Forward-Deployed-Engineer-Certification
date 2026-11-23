@@ -73,6 +73,7 @@ every later week runs. `python use_case/evals/run.py` is the whole interface.
 | `scenarios.py` | Not written: the endpoint answers one request and holds no conversation (`decisions.md`, Week 4) | TC4 Step 5 |
 | `run.py` | Points the harness at your endpoint and prints the report | TC4 Step 6 |
 | `baseline.json` | **The run itself**, saved with `helpers.harness.save`. Commit it | TC4 Step 6 |
+| `harness.py`, Week 7 part | The four memory tests (staleness, cost, truthfulness, leakage), not in `scenarios.py`. `run.py` runs them on their own empty memory file, at the end of every run or alone with `run.py memory` | TC7 |
 
 | Week | What uses these files |
 | --- | --- |

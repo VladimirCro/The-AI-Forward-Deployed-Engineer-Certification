@@ -30,7 +30,7 @@ EVALS = Path(__file__).resolve().parent
 ROOT = EVALS.parents[1]
 sys.path.insert(0, str(EVALS))
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / "01_Product_Engineering" / "challenge"))  # llm.py for the judge, guard.py for the rails
+sys.path.insert(0, str(ROOT / "01_Product_Engineering" / "challenge"))  # llm.py for the judge, guard.py for the rails, app.py and assess.py for the memory tests
 from collect_traces import all_cases, read_jsonl  # the same cases the traces came from
 from helpers.harness import run
 from helpers.judge import Judge
@@ -537,6 +537,134 @@ def scorer_table(cases: list[dict], systems: dict) -> str:
         means = [run(subset, system, {label: scorer}, name=name).means[label] for name, system in systems.items()]
         lines.append(f"| {label} | {len(subset)} | " + " | ".join(f"{mean:.2f}" for mean in means) + " |")
     return "\n".join(lines)
+
+
+# ----------------------------------------------------------------- Week 7: memory
+# The memory is tested on its own, not through the 52 cases: memory_report() in run.py points MEMORY_FILE
+# at an empty file first. Only cost and truthfulness call the model (one real assessment, one explanation).
+
+MEMORY_TESTS = ("staleness", "cost", "truthfulness", "leakage")
+
+
+def memory_cases() -> list[dict]:
+    """One case per memory test, all on the first case that should find documents."""
+    case = next(c for c in harness_cases() if c["expected_sources"] and not c["should_decline"])
+    request = json.loads(case["input"])
+    return [{"trace_id": f"memory-{test}", "input": json.dumps({"test": test, **request}), "output": "passed"}
+            for test in MEMORY_TESTS]
+
+
+def memory_test(question: str) -> str:
+    """The system under test for memory_cases: runs one test, returns "passed..." or what went wrong."""
+    request = json.loads(question)
+    return {"staleness": staleness, "cost": cost, "truthfulness": truthfulness,
+            "leakage": leakage}[request["test"]](request["client_id"], request["control_id"])
+
+
+def memory_holds(actual: str, case: dict) -> float:
+    """1.0 when the memory test passed."""
+    return float(actual.startswith("passed"))
+
+
+def staleness(client_id: str, control_id: str) -> str:
+    """She accepts 3, then changes it to 2: 2 must be the live decision, and 3 only in the history."""
+    import app
+    import memory
+    app.record_consultant_decision(client_id, control_id, "implementation", "3", "3", "")
+    app.record_consultant_decision(client_id, control_id, "implementation", "3", "2", "Changed in the staleness test.")
+    live = memory.live(client_id, control_id, "decision", "implementation")
+    history = [e["data"]["decided_level"] for e in memory.history(client_id, control_id, "decision", "implementation")]
+    if not live or live["data"]["decided_level"] != "2":
+        return f"failed: the live decision is {live and live['data']['decided_level']}, not 2"
+    if history != ["3", "2"]:
+        return f"failed: the history is {history}, not ['3', '2']"
+
+    # The same for an assessment: after the client changes a document, the stored answer must not come back.
+    import shutil
+    import tempfile
+    import assess
+    import retrieval
+
+    def no_search(client, control):  # no model call, so the answer is a decline
+        return {}
+
+    saved = retrieval.CLIENTS_DIR
+    with tempfile.TemporaryDirectory() as folder:
+        retrieval.CLIENTS_DIR = Path(folder)
+        try:
+            shutil.copytree(saved / client_id, retrieval.CLIENTS_DIR / client_id)
+            assess.assess_control_for_client(client_id, control_id, find=no_search)
+            page = sorted((retrieval.CLIENTS_DIR / client_id).glob("r*.md"))[0]
+            page.write_text(page.read_text(encoding="utf-8") + "\nOne more line from the client.\n", encoding="utf-8")
+            assess.assess_control_for_client(client_id, control_id, find=no_search)
+        finally:
+            retrieval.CLIENTS_DIR = saved
+    episodes = memory.history(client_id, control_id, "assessment")
+    if len(episodes) != 2 or episodes[0]["replaced_at"] is None or episodes[0]["inputs_hash"] == episodes[1]["inputs_hash"]:
+        return f"failed: after a changed document there are {len(episodes)} assessments, the old one not replaced by a new one"
+    return "passed"
+
+
+def cost(client_id: str, control_id: str) -> str:
+    """The same assessment twice, counting the model calls: the second one must cost none and give the same answer."""
+    import assess
+    import llm
+    calls = []
+    real = llm.completion
+
+    def counted(*args, **kwargs):
+        calls.append(1)
+        return real(*args, **kwargs)
+
+    llm.completion = counted  # every chat call in the app goes through llm.completion
+    try:
+        first = assess.assess_control_for_client(client_id, control_id)
+        first_calls = len(calls)
+        second = assess.assess_control_for_client(client_id, control_id)
+        second_calls = len(calls) - first_calls
+    finally:
+        llm.completion = real
+    if first_calls == 0:
+        return "failed: the first assessment made no model call, so there was nothing to save"
+    if second_calls:
+        return f"failed: the second assessment made {second_calls} model calls"
+    if second != first:
+        return "failed: the second answer is not the first one"
+    return f"passed: {first_calls} model calls the first time, 0 the second"
+
+
+def truthfulness(client_id: str, control_id: str) -> str:
+    """Every document and quote the explanation names must be in the log; with relevant documents it must name one."""
+    import assess
+    import memory
+    assess.assess_control_for_client(client_id, control_id)  # from memory when the cost test ran first
+    episode = memory.live(client_id, control_id, "assessment")["data"]
+    explanation = assess.explain(client_id, control_id)
+    # A dropped quote is in the log too, and saying it was dropped is true.
+    quotes = {c["citation_id"] for c in episode["response"]["citations"]} | set(episode.get("dropped_citations", []))
+    invented = (set(explanation.document_ids) - set(episode.get("found", []))) | (set(explanation.citation_ids) - quotes)
+    if invented:
+        return f"failed: the explanation names {sorted(invented)}, which are not in the log"
+    # Without this an explanation that names nothing would pass.
+    if episode.get("relevant") and not explanation.document_ids:
+        return "failed: the explanation names no document, though the assessment used some"
+    return f"passed: {len(explanation.document_ids)} documents and {len(explanation.citation_ids)} quotes, all in the log"
+
+
+def leakage(client_id: str, control_id: str) -> str:
+    """Another client asking about the same control must see none of this client's decisions or assessments."""
+    import app
+    import assess
+    import memory
+    other = f"{client_id}-other"
+    app.record_consultant_decision(client_id, control_id, "documentation", "3", "3", "")
+    seen = [kind for kind, dimension in (("decision", "documentation"), ("decision", "implementation"), ("assessment", ""))
+            if memory.live(other, control_id, kind, dimension)]
+    if seen:
+        return f"failed: the other client sees this client's {seen}"
+    if assess.explain(other, control_id).document_ids:
+        return "failed: the explanation for the other client names this client's documents"
+    return "passed"
 
 
 if __name__ == "__main__":

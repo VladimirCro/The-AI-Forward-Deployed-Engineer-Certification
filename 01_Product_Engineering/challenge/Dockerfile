@@ -21,7 +21,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv export --frozen --no-dev --no-emit-project -o requirements.txt \
  && uv pip install --system --no-cache -r requirements.txt
 
-COPY llm.py app.py schema.py retrieval.py assess.py skill.py guard.py catalog.json ./
+COPY llm.py app.py schema.py retrieval.py assess.py skill.py guard.py memory.py catalog.json ./
 COPY guardrails/ ./guardrails/
 COPY skills/ ./skills/
 # The clients' documents are not in the image: they are data, mounted at run time

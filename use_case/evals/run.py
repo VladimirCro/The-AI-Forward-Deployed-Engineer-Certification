@@ -5,6 +5,9 @@
         runs the cases live and compares the run with baseline.json (PASS or not).
     ... python ../../use_case/evals/run.py --save
         the same, and saves the run as the new baseline. Only when re-baselining on purpose.
+    ... python ../../use_case/evals/run.py memory
+        only the Week 7 memory tests, in this process, on an empty memory file: one real
+        assessment for the cost test, no container needed.
 
 Needs the app running (tc3-app container on port 7860) with the fictional clients
 mounted, and .env with LLM_THINKING=between_tools. Everything in use_case/data/ stays
@@ -13,19 +16,26 @@ use_case/data/synthetic_v2.jsonl, and the clients are built by build_clients.py
 (Week 3) and build_trace_clients.py (noise from synthetic_v1.jsonl). Runs from the
 app's environment, which has gradio_client.
 
-One run: 52 app calls and 62 judge calls (12 to calibrate, 50 to score; crashed cases are not scored), 52 minutes on 2 Nov.
+One run: 52 app calls and 62 judge calls (12 to calibrate, 50 to score; crashed cases are not scored), 52 minutes on 2 Nov,
+plus the memory tests: one assessment and one explanation in this process.
+
+Since Week 7 the app keeps its answers in memory (MEMORY_FILE, /tmp/memory.sqlite in the container).
+Start a new container before each run, or the cases are answered from memory and the run scores
+the stored answers, not the tool.
 """
 
 import json
+import os
 import statistics
 import sys
+import tempfile
 from pathlib import Path
 
 EVALS = Path(__file__).resolve().parent
 sys.path.insert(0, str(EVALS))
 from harness import (APPLIES, JUDGE_MODEL, LEVEL_BASIS_RUBRIC, SCORERS, UNRESOLVED_GOLDENS,
                      GatewayJudge, blocks_injection, bootstrap_ci, golden_cases, harness_cases, injection_cases,
-                     subset_means, through_rails)
+                     memory_cases, memory_holds, memory_test, subset_means, through_rails)
 from helpers import harness as course
 
 APP_URL = "http://localhost:7860"
@@ -108,8 +118,34 @@ def guardrail_report() -> str:
     return line
 
 
+def memory_report() -> str:
+    """Week 7: the four memory tests on an empty memory file of their own.
+
+    Stops the run when one fails, so a PASS on the other scorers does not cover a broken memory.
+    """
+    before = os.environ.get("MEMORY_FILE")
+    with tempfile.TemporaryDirectory() as folder:
+        os.environ["MEMORY_FILE"] = str(Path(folder) / "memory.sqlite")
+        try:
+            cases = memory_cases()
+            report = course.run(cases, memory_test, {"memory_holds": memory_holds}, name="week7-memory")
+        finally:
+            if before is None:
+                os.environ.pop("MEMORY_FILE")
+            else:
+                os.environ["MEMORY_FILE"] = before
+    lines = [f"{case['trace_id']}: {result.actual or result.error.strip().splitlines()[-1]}"
+             for case, result in zip(cases, report.results)]
+    if report.means["memory_holds"] < 1:
+        sys.exit("\n".join(lines) + "\nThe memory no longer does what it did on 23 Nov.")
+    return "\n".join(lines)
+
+
 def main() -> None:
     """Run live, print the summary, compare with the baseline; save it only with --save."""
+    if sys.argv[1:] == ["memory"]:
+        print(memory_report())
+        return
     cases = harness_cases()
     scorers = scorers_with_judge(cases)
     name = "week4-baseline" if "--save" in sys.argv else "week4-candidate"
@@ -118,6 +154,7 @@ def main() -> None:
     print(report)
     print(summary(report, cases))
     print(guardrail_report())
+    print(memory_report())
     if "--save" in sys.argv:
         # A run where the app was down scores 0 everywhere, and compare() against it would pass anything.
         if report.errors > len(cases) // 10:
