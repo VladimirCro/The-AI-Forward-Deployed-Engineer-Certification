@@ -14,6 +14,7 @@ from fastapi.responses import HTMLResponse
 from gradio import Server
 
 import assess
+import memory
 import skill
 from llm import stream_reply
 from schema import CATALOG, EvidenceDocument, Request, solve
@@ -21,8 +22,6 @@ from schema import CATALOG, EvidenceDocument, Request, solve
 app = Server()
 
 FRONTEND = Path(__file__).parent / "frontend" / "index.html"
-# The consultant's accept or change, one JSON line each. Outside the clients' folder, which is mounted read-only.
-DECISIONS = Path(os.getenv("DECISIONS_FILE") or "/tmp/consultant_decisions.jsonl")
 LEVELS = {"", "1", "2", "3", "4", "5"}
 
 # --- The API -----------------------------------------------------------------
@@ -69,6 +68,9 @@ def assess_control_for_client(client_id: str, control_id: str) -> str:
     no level, an empty `sources` and the reason, instead of assessing from
     unrelated documents.
 
+    Asked again with the same documents, model and search, returns the stored answer
+    without a model call.
+
     Never makes the final decision; the consultant does.
     """
     return assess.assess_control_for_client(client_id, control_id).model_dump_json()
@@ -107,9 +109,21 @@ def record_consultant_decision(client_id: str, control_id: str, dimension: str, 
               "proposed_level": proposed_level or None, "decided_level": decided_level or None,
               "changed": decided_level != proposed_level, "reason": reason.strip(),
               "decided_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
-    with DECISIONS.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(record, ensure_ascii=False) + "\n")
+    # A second decision on the same dimension replaces the first; the first stays in the history.
+    memory.record(client_id, control_id, "decision", record, dimension=dimension)
     return json.dumps(record, ensure_ascii=False)
+
+
+@app.api(name="explain_assessment")
+def explain_assessment(client_id: str, control_id: str) -> str:
+    """Explain an earlier assessment of one control for one client, from the log of what the tool did.
+
+    Returns JSON: the explanation, and the document and citation ids it relies on. With no
+    assessment on record it says so and calls no model.
+    """
+    if control_id not in CATALOG:
+        raise ValueError(f"Unknown control: {control_id}")
+    return assess.explain(client_id, control_id).model_dump_json()
 
 # --- The frontend ------------------------------------------------------------
 # Defining a route at "/" replaces Gradio's default UI with ours.

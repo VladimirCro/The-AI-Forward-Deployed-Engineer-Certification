@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TC7 submission</title>
+<style>
+:root{
+  --bg:#faf9f6; --card:#ffffff; --ink:#1c1c1a; --muted:#5d5b55; --line:#dcd9d0;
+  --accent:#9a3b12; --tint:#f3ece4; --link:#0b5cad;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16171a; --card:#1e2024; --ink:#ebeae6; --muted:#a3a198; --line:#34363b;
+    --accent:#e8a070; --tint:#26241f; --link:#7db7f0;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16171a; --card:#1e2024; --ink:#ebeae6; --muted:#a3a198; --line:#34363b;
+  --accent:#e8a070; --tint:#26241f; --link:#7db7f0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  padding:24px 16px 56px; overflow-wrap:break-word}
+main{max-width:760px; margin:0 auto}
+a{color:var(--link)}
+h1{font-size:2rem; line-height:1.15; margin:0 0 6px}
+h2{font-size:1.3rem; line-height:1.25; margin:40px 0 10px; padding-top:6px; border-top:1px solid var(--line)}
+p{margin:0 0 12px}
+.sub{color:var(--muted); margin-bottom:20px}
+code{font:.88em ui-monospace,Consolas,monospace; background:var(--tint); padding:1px 5px; border-radius:4px; overflow-wrap:anywhere}
+pre{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin:0 0 12px; overflow-x:auto}
+pre code{background:none; padding:0; overflow-wrap:normal; white-space:pre}
+.box{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:0 0 12px}
+.wrap{overflow-x:auto; margin:0 0 12px; border:1px solid var(--line); border-radius:10px; background:var(--card)}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:.95rem}
+th,td{text-align:left; vertical-align:top; padding:8px 12px; border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{background:var(--tint); font-weight:600}
+ul,ol{margin:0 0 12px; padding-left:22px}
+li{margin-bottom:6px}
+.order{color:var(--muted); font-size:.95rem}
+.num{white-space:nowrap}
+td.num,th.num{text-align:right}
+.wide th,.wide td{padding:8px 6px}
+</style>
+</head>
+<body>
+<main>
+<h1>TC7 submission</h1>
+<p class="sub">Week 7, Memory.</p>
+
+<h2 id="summary">Summary</h2>
+<p>I gave the assessment tool a memory of what it did. Each assessment and each of the consultant's decisions is now kept in one SQLite file, so a past answer can be explained, and when she changes a level the new decision replaces the old one and the old one stays in the history. Four tests in the harness check it: staleness, cost, truthfulness and leakage. Each of them failed when I broke what it checks.</p>
+
+<h2 id="video">Video</h2>
+<p><a href="https://www.loom.com/share/1b339825f63244d8b90b81fc4c32facc">Watch the video on Loom</a></p>
+
+<h2 id="deliverables">Where each deliverable is</h2>
+<div class="wrap"><table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Video: the memory, the four tests and the run that checks them</td>
+<td>Link above</td>
+</tr>
+<tr>
+<td>The choice of kind, and the kinds I rejected</td>
+<td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md"><code>use_case/decisions.md</code></a>, Week 7</td>
+</tr>
+<tr>
+<td>The memory</td>
+<td><a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/memory.py"><code>memory.py</code></a>; written by <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/assess.py"><code>assess.py</code></a> and by <code>record_consultant_decision</code> in <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/app.py"><code>app.py</code></a></td>
+</tr>
+<tr>
+<td>Explaining a past assessment</td>
+<td><code>explain()</code> in <code>assess.py</code>, endpoint <code>explain_assessment</code> in <code>app.py</code></td>
+</tr>
+<tr>
+<td>The four memory tests</td>
+<td>Week 7 part of <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/harness.py"><code>use_case/evals/harness.py</code></a>, run by <code>memory_report()</code> in <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/evals/run.py"><code>use_case/evals/run.py</code></a></td>
+</tr>
+<tr>
+<td>Before and after on the harness numbers</td>
+<td>Below: baseline from 13 Nov (<code>use_case/evals/baseline.json</code>), run on 23 Nov</td>
+</tr>
+<tr>
+<td>It still runs in Docker</td>
+<td>Run it below</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="the-choice-episodic">The choice: episodic</h2>
+<p>Sooner or later someone asks why the tool proposed a level, for example the consultant a few weeks later or an auditor. Until now nothing was kept to answer that. Semantic memory did not fit, because the consultant has no stable facts the tool keeps asking for, and a fact without a document behind it should never reach an assessment. Procedural memory did not fit either: in Week 5 a search planned up front found fewer documents (0.79 against 0.93), and learned search steps could do the same. The full reasoning is in <code>decisions.md</code>.</p>
+<p>An episode holds what the code saw: the documents the search returned, the label and reason for each, the documents kept as relevant, the quotes the check dropped because they were not in the document word for word, and the answer. Her decisions go into the same file.</p>
+<h2 id="staleness-supersede-on-write">Staleness: supersede on write</h2>
+<p>One live entry per client, control, kind and dimension. When she changes a level, the earlier decision is marked replaced and kept with its time and reason, so the history is there for an audit, but only one decision counts. A unique index on live entries means the database itself refuses a second one.</p>
+<p>For assessments the subject is the client and the control, and the episode carries a hash of what the answer depends on: the text of all the client's documents, the model, and which search ran. If the hash is the same, the stored answer comes back without a model call. If a document, the model or the search changed, the tool assesses again.</p>
+<h2 id="the-tests">The tests</h2>
+<p>They run on an empty memory file of their own, apart from the 52 cases, so the fingerprint of the main run does not change and the comparison with the baseline still holds. If one fails, <code>run.py</code> stops.</p>
+<div class="wrap"><table>
+<thead>
+<tr>
+<th>Test</th>
+<th>What it does</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Staleness</td>
+<td>She accepts 3, then changes it to 2 with a reason, through the same function the frontend calls. The live decision must be 2, and the history 3 then 2. Then one of the client's documents changes (in a copy of the folder): the next assessment must be a new one, and the old one only in the history.</td>
+<td>passed</td>
+</tr>
+<tr>
+<td>Cost saving</td>
+<td>One real case assessed twice, counting every chat model call (the embedding calls are not counted, and the second time there are none of those either). The second must make none and give the same answer.</td>
+<td>passed: 6 model calls the first time, 0 the second</td>
+</tr>
+<tr>
+<td>Truthfulness</td>
+<td>The tool explains that assessment. Every document and quote it names must be in the episode, and it must name at least one when the assessment used documents.</td>
+<td>passed: 8 documents and 3 quotes, all in the log</td>
+</tr>
+<tr>
+<td>Leakage</td>
+<td>Another client asks about the same control and must see none of the first client's decisions or assessments.</td>
+<td>passed</td>
+</tr>
+</tbody>
+</table></div>
+<p>The numbers are from the full run on 23 Nov. The search does not take the same path every time, so another run gave 5 calls the first time, still 0 the second.</p>
+<p>There are no user accounts in the app, but the clients' data must never mix, so I wrote the leakage test anyway. The saving comes from reusing a stored answer when nothing changed; the tool does not search any better.</p>
+<h2 id="do-the-tests-catch-a-broken-memory">Do the tests catch a broken memory</h2>
+<p>I broke each part on purpose and ran the test that guards it:</p>
+<div class="wrap"><table>
+<thead>
+<tr>
+<th>What I broke</th>
+<th>Test that failed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A new decision no longer marks the old one replaced</td>
+<td>Staleness: the database refused the second live entry</td>
+</tr>
+<tr>
+<td>The memory ignores the client</td>
+<td>Leakage</td>
+</tr>
+<tr>
+<td>The explanation names a document that is not in the log</td>
+<td>Truthfulness</td>
+</tr>
+<tr>
+<td>The explanation names nothing</td>
+<td>Truthfulness</td>
+</tr>
+<tr>
+<td>The stored answer is never read</td>
+<td>Cost saving: 6 model calls the second time too</td>
+</tr>
+<tr>
+<td>The hash ignores the documents</td>
+<td>Staleness: after the changed document the old answer came back</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="before-and-after">Before and after</h2>
+<p>The same 52 cases, the same judge, against the baseline from 13 Nov (the Week 4 baseline no longer compares since the harness changed in Week 6, see <code>decisions.md</code>).</p>
+<div class="wrap"><table>
+<thead>
+<tr>
+<th>Scorer</th>
+<th style="text-align: right;">Cases</th>
+<th style="text-align: right;">Before</th>
+<th style="text-align: right;">After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>documents_found (headline)</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">0.88</td>
+<td style="text-align: right;">0.92</td>
+</tr>
+<tr>
+<td>level_matches</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+<tr>
+<td>declines_when_no_evidence</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">0.40</td>
+</tr>
+<tr>
+<td>only_case_documents</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">0.82</td>
+<td style="text-align: right;">0.81</td>
+</tr>
+<tr>
+<td>judge_level_basis</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">0.88</td>
+<td style="text-align: right;">0.87</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>run.py</code> says PASS: every change is inside the 0.08 tolerance, and they go both ways, which is what three runs of the same app also did. Seconds per case: median 58, against 56 in the baseline.</p>
+<p>The memory did not make the answers worse, but this run cannot show the case where it could. Every case is a different client and control, so the memory only wrote: after the run it held 52 assessments, all live, none reused. The week warns about a wrong entry coming back as if it were right. For me that would be an old answer coming back after something outside the hash changed, such as the prompt.</p>
+<h2 id="what-is-still-weak">What is still weak</h2>
+<ul>
+<li>When a client sends one new document, the hash changes and the whole assessment runs again. The better version keeps the documents from the last episode and reads only the new one.</li>
+<li>The hash has no version of the prompt, the catalog or a <code>SKILL.md</code>. After changing one of them, the memory file has to start empty. The same goes for a second <code>run.py</code> against the same container, and for the Week 5 scripts on the host: without a new memory file they score the stored answers.</li>
+<li>A decline is stored like any answer, also one where the search ran out of turns, and comes back until a document changes. There is no way yet to ask for a new assessment.</li>
+<li>There is one live assessment per client and control, whichever search made it, so the tool and the skill replace each other.</li>
+<li>The episode keeps what the search returned, not each search it made.</li>
+<li>In the container the file is in <code>/tmp</code> and goes away with it, decisions included. A real deployment needs a volume or a database.</li>
+<li>The truthfulness test checks the ids an explanation names, not what it says about them.</li>
+</ul>
+<h2 id="run-it">Run it</h2>
+<pre><code class="language-bash">cd 01_Product_Engineering/challenge
+uv run --no-sync --env-file ../../.env python ../../use_case/evals/run.py memory
+</code></pre>
+<p>Only the memory tests, in this process, on an empty file: one real assessment, about a minute and a half. A plain <code>run.py</code> with the app running runs them after the 52 cases and the guardrail check.</p>
+<p>Docker, from the repo root, the same as in Week 6:</p>
+<pre><code class="language-bash">docker build --build-arg HTTPS_PROXY=&quot;$HTTPS_PROXY&quot; -t enterprise-fde-challenge 01_Product_Engineering/challenge
+docker run --rm -p 7860:7860 --env-file .env \
+  -v &quot;$PWD/use_case/data/clients:/data/clients:ro&quot; -e CLIENTS_DIR=/data/clients \
+  enterprise-fde-challenge
+</code></pre>
+<p>On 23 Nov <code>run.py</code> ran against this container with the memory in it. After the run its memory held 52 assessments.</p>
+<p>The same text is in <a href="https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/07_Memory/challenge/SUBMISSION.md">SUBMISSION.md</a>.</p>
+</main>
+</body>
+</html>

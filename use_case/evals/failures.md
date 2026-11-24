@@ -30,6 +30,8 @@ One main reason per answer, so the counts add up to 24.
 
 Row 4 counts attack runs from Week 6, not the 24 answers above.
 
+Week 7 adds no row. Until then the tool kept nothing between requests, so none of the fifty traces could show a stale answer or one client's data reaching another. The four memory tests in `harness.py` check for those instead.
+
 In 16 of the 24 the problem is which documents reach the assessment (#1 and #3). Only 8 are about the reasoning on the level itself.
 
 ## Every failure, one sentence each
