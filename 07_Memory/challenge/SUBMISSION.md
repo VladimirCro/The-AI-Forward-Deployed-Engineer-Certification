@@ -2,12 +2,13 @@
 
 I gave the assessment tool a memory of what it did. Each assessment and each of the consultant's decisions is now kept in one SQLite file, so a past answer can be explained, and when she changes a level the new decision replaces the old one and the old one stays in the history. Four tests in the harness check it: staleness, cost, truthfulness and leakage. Each of them failed when I broke what it checks.
 
-Loom video:
+Loom video: https://www.loom.com/share/1b339825f63244d8b90b81fc4c32facc
 
 ## Where each deliverable is
 
 | Deliverable | Where |
 | --- | --- |
+| Video: the memory, the four tests and the run that checks them | Link above |
 | The choice of kind, and the kinds I rejected | [`use_case/decisions.md`](https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/use_case/decisions.md), Week 7 |
 | The memory | [`memory.py`](https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/memory.py); written by [`assess.py`](https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/assess.py) and by `record_consultant_decision` in [`app.py`](https://github.com/VladimirCro/The-AI-Forward-Deployed-Engineer-Certification/blob/main/01_Product_Engineering/challenge/app.py) |
 | Explaining a past assessment | `explain()` in `assess.py`, endpoint `explain_assessment` in `app.py` |
